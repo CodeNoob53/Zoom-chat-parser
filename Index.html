@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Парсер чату Zoom</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #1c1c1c;
+        color: #e0e0e0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+
+      /* Скрол сторінки */
+      body::-webkit-scrollbar {
+        width: 12px;
+      }
+      body::-webkit-scrollbar-track {
+        background: #2a2a2a;
+      }
+      body::-webkit-scrollbar-thumb {
+        background: #555;
+        border-radius: 6px;
+      }
+      body::-webkit-scrollbar-thumb:hover {
+        background: #777;
+      }
+      body::-webkit-scrollbar-button {
+        background: #333;
+        height: 12px;
+        border: 1px solid #555;
+      }
+      body::-webkit-scrollbar-button:vertical:decrement {
+        background: #333
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white"><polygon points="6,2 10,8 2,8"/></svg>')
+          center no-repeat;
+      }
+      body::-webkit-scrollbar-button:vertical:increment {
+        background: #333
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white"><polygon points="6,10 10,4 2,4"/></svg>')
+          center no-repeat;
+      }
+
+      header,
+      footer {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        background: rgba(40, 40, 40, 0.6);
+        padding: 1rem;
+        text-align: center;
+        border-bottom: 1px solid #444;
+        box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+      }
+
+      h1 {
+        font-size: clamp(1.2rem, 3vw, 1.5rem);
+        color: #fff;
+      }
+
+      h3 {
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
+        margin-bottom: 20px;
+      }
+
+      main {
+        flex: 1;
+        padding: clamp(1rem, 2vw, 2rem);
+        max-width: 1240px;
+        margin: 0 auto;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .aero-panel {
+        background: rgba(60, 60, 60, 0.4);
+        border: 1px solid #666;
+        border-radius: 8px;
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+        padding: 1.25rem;
+        max-width: 600px;
+        width: 100%;
+        flex: 1 1 calc(50% - 0.5rem);
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        min-height: 300px;
+        max-height: 80vh;
+      }
+
+      #namesList {
+        width: 100%;
+        background: #333;
+        color: #f0f0f0;
+        border: 1px solid #555;
+        border-radius: 4px;
+        padding: 0.5rem;
+        margin-bottom: 0.75rem;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        transition: border-color 0.2s;
+      }
+      /* Перша панель */
+      .aero-panel:first-child > p {
+        margin-bottom: 0.75rem;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+      }
+
+      textarea {
+        width: 100%;
+        background: #333;
+        color: #f0f0f0;
+        border: 1px solid #555;
+        border-radius: 4px;
+        padding: 0.5rem;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        flex: 1;
+        resize: vertical;
+        min-height: 100px;
+        margin-bottom: 0.75rem;
+      }
+
+      /* Форми та поля вводу */
+      input[type="file"]{
+        width: 100%;
+        background: #333;
+        color: #f0f0f0;
+        border: 1px solid #555;
+        border-radius: 4px;
+        padding: 0.5rem;
+        margin-bottom: 0.75rem;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        transition: border-color 0.2s;
+      }
+
+      textarea:focus {
+        border-color: #888;
+        outline: none;
+      }
+
+      /* Скрол для textarea */
+      textarea::-webkit-scrollbar {
+        width: 10px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: #333;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background: #666;
+        border-radius: 5px;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background: #888;
+      }
+      textarea::-webkit-scrollbar-button {
+        background: #333;
+        height: 10px;
+        border: 1px solid #555;
+      }
+      textarea::-webkit-scrollbar-button:vertical:decrement {
+        background: #333
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,2 8,6 2,6"/></svg>')
+          center no-repeat;
+      }
+      textarea::-webkit-scrollbar-button:vertical:increment {
+        background: #333
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,8 8,4 2,4"/></svg>')
+          center no-repeat;
+      }
+
+
+      input[type="file"] {
+        width: 100%;
+        color: #f0f0f0;
+      }
+
+      /* Друга панель */
+      .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      ul {
+        list-style: none;
+        flex: 1;
+        overflow-y: auto;
+
+      }
+
+      li {
+        margin: 0.25rem 0;
+        padding: 0.5rem 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        word-break: break-word;
+      }
+
+      /* Скрол для списку */
+      ul::-webkit-scrollbar {
+        width: 10px;
+      }
+      ul::-webkit-scrollbar-track {
+        background: #333;
+      }
+      ul::-webkit-scrollbar-thumb {
+        background: #666;
+        border-radius: 5px;
+      }
+      ul::-webkit-scrollbar-thumb:hover {
+        background: #888;
+      }
+      ul::-webkit-scrollbar-button {
+        background: #333;
+        height: 10px;
+        border: 1px solid #555;
+      }
+      ul::-webkit-scrollbar-button:vertical:decrement {
+        background: #333
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,2 8,6 2,6"/></svg>')
+          center no-repeat;
+      }
+      ul::-webkit-scrollbar-button:vertical:increment {
+        background: #333
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,8 8,4 2,4"/></svg>')
+          center no-repeat;
+      }
+
+      .list-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+      }
+
+      /* Чекбокс і кнопки */
+      label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+      }
+
+      #keywordInput {
+        width: clamp(150px, 30%, 250px);
+        display: none;
+        background: #333;
+        color: #f0f0f0;
+        border: 1px solid #555;
+        border-radius: 4px;
+        padding: 0.5rem;
+      }
+
+      #parseBtn, #saveBtn {
+        background: rgba(70, 70, 70, 0.8);
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: #fff;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: background 0.2s;
+      }
+      #sortBtn {
+        background: transparent; 
+        border: none;
+        border-radius: 3px;
+        color: #fff;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 5px;
+        transition: background 0.2s;
+      }
+
+      #sortBtn:hover,
+      #parseBtn:hover,
+      #saveBtn:hover {
+        background: rgba(90, 90, 90, 0.6);
+      }
+
+      footer {
+        border-top: 1px solid #444;
+        padding: 1rem;
+      }
+
+      /* Медіа-запити */
+      @media (max-width: 640px) {
+        .aero-panel {
+          flex: 1 1 100%;
+        }
+      }
+
+      @media (max-width: 400px) {
+        .list-header,
+        .list-footer {
+          flex-direction: column;
+          gap: 0.75rem;
+          text-align: center;
+        }
+
+        #keywordInput {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Парсер чату Zoom</h1>
+    </header>
+    <main>
+      <!-- Панель із вставкою файлу / тексту та кнопкою парсингу -->
+      <div class="aero-panel">
+        <div class="list-header"><h3>Вставте текст чату або завантажте .txt:</h3></div>
+        <textarea
+          id="chatInput"
+          rows="6"
+          placeholder="Вставте текст тут..."
+        ></textarea>
+        
+        <input type="file" id="fileInput" accept=".txt" />
+
+        <!-- Блок із чекбоксом і полем -->
+        <div style="margin-bottom: 10px">
+          <label>
+            <input type="checkbox" id="useKeywordChk" />
+            За ключовим словом:
+          </label>
+          <input
+            type="text"
+            id="keywordInput"
+            placeholder="Введіть слово..."
+            style="width: auto; display: none"
+          />
+        </div>
+        <!-- Кнопка парсингу -->
+        <div class="list-footer">
+          <button id="parseBtn">
+            <span class="material-icons">search</span> Парсити
+          </button>
+        </div>
+      </div>
+
+      <!-- Список учасників -->
+      <div class="aero-panel">
+        <div class="list-header">
+          <h3>Учасники (<span id="countNames">0</span>)</h3>
+          <button id="sortBtn">
+            <span class="material-icons">sort</span> Сортувати
+          </button>
+        </div>
+        <ul id="namesList"></ul>
+        <div class="list-footer">
+
+          <button id="saveBtn">
+            <span class="material-icons">save</span> Зберегти список
+          </button>
+        </div>
+      </div>
+    </main>
+    <footer><p>© 2025 Парсер чату <strong style="color: rgb(77, 166, 250);">Zoom</strong></p>&nbsp;<p>By <a style="color: goldenrod;" href="https://github.com/CodeNoob53">Code Noob</a></p></footer>
+
+    <script>
+      const chatInput = document.getElementById("chatInput");
+      const fileInput = document.getElementById("fileInput");
+      const parseBtn = document.getElementById("parseBtn");
+
+      const useKeywordChk = document.getElementById("useKeywordChk");
+      const keywordInput = document.getElementById("keywordInput");
+
+      const namesList = document.getElementById("namesList");
+      const countNamesSpan = document.getElementById("countNames");
+
+      const sortBtn = document.getElementById("sortBtn");
+      const saveBtn = document.getElementById("saveBtn");
+
+      // Дані
+      let messagesByName = {};
+      // Зберігаємо унікальні імена (Set не дасть дублікатів)
+      let uniqueNames = new Set();
+      let displayedNames = [];
+      let isSortedAsc = true; // Стан сортування
+
+      // 1) При виборі файлу обробка завантаження файлу
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files && fileInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            chatInput.value = e.target.result;
+          };
+          reader.readAsText(fileInput.files[0]);
+        }
+      });
+
+      // 2) Показати / приховати поле для ключового слова
+      useKeywordChk.addEventListener("change", () => {
+        if (useKeywordChk.checked) {
+          keywordInput.style.display = "inline-block";
+        } else {
+          keywordInput.style.display = "none";
+          keywordInput.value = "";
+        }
+      });
+
+      // Функція "очистки" повідомлення від цитат і емоджі-реакцій
+      function sanitizeMessage(rawMsg) {
+        let sanitized = rawMsg;
+        sanitized = sanitized.replace(/^Replying to\s+"[^"]*":.*$/gm, "");
+        sanitized = sanitized.replace(
+          /^[\p{L}\p{M}\s,'-]+:[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{So}]+$/gmu,
+          ""
+        );
+        sanitized = sanitized.replace(/\n\s*\n+/g, "\n");
+        sanitized = sanitized.trim();
+        return sanitized;
+      }
+
+      // 3) Парсити
+      parseBtn.addEventListener("click", () => {
+        const text = chatInput.value;
+        if (!text.trim()) {
+          alert("Вставте текст чату або завантажте файл!");
+          return;
+        }
+
+        messagesByName = {};
+        uniqueNames.clear();
+        displayedNames = [];
+        namesList.innerHTML = "";
+        countNamesSpan.textContent = "0";
+
+        const regex =
+          /(\d{2}:\d{2}:\d{2})\s+From\s+(.*?)\s+to\s+(.*?):(.*?)(?=\d{2}:\d{2}:\d{2}\s+From|$)/gs;
+
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+          const time = match[1];
+          const name = match[2].trim();
+          const fullBlock = match[4] || "";
+          const blockLines = fullBlock
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter(Boolean);
+
+          let userMessage = "";
+          if (blockLines.length > 0) {
+            if (blockLines[0].startsWith('Replying to "')) {
+              userMessage = blockLines[1] || "";
+            } else {
+              userMessage = blockLines[0];
+            }
+          }
+
+          const cleanMessage = sanitizeMessage(userMessage);
+          if (cleanMessage) {
+            if (!messagesByName[name]) {
+              messagesByName[name] = [];
+            }
+            messagesByName[name].push(cleanMessage);
+          }
+        }
+
+        for (let nm in messagesByName) {
+          uniqueNames.add(nm);
+        }
+
+        if (useKeywordChk.checked && keywordInput.value.trim()) {
+          const keyword = keywordInput.value.toLowerCase();
+          displayedNames = [...uniqueNames].filter((nm) =>
+            messagesByName[nm].some((msg) =>
+              msg.toLowerCase().includes(keyword)
+            )
+          );
+        } else {
+          displayedNames = [...uniqueNames];
+        }
+
+        renderNames(displayedNames);
+        alert("Парсинг завершено! Імен знайдено: " + displayedNames.length);
+      });
+
+      // Функція відмалювання списку
+      function renderNames(list) {
+        namesList.innerHTML = "";
+        countNamesSpan.textContent = list.length;
+        list.forEach((name) => {
+          const li = document.createElement("li");
+          li.textContent = name;
+          namesList.appendChild(li);
+        });
+      }
+
+      // 4) Сортування за назвою
+      sortBtn.addEventListener("click", () => {
+        if (displayedNames.length === 0) {
+          alert("Список порожній, нема що сортувати.");
+          return;
+        }
+
+        displayedNames.sort((a, b) =>
+          isSortedAsc
+            ? a.localeCompare(b, "uk")
+            : b.localeCompare(a, "uk")
+        );
+        isSortedAsc = !isSortedAsc; // Перемикаємо напрямок
+        renderNames(displayedNames);
+      });
+
+      // 5) Зберегти список
+      function saveList() {
+        if (!displayedNames.length) {
+          alert("Список порожній, нема що зберігати.");
+          return;
+        }
+        const content = displayedNames.join("\n");
+        const blob = new Blob([content], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "names.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      saveBtn.addEventListener("click", saveList);
+    </script>
+  </body>
+</html>

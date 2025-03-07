@@ -190,14 +190,8 @@
           center no-repeat;
       }
 
-
-      input[type="file"] {
-        width: 100%;
-        color: #f0f0f0;
-      }
-
       /* Друга панель */
-      .list-header {
+      .aero-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -251,16 +245,24 @@
           center no-repeat;
       }
 
-      .list-footer {
+      .aero-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-top: 0.5rem;
       }
 
+      .keyword-block {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 0.75rem;
+      }
+
       /* Чекбокс і кнопки */
       label {
-        display: inline-flex;
+        display: flex;
         align-items: center;
         gap: 0.5rem;
         cursor: pointer;
@@ -268,8 +270,8 @@
       }
 
       #keywordInput {
-        width: clamp(150px, 30%, 250px);
         display: none;
+        flex: 1;
         background: #252525;
         color: #f0f0f0;
         border: 1px solid #555;
@@ -323,15 +325,11 @@
       }
 
       @media (max-width: 400px) {
-        .list-header,
-        .list-footer {
+        .aero-header,
+        .aero-footer {
           flex-direction: column;
           gap: 0.75rem;
           text-align: center;
-        }
-
-        #keywordInput {
-          width: 100%;
         }
       }
 
@@ -376,7 +374,7 @@
     <main>
       <!-- Панель із вставкою файлу / тексту та кнопкою парсингу -->
       <div class="aero-panel">
-        <div class="list-header"><h3>Вставте текст чату або завантажте .txt:</h3></div>
+        <div class="aero-header"><h3>Вставте текст чату або завантажте .txt:</h3></div>
         <textarea
           id="chatInput"
           rows="6"
@@ -386,7 +384,7 @@
         <input type="file" id="fileInput" accept=".txt" />
 
         <!-- Блок із чекбоксом і полем -->
-        <div style="margin-bottom: 10px">
+        <div class="keyword-block">
           <label>
             <input type="checkbox" id="useKeywordChk" />
             За ключовим словом:
@@ -395,11 +393,10 @@
             type="text"
             id="keywordInput"
             placeholder="Введіть слово..."
-            style="width: auto; display: none"
           />
         </div>
         <!-- Кнопка парсингу -->
-        <div class="list-footer">
+        <div class="aero-footer">
           <button id="parseBtn">
             <span class="material-icons">search</span> Парсити
           </button>
@@ -408,14 +405,14 @@
 
       <!-- Список учасників -->
       <div class="aero-panel">
-        <div class="list-header">
+        <div class="aero-header">
           <h3>Учасники (<span id="countNames">0</span>)</h3>
           <button id="sortBtn">
             <span class="material-icons">sort</span> Сортувати
           </button>
         </div>
         <ul id="namesList"></ul>
-        <div class="list-footer">
+        <div class="aero-footer">
 
           <button id="saveBtn">
             <span class="material-icons">save</span> Зберегти список

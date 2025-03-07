@@ -335,6 +335,39 @@
           width: 100%;
         }
       }
+
+      /* Notification styles */
+      #notification {
+        position: fixed;
+        top: 70px; 
+        right: 15px;
+        min-width: 250px;
+        padding: 15px;
+        
+        border-radius: 5px;
+        color: #fff;
+        font-size: 1rem;
+        z-index: 100;
+        backdrop-filter: blur(2px);
+        display: none;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+      }
+
+      #notification.success {
+        background-color: #4caf4fbe;
+        border: 1px solid #6cff71;
+      }
+
+      #notification.warning {
+        background-color: #ff9900bb;
+        border: 1px solid #f8bb5f;
+      }
+
+      #notification.error {
+        background-color: #f44336bd;
+        border: 1px solid #ff5347;
+      }
     </style>
   </head>
   <body>
@@ -392,6 +425,9 @@
       </div>
     </main>
     <footer><p>© 2025 Парсер чату <strong style="color: rgb(77, 166, 250);">Zoom</strong></p>&nbsp;<p>By <a style="color: goldenrod;" href="https://github.com/CodeNoob53">Code Noob</a></p></footer>
+
+    <!-- Notification container -->
+    <div id="notification"></div>
 
     <script>
       const chatInput = document.getElementById("chatInput");
@@ -452,7 +488,7 @@
       parseBtn.addEventListener("click", () => {
         const text = chatInput.value;
         if (!text.trim()) {
-          alert("Вставте текст чату або завантажте файл!");
+          showNotification("Вставте текст чату або завантажте файл!", "warning");
           return;
         }
 
@@ -509,7 +545,7 @@
         }
 
         renderNames(displayedNames);
-        alert("Парсинг завершено! Імен знайдено: " + displayedNames.length);
+        showNotification("Парсинг завершено! Імен знайдено: " + displayedNames.length, "success");
       });
 
       // Функція відмалювання списку
@@ -526,7 +562,7 @@
       // 4) Сортування за назвою
       sortBtn.addEventListener("click", () => {
         if (displayedNames.length === 0) {
-          alert("Список порожній, нема що сортувати.");
+          showNotification("Список порожній, нема що сортувати.", "warning");
           return;
         }
 
@@ -542,7 +578,7 @@
       // 5) Зберегти список
       function saveList() {
         if (!displayedNames.length) {
-          alert("Список порожній, нема що зберігати.");
+          showNotification("Список порожній, нема що зберігати.", "warning");
           return;
         }
         const content = displayedNames.join("\n");
@@ -556,9 +592,28 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        showNotification("Список збережено успішно!", "success");
       }
 
       saveBtn.addEventListener("click", saveList);
+
+      // Function to show notifications
+      function showNotification(message, type) {
+        const notification = document.getElementById("notification");
+        notification.textContent = message;
+        notification.className = type;
+        notification.style.display = "block";
+        setTimeout(() => {
+          notification.style.opacity = 1;
+        }, 10);
+
+        setTimeout(() => {
+          notification.style.opacity = 0;
+          setTimeout(() => {
+            notification.style.display = "none";
+          }, 500);
+        }, 3000);
+      }
     </script>
   </body>
 </html>

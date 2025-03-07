@@ -36,7 +36,8 @@
         width: 12px;
       }
       body::-webkit-scrollbar-track {
-        background: #2a2a2a;
+        background: transparent;
+        border: 1px solid #555;
       }
       body::-webkit-scrollbar-thumb {
         background: #555;
@@ -66,7 +67,7 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
-        background: rgba(40, 40, 40, 0.6);
+        background: rgba(61, 61, 61, 0.6);
         padding: 1rem;
         text-align: center;
         border-bottom: 1px solid #444;
@@ -96,11 +97,12 @@
       }
 
       .aero-panel {
-        background: rgba(34, 34, 34, 0.7);
+        background: #3d3d3d99;
         border: 1px solid #666;
         border-radius: 8px;
-        box-shadow:  5px 5px 10px #000000d3,
-        -5px -5px 10px #4b4b4bce;
+        box-shadow:  3px 3px 10px #000000d3,
+        -3px -3px 10px #4b4b4b,
+        0 0 4px #ffffff33;
         padding: 1.25rem;
         max-width: 600px;
         width: 100%;
@@ -115,7 +117,7 @@
 
       #namesList {
         width: 100%;
-        background: #333;
+        background: #252525;
         color: #f0f0f0;
         border: 1px solid #555;
         border-radius: 4px;
@@ -124,30 +126,28 @@
         font-size: clamp(0.875rem, 2vw, 1rem);
         transition: border-color 0.2s;
       }
-      /* Перша панель */
-      .aero-panel:first-child > p {
-        margin-bottom: 0.75rem;
-        font-size: clamp(0.875rem, 2vw, 1rem);
-      }
 
       textarea {
         width: 100%;
-        background: #333;
+        background: #252525;
         color: #f0f0f0;
         border: 1px solid #555;
         border-radius: 4px;
         padding: 0.5rem;
         font-size: clamp(0.875rem, 2vw, 1rem);
         flex: 1;
-        resize: vertical;
         min-height: 100px;
         margin-bottom: 0.75rem;
+        /* фікс whitecorner для textarea при появі скролу */
+        resize: none; /* Забороняє зміну розміру textarea */
+        overflow: auto; /* Дозволяє скролбар тільки при необхідності */
+        scrollbar-gutter: stable; /* Запобігає стрибкам при появі скролбару */
       }
 
       /* Форми та поля вводу */
       input[type="file"]{
         width: 100%;
-        background: #333;
+        background: #252525;
         color: #f0f0f0;
         border: 1px solid #555;
         border-radius: 4px;
@@ -157,17 +157,15 @@
         transition: border-color 0.2s;
       }
 
-      textarea:focus {
-        border-color: #888;
-        outline: none;
-      }
+
 
       /* Скрол для textarea */
       textarea::-webkit-scrollbar {
         width: 10px;
       }
       textarea::-webkit-scrollbar-track {
-        background: #333;
+        background: transparent;
+        border: 1px solid #555;
       }
       textarea::-webkit-scrollbar-thumb {
         background: #666;
@@ -227,7 +225,8 @@
         width: 10px;
       }
       ul::-webkit-scrollbar-track {
-        background: #333;
+        background: #252525;
+        border: 1px solid #555;
       }
       ul::-webkit-scrollbar-thumb {
         background: #666;
@@ -343,7 +342,6 @@
         right: 15px;
         min-width: 250px;
         padding: 15px;
-        
         border-radius: 5px;
         color: #fff;
         font-size: 1rem;
@@ -352,6 +350,7 @@
         display: none;
         opacity: 0;
         transition: opacity 0.5s ease-in-out;
+        box-shadow: 0 0 4px #ffffff33;
       }
 
       #notification.success {
@@ -372,7 +371,7 @@
   </head>
   <body>
     <header>
-      <h1>Парсер чату Zoom</h1>
+      <h1>Парсер чату <strong style="color: rgb(77, 166, 250);">Zoom</strong></h1>
     </header>
     <main>
       <!-- Панель із вставкою файлу / тексту та кнопкою парсингу -->

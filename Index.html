@@ -10,370 +10,387 @@
     />
     <style>
       * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Segoe UI", Arial, sans-serif;
-        background:
-        radial-gradient(black 15%, transparent 16%) 0 0,
-        radial-gradient(black 15%, transparent 16%) 8px 8px,
-        radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
-        radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
-        background-color:#282828;
-        background-size:16px 16px;
-        color: #e0e0e0;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-      }
-
-      /* Скрол сторінки */
-      body::-webkit-scrollbar {
-        width: 12px;
-      }
-      body::-webkit-scrollbar-track {
-        background: transparent;
-        border: 1px solid #555;
-      }
-      body::-webkit-scrollbar-thumb {
-        background: #555;
-        border-radius: 6px;
-      }
-      body::-webkit-scrollbar-thumb:hover {
-        background: #777;
-      }
-      body::-webkit-scrollbar-button {
-        background: #333;
-        height: 12px;
-        border: 1px solid #555;
-      }
-      body::-webkit-scrollbar-button:vertical:decrement {
-        background: #333
-          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white"><polygon points="6,2 10,8 2,8"/></svg>')
-          center no-repeat;
-      }
-      body::-webkit-scrollbar-button:vertical:increment {
-        background: #333
-          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white"><polygon points="6,10 10,4 2,4"/></svg>')
-          center no-repeat;
-      }
-
-      header,
-      footer {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        background: rgba(61, 61, 61, 0.6);
-        padding: 1rem;
-        text-align: center;
-        border-bottom: 1px solid #444;
-        box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(2px);
-      }
-
-      h1 {
-        font-size: clamp(1.2rem, 3vw, 1.5rem);
-        color: #fff;
-      }
-
-      h3 {
-        font-size: clamp(1rem, 2.5vw, 1.25rem);
-        margin-bottom: 20px;
-      }
-
-      main {
-        flex: 1;
-        padding: clamp(1rem, 2vw, 2rem);
-        max-width: 1240px;
-        margin: 0 auto;
-        width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-
-      .aero-panel {
-        background: #3d3d3d99;
-        border: 1px solid #666;
-        border-radius: 8px;
-        box-shadow:  3px 3px 10px #000000d3,
-        -3px -3px 10px #4b4b4b,
-        0 0 4px #ffffff33;
-        padding: 1.25rem;
-        max-width: 600px;
-        width: 100%;
-        flex: 1 1 calc(50% - 0.5rem);
-        min-width: 300px;
-        display: flex;
-        flex-direction: column;
-        min-height: 300px;
-        max-height: 80vh;
-        backdrop-filter: blur(2px);
-      }
-
-      #namesList {
-        width: 100%;
-        background: #252525;
-        color: #f0f0f0;
-        border: 1px solid #555;
-        border-radius: 4px;
-        padding: 0.5rem;
-        margin-bottom: 0.75rem;
-        font-size: clamp(0.875rem, 2vw, 1rem);
-        transition: border-color 0.2s;
-      }
-
-      textarea {
-        width: 100%;
-        background: #252525;
-        color: #f0f0f0;
-        border: 1px solid #555;
-        border-radius: 4px;
-        padding: 0.5rem;
-        font-size: clamp(0.875rem, 2vw, 1rem);
-        flex: 1;
-        min-height: 100px;
-        margin-bottom: 0.75rem;
-        /* фікс whitecorner для textarea при появі скролу */
-        resize: none; /* Забороняє зміну розміру textarea */
-        overflow: auto; /* Дозволяє скролбар тільки при необхідності */
-        scrollbar-gutter: stable; /* Запобігає стрибкам при появі скролбару */
-      }
-
-      /* Форми та поля вводу */
-      input[type="file"]{
-        width: 100%;
-        background: #252525;
-        color: #f0f0f0;
-        border: 1px solid #555;
-        border-radius: 4px;
-        padding: 0.5rem;
-        margin-bottom: 0.75rem;
-        font-size: clamp(0.875rem, 2vw, 1rem);
-        transition: border-color 0.2s;
-      }
-
-
-
-      /* Скрол для textarea */
-      textarea::-webkit-scrollbar {
-        width: 10px;
-      }
-      textarea::-webkit-scrollbar-track {
-        background: transparent;
-        border: 1px solid #555;
-      }
-      textarea::-webkit-scrollbar-thumb {
-        background: #666;
-        border-radius: 5px;
-      }
-      textarea::-webkit-scrollbar-thumb:hover {
-        background: #888;
-      }
-      textarea::-webkit-scrollbar-button {
-        background: #333;
-        height: 10px;
-        border: 1px solid #555;
-      }
-      textarea::-webkit-scrollbar-button:vertical:decrement {
-        background: #333
-          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,2 8,6 2,6"/></svg>')
-          center no-repeat;
-      }
-      textarea::-webkit-scrollbar-button:vertical:increment {
-        background: #333
-          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,8 8,4 2,4"/></svg>')
-          center no-repeat;
-      }
-
-      /* Друга панель */
-      .aero-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
-
-      ul {
-        list-style: none;
-        flex: 1;
-        overflow-y: auto;
-
-      }
-
-      li {
-        margin: 0.25rem 0;
-        padding: 0.5rem 0.75rem;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 4px;
-        font-size: clamp(0.875rem, 2vw, 1rem);
-        word-break: break-word;
-      }
-
-      /* Скрол для списку */
-      ul::-webkit-scrollbar {
-        width: 10px;
-      }
-      ul::-webkit-scrollbar-track {
-        background: #252525;
-        border: 1px solid #555;
-      }
-      ul::-webkit-scrollbar-thumb {
-        background: #666;
-        border-radius: 5px;
-      }
-      ul::-webkit-scrollbar-thumb:hover {
-        background: #888;
-      }
-      ul::-webkit-scrollbar-button {
-        background: #333;
-        height: 10px;
-        border: 1px solid #555;
-      }
-      ul::-webkit-scrollbar-button:vertical:decrement {
-        background: #333
-          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,2 8,6 2,6"/></svg>')
-          center no-repeat;
-      }
-      ul::-webkit-scrollbar-button:vertical:increment {
-        background: #333
-          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,8 8,4 2,4"/></svg>')
-          center no-repeat;
-      }
-
-      .aero-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 0.5rem;
-      }
-
-      .keyword-block {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.7rem;
-        margin-bottom: 0.75rem;
-      }
-
-      /* Чекбокс і кнопки */
-      label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        cursor: pointer;
-        font-size: clamp(0.875rem, 2vw, 1rem);
-      }
-
-      #keywordInput {
-        display: none;
-        flex: 1;
-        background: #252525;
-        color: #f0f0f0;
-        border: 1px solid #555;
-        border-radius: 4px;
-        padding: 0.5rem;
-      }
-
-      #parseBtn, #saveBtn {
-        background: rgba(70, 70, 70, 0.8);
-        border: 1px solid #444;
-        border-radius: 4px;
-        color: #fff;
-        font-size: clamp(0.85rem, 2vw, 0.95rem);
-        padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem);
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        transition: background 0.2s;
-      }
-      #sortBtn {
-        background: transparent; 
-        border: none;
-        border-radius: 3px;
-        color: #fff;
-        font-size: clamp(0.85rem, 2vw, 0.95rem);
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        padding: 5px;
-        transition: background 0.2s;
-      }
-
-      #sortBtn:hover,
-      #parseBtn:hover,
-      #saveBtn:hover {
-        background: rgba(134, 134, 134, 0.6);
-      }
-
-      footer {
-        border-top: 1px solid #444;
-        padding: 1rem;
-      }
-
-      /* Медіа-запити */
-      @media (max-width: 895px) {
-
-        .aero-panel {
-          margin: 0 auto 1rem;
-          flex: 1 1 100%;
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
         }
-
-        textarea {
-          min-height: 300px;
+      
+        body {
+          font-family: "Segoe UI", Arial, sans-serif;
+          background:
+          radial-gradient(black 15%, transparent 16%) 0 0,
+          radial-gradient(black 15%, transparent 16%) 8px 8px,
+          radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+          radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+          background-color:#282828;
+          background-size:16px 16px;
+          color: #e0e0e0;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
         }
-      }
-
-      @media (max-width: 400px) {
-        .aero-header,
-        .aero-footer {
-
-          gap: 0.75rem;
+      
+        /* Скрол сторінки */
+        body::-webkit-scrollbar {
+          width: 12px;
+        }
+        body::-webkit-scrollbar-track {
+          background: transparent;
+          border: 1px solid #555;
+        }
+        body::-webkit-scrollbar-thumb {
+          background: #555;
+          border-radius: 6px;
+        }
+        body::-webkit-scrollbar-thumb:hover {
+          background: #777;
+        }
+        body::-webkit-scrollbar-button {
+          background: #333;
+          height: 12px;
+          border: 1px solid #555;
+        }
+        body::-webkit-scrollbar-button:vertical:decrement {
+          background: #333
+            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white"><polygon points="6,2 10,8 2,8"/></svg>')
+            center no-repeat;
+        }
+        body::-webkit-scrollbar-button:vertical:increment {
+          background: #333
+            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white"><polygon points="6,10 10,4 2,4"/></svg>')
+            center no-repeat;
+        }
+      
+        header,
+        footer {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          background: rgba(61, 61, 61, 0.6);
+          padding: 1rem;
           text-align: center;
+          border-bottom: 1px solid #444;
+          box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(2px);
         }
+      
+        h1 {
+          font-size: clamp(1.2rem, 3vw, 1.5rem);
+          color: #fff;
+        }
+      
+        h3 {
+          font-size: clamp(1rem, 2.5vw, 1.25rem);
+          margin-bottom: 20px;
+        }
+      
+        main {
+          flex: 1;
+          padding: clamp(1rem, 2vw, 2rem);
+          max-width: 1240px;
+          margin: 0 auto;
+          width: 100%;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+      
+        .aero-panel {
+          background: #3d3d3d99;
+          border: 1px solid #666;
+          border-radius: 8px;
+          box-shadow:  3px 3px 10px #000000d3,
+          -3px -3px 10px #4b4b4b,
+          0 0 4px #ffffff33;
+          padding: 1.25rem;
+          max-width: 600px;
+          width: 100%;
+          flex: 1 1 calc(50% - 0.5rem);
+          min-width: 300px;
+          display: flex;
+          flex-direction: column;
+          min-height: 300px;
+          max-height: 80vh;
+          backdrop-filter: blur(2px);
+        }
+      
+        #namesList {
+          width: 100%;
+          background: #252525;
+          color: #f0f0f0;
+          border: 1px solid #555;
+          border-radius: 4px;
+          padding: 0.5rem;
+          margin-bottom: 0.75rem;
+          font-size: clamp(0.875rem, 2vw, 1rem);
+          transition: border-color 0.2s;
+        }
+      
         textarea {
-          min-height: 250px;
+          width: 100%;
+          background: #252525;
+          color: #f0f0f0;
+          border: 1px solid #555;
+          border-radius: 4px;
+          padding: 0.5rem;
+          font-size: clamp(0.875rem, 2vw, 1rem);
+          flex: 1;
+          min-height: 100px;
+          margin-bottom: 0.75rem;
+          /* фікс whitecorner для textarea при появі скролу */
+          resize: none; /* Забороняє зміну розміру textarea */
+          overflow: auto; /* Дозволяє скролбар тільки при необхідності */
+          scrollbar-gutter: stable; /* Запобігає стрибкам при появі скролбару */
         }
-      }
-
-      /* Notification styles */
-      #notification {
-        position: fixed;
-        top: 70px; 
-        right: 15px;
-        min-width: 250px;
-        padding: 15px;
-        border-radius: 5px;
-        color: #fff;
-        font-size: 1rem;
-        z-index: 100;
-        backdrop-filter: blur(2px);
-        display: none;
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out;
-        box-shadow: 0 0 4px #ffffff33;
-      }
-
-      #notification.success {
-        background-color: #4caf4fbe;
-        border: 1px solid #6cff71;
-      }
-
-      #notification.warning {
-        background-color: #ff9900bb;
-        border: 1px solid #f8bb5f;
-      }
-
-      #notification.error {
-        background-color: #f44336bd;
-        border: 1px solid #ff5347;
-      }
+      
+        /* Форми та поля вводу */
+        input[type="file"]{
+          width: 100%;
+          background: #252525;
+          color: #f0f0f0;
+          border: 1px solid #555;
+          border-radius: 4px;
+          padding: 0.5rem;
+          margin-bottom: 0.75rem;
+          font-size: clamp(0.875rem, 2vw, 1rem);
+          transition: border-color 0.2s;
+        }
+      
+      
+      
+        /* Скрол для textarea */
+        textarea::-webkit-scrollbar {
+          width: 10px;
+        }
+        textarea::-webkit-scrollbar-track {
+          background: transparent;
+          border: 1px solid #555;
+        }
+        textarea::-webkit-scrollbar-thumb {
+          background: #666;
+          border-radius: 5px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+          background: #888;
+        }
+        textarea::-webkit-scrollbar-button {
+          background: #333;
+          height: 10px;
+          border: 1px solid #555;
+        }
+        textarea::-webkit-scrollbar-button:vertical:decrement {
+          background: #333
+            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,2 8,6 2,6"/></svg>')
+            center no-repeat;
+        }
+        textarea::-webkit-scrollbar-button:vertical:increment {
+          background: #333
+            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,8 8,4 2,4"/></svg>')
+            center no-repeat;
+        }
+      
+        /* Друга панель */
+        .aero-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
+        }
+      
+        ul {
+          list-style: none;
+          flex: 1;
+          overflow-y: auto;
+      
+        }
+      
+        li {
+          margin: 0.25rem 0;
+          padding: 0.5rem 0.75rem;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 4px;
+          font-size: clamp(0.875rem, 2vw, 1rem);
+          word-break: break-word;
+        }
+      
+        /* Скрол для списку */
+        ul::-webkit-scrollbar {
+          width: 10px;
+        }
+        ul::-webkit-scrollbar-track {
+          background: #252525;
+          border: 1px solid #555;
+        }
+        ul::-webkit-scrollbar-thumb {
+          background: #666;
+          border-radius: 5px;
+        }
+        ul::-webkit-scrollbar-thumb:hover {
+          background: #888;
+        }
+        ul::-webkit-scrollbar-button {
+          background: #333;
+          height: 10px;
+          border: 1px solid #555;
+        }
+        ul::-webkit-scrollbar-button:vertical:decrement {
+          background: #333
+            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,2 8,6 2,6"/></svg>')
+            center no-repeat;
+        }
+        ul::-webkit-scrollbar-button:vertical:increment {
+          background: #333
+            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white"><polygon points="5,8 8,4 2,4"/></svg>')
+            center no-repeat;
+        }
+      
+        .aero-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 0.5rem;
+        }
+      
+        .keyword-block {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 0.7rem;
+          margin-bottom: 0.75rem;
+        }
+      
+        /* Чекбокс і кнопки */
+        label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          cursor: pointer;
+          font-size: clamp(0.875rem, 2vw, 1rem);
+        }
+      
+        #keywordInput {
+          display: none;
+          flex: 1;
+          background: #252525;
+          color: #f0f0f0;
+          border: 1px solid #555;
+          border-radius: 4px;
+          padding: 0.5rem;
+        }
+      
+        #parseBtn, #saveBtn {
+          background: rgba(70, 70, 70, 0.8);
+          border: 1px solid #444;
+          border-radius: 4px;
+          color: #fff;
+          font-size: clamp(0.85rem, 2vw, 0.95rem);
+          padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem);
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          transition: background 0.2s;
+        }
+        #sortBtn {
+          background: transparent; 
+          border: none;
+          border-radius: 3px;
+          color: #fff;
+          font-size: clamp(0.85rem, 2vw, 0.95rem);
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          padding: 5px;
+          transition: background 0.2s;
+        }
+      
+        #sortBtn:hover,
+        #parseBtn:hover,
+        #saveBtn:hover {
+          background: rgba(134, 134, 134, 0.6);
+        }
+      
+        footer {
+          border-top: 1px solid #444;
+          padding: 1rem;
+        }
+      
+        /* Медіа-запити */
+        @media (max-width: 895px) {
+      
+          .aero-panel {
+            margin: 0 auto 1rem;
+            flex: 1 1 100%;
+          }
+      
+          textarea {
+            min-height: 300px;
+          }
+        }
+      
+        @media (max-width: 400px) {
+          .aero-header,
+          .aero-footer {
+      
+            gap: 0.75rem;
+            text-align: center;
+          }
+          textarea {
+            min-height: 250px;
+          }
+        }
+      
+        /* Notification styles */
+        #notification {
+          position: fixed;
+          top: 70px; 
+          right: 15px;
+          min-width: 250px;
+          padding: 15px;
+          border-radius: 5px;
+          color: #fff;
+          font-size: 1rem;
+          z-index: 100;
+          backdrop-filter: blur(2px);
+          display: none;
+          opacity: 0;
+          transition: opacity 0.5s ease-in-out;
+          box-shadow: 0 0 4px #ffffff33;
+        }
+      
+        #notification.success {
+          background-color: #4caf4fbe;
+          border: 1px solid #6cff71;
+        }
+      
+        #notification.warning {
+          background-color: #ff9900bb;
+          border: 1px solid #f8bb5f;
+        }
+      
+        #notification.error {
+          background-color: #f44336bd;
+          border: 1px solid #ff5347;
+        }
+      
+      /* Додаткові стилі для відображення реальних імен */
+      .real-name {
+          font-weight: bold;
+          color: #4da6fa;
+        }
+        
+        .aka {
+          color: #999;
+          font-style: italic;
+          margin: 0 0.5rem;
+          font-size: 0.9em;
+        }
+        
+        .zoom-name {
+          color: #e0e0e0;
+        }  
     </style>
   </head>
   <body>
@@ -438,23 +455,25 @@
       const chatInput = document.getElementById("chatInput");
       const fileInput = document.getElementById("fileInput");
       const parseBtn = document.getElementById("parseBtn");
-
+      
       const useKeywordChk = document.getElementById("useKeywordChk");
       const keywordInput = document.getElementById("keywordInput");
-
+      
       const namesList = document.getElementById("namesList");
       const countNamesSpan = document.getElementById("countNames");
-
+      
       const sortBtn = document.getElementById("sortBtn");
       const saveBtn = document.getElementById("saveBtn");
-
+      
       // Дані
       let messagesByName = {};
       // Зберігаємо унікальні імена (Set не дасть дублікатів)
       let uniqueNames = new Set();
       let displayedNames = [];
       let isSortedAsc = true; // Стан сортування
-
+      // Зберігаємо відповідність реальних імен до імен Zoom
+      let realNameMap = {};
+      
       // 1) При виборі файлу обробка завантаження файлу
       fileInput.addEventListener("change", () => {
         if (fileInput.files && fileInput.files[0]) {
@@ -465,7 +484,7 @@
           reader.readAsText(fileInput.files[0]);
         }
       });
-
+      
       // 2) Показати / приховати поле для ключового слова
       useKeywordChk.addEventListener("change", () => {
         if (useKeywordChk.checked) {
@@ -475,7 +494,7 @@
           keywordInput.value = "";
         }
       });
-
+      
       // Функція "очистки" повідомлення від цитат і емоджі-реакцій
       function sanitizeMessage(rawMsg) {
         let sanitized = rawMsg;
@@ -488,7 +507,14 @@
         sanitized = sanitized.trim();
         return sanitized;
       }
-
+      
+      // Функція для пошуку тегу rnm: та обробки реального імені
+      function findRealName(message) {
+        const regex = /rnm:\s*([^]*)$/i;
+        const match = message.match(regex);
+        return match ? match[1].trim() : null;
+      }
+      
       // 3) Парсити
       parseBtn.addEventListener("click", () => {
         const text = chatInput.value;
@@ -496,16 +522,17 @@
           showNotification("Вставте текст чату або завантажте файл!", "warning");
           return;
         }
-
+      
         messagesByName = {};
         uniqueNames.clear();
+        realNameMap = {};
         displayedNames = [];
         namesList.innerHTML = "";
         countNamesSpan.textContent = "0";
-
+      
         const regex =
           /(\d{2}:\d{2}:\d{2})\s+From\s+(.*?)\s+to\s+(.*?):(.*?)(?=\d{2}:\d{2}:\d{2}\s+From|$)/gs;
-
+      
         let match;
         while ((match = regex.exec(text)) !== null) {
           const time = match[1];
@@ -515,7 +542,7 @@
             .split(/\r?\n/)
             .map((line) => line.trim())
             .filter(Boolean);
-
+      
           let userMessage = "";
           if (blockLines.length > 0) {
             if (blockLines[0].startsWith('Replying to "')) {
@@ -524,20 +551,26 @@
               userMessage = blockLines[0];
             }
           }
-
+      
           const cleanMessage = sanitizeMessage(userMessage);
           if (cleanMessage) {
             if (!messagesByName[name]) {
               messagesByName[name] = [];
             }
             messagesByName[name].push(cleanMessage);
+            
+            // Перевіряємо, чи містить повідомлення тег rnm:
+            const realName = findRealName(cleanMessage);
+            if (realName) {
+              realNameMap[name] = realName;
+            }
           }
         }
-
+      
         for (let nm in messagesByName) {
           uniqueNames.add(nm);
         }
-
+      
         if (useKeywordChk.checked && keywordInput.value.trim()) {
           const keyword = keywordInput.value.toLowerCase();
           displayedNames = [...uniqueNames].filter((nm) =>
@@ -548,48 +581,69 @@
         } else {
           displayedNames = [...uniqueNames];
         }
-
+      
         renderNames(displayedNames);
         showNotification("Парсинг завершено! Імен знайдено: " + displayedNames.length, "success");
       });
-
+      
       // Функція відмалювання списку
       function renderNames(list) {
         namesList.innerHTML = "";
         countNamesSpan.textContent = list.length;
         list.forEach((name) => {
           const li = document.createElement("li");
-          li.textContent = name;
+          
+          // Якщо для цього імені є запис real name
+          if (realNameMap[name]) {
+            li.innerHTML = `<span class="real-name">${realNameMap[name]}</span> <span class="aka">aka</span> <span class="zoom-name">${name}</span>`;
+          } else {
+            li.textContent = name;
+          }
+          
           namesList.appendChild(li);
         });
       }
-
+      
       // 4) Сортування за назвою
       sortBtn.addEventListener("click", () => {
         if (displayedNames.length === 0) {
           showNotification("Список порожній, нема що сортувати.", "warning");
           return;
         }
-
-        displayedNames.sort((a, b) =>
-          isSortedAsc
-            ? a.localeCompare(b, "uk")
-            : b.localeCompare(a, "uk")
-        );
+      
+        // Змінено метод сортування для врахування реальних імен
+        displayedNames.sort((a, b) => {
+          // Використовуємо реальне ім'я якщо доступне, інакше використовуємо ім'я з Zoom
+          const nameA = realNameMap[a] || a;
+          const nameB = realNameMap[b] || b;
+          
+          return isSortedAsc
+            ? nameA.localeCompare(nameB, "uk")
+            : nameB.localeCompare(nameA, "uk");
+        });
+        
         isSortedAsc = !isSortedAsc; // Перемикаємо напрямок
         renderNames(displayedNames);
       });
-
+      
       // 5) Зберегти список
       function saveList() {
         if (!displayedNames.length) {
           showNotification("Список порожній, нема що зберігати.", "warning");
           return;
         }
-        const content = displayedNames.join("\n");
+        
+        // Змінено формат збереження для включення реальних імен
+        const content = displayedNames.map(name => {
+          if (realNameMap[name]) {
+            return `${realNameMap[name]} (${name})`;
+          }
+          return name;
+        }).join("\n");
+        
         const blob = new Blob([content], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
-
+      
         const a = document.createElement("a");
         a.href = url;
         a.download = "names.txt";
@@ -599,9 +653,9 @@
         URL.revokeObjectURL(url);
         showNotification("Список збережено успішно!", "success");
       }
-
+      
       saveBtn.addEventListener("click", saveList);
-
+      
       // Function to show notifications
       function showNotification(message, type) {
         const notification = document.getElementById("notification");
@@ -611,7 +665,7 @@
         setTimeout(() => {
           notification.style.opacity = 1;
         }, 10);
-
+      
         setTimeout(() => {
           notification.style.opacity = 0;
           setTimeout(() => {

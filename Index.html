@@ -54,15 +54,32 @@
         </div>
       </div>
 
-      <!-- Список учасників -->
+      <!-- Таблиця учасників -->
       <div class="aero-panel">
         <div class="aero-header">
           <h3>Учасники (<span id="countNames">0</span>)</h3>
-          <button id="sortBtn">
-            <span class="material-icons">sort</span> Сортувати
-          </button>
         </div>
-        <ul id="namesList"></ul>
+        <div class="table-container">
+          <table class="participants-table" id="participantsTable">
+            <thead>
+              <tr>
+                <th class="id-cell" id="sortById">ID</th>
+                <th class="surname-cell" id="sortBySurname">Прізвище</th>
+                <th class="firstname-cell" id="sortByFirstname">Ім'я</th>
+                <th class="zoom-nickname-cell" id="sortByNickname">Zoom nickname</th>
+              </tr>
+            </thead>
+            <tbody id="participantsList">
+              <!-- Тут будуть рядки таблиці -->
+            </tbody>
+          </table>
+        </div>
+        <div class="legend">
+          <div><span class="legend-dot found"></span> В базі</div>
+          <div><span class="legend-dot not-found"></span> Не знайдено в базі</div>
+          <div><span class="legend-dot translit"></span> Знайдено через транслітерацію</div>
+          <div><span class="legend-dot reversed"></span> Знайдено в зворотному порядку (Ім'я Прізвище)</div>
+        </div>
         <div class="aero-footer">
           <button id="saveBtn">
             <span class="material-icons">save</span> Зберегти список
@@ -75,6 +92,7 @@
     <!-- Notification container -->
     <div id="notification"></div>
 
-    <script src="script.js"></script>
+    <!-- Підключення модулів JS -->
+    <script type="module" src="index.js"></script>
   </body>
 </html>

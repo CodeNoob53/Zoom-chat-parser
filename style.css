@@ -88,25 +88,34 @@ tr.expanded .alt-matches {
 
 /* Стилі для індикаторів співпадінь */
 .match-indicator {
+  display: inline-block;
+  margin-left: 4px;
   font-weight: bold;
-  font-size: 0.8em;
-  margin-left: 2px;
+  width: 12px;
+  height: 12px;
+  line-height: 1;
+  text-align: center;
+  border-radius: 2px;
 }
 
 .match-indicator.translit-indicator {
-  color: #9400d3;
+  color: #fff;
+  background-color: rgba(148, 0, 211, 0.3);
 }
 
 .match-indicator.reversed-indicator {
-  color: #ff9900;
+  color: #fff;
+  background-color: rgba(255, 153, 0, 0.3);
 }
 
 .match-indicator.variant-indicator {
-  color: #00b400;
+  color: #fff;
+  background-color: rgba(0, 180, 0, 0.3);
 }
 
 .match-indicator.auto-indicator {
-  color: #ffcc00;
+  color: #333;
+  background-color: rgba(255, 204, 0, 0.3);
 }
 
 /* Стилі для автоматичних співпадінь */
@@ -685,8 +694,10 @@ footer {
 
 /* Додаткові стилі для відображення реальних імен */
 .real-name {
-  font-weight: bold;
+  font-weight: normal;
+  font-style: italic;
   color: #4da6fa;
+  opacity: 0.8;
 }
 
 .aka {
@@ -850,215 +861,94 @@ footer {
 /* Стилі для таблиці */
 .participants-table {
   width: 100%;
-  border-collapse: collapse;
-  background: rgba(255, 255, 255, 0.05);
+  border-collapse: separate;
+  border-spacing: 0;
   border-radius: 4px;
   margin-bottom: 0.5rem;
-  table-layout: fixed; /* Фіксує розмір стовпців */
+  table-layout: fixed;
+  background-color: rgba(32, 32, 32, 0.6);
 }
 
+/* Налаштування ширини колонок */
+.participants-table th.id-cell {
+  width: 50px;
+}
+
+.participants-table th.surname-cell {
+  width: 25%;
+}
+
+.participants-table th.firstname-cell {
+  width: 25%;
+}
+
+.participants-table th.zoom-nickname-cell {
+  width: 40%;
+}
+
+.participants-table th.actions-cell {
+  width: 10%;
+}
+
+/* Стилі для заголовків */
 .participants-table th {
-  text-align: left;
-  padding: 0.6rem 0.5rem;
-  border-bottom: 1px solid #444;
-  cursor: pointer;
-  background: rgba(50, 50, 50, 0.5);
-  user-select: none;
-  font-size: 0.9rem;
+  padding: 10px 8px;
+  border-bottom: 2px solid #444;
+  background-color: rgba(40, 40, 40, 0.8);
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: #eee;
   position: sticky;
   top: 0;
   z-index: 10;
+  text-align: left;
 }
 
 .participants-table th:hover {
-  background: rgba(70, 70, 70, 0.7);
+  background-color: rgba(50, 50, 50, 0.9);
 }
 
 .participants-table th.sorted {
-  background: rgba(77, 166, 250, 0.3);
+  background-color: rgba(77, 166, 250, 0.2);
+  color: #fff;
 }
 
-.participants-table th.sorted::after {
-  content: ' ↓';
-  display: inline-block;
-}
-
-.participants-table th.sorted.asc::after {
-  content: ' ↑';
-}
-
+/* Стилі для комірок */
 .participants-table td {
-  padding: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px;
+  border-bottom: 1px solid rgba(80, 80, 80, 0.3);
   vertical-align: middle;
 }
 
-.participants-table tr:last-child td {
-  border-bottom: none;
-}
-
-.participants-table tr:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
+/* Всі клітинки ID по центру */
 .participants-table .id-cell {
-  width: 40px;
   text-align: center;
-  padding-left: 2px;
-  padding-right: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-
-/* Стилі для кольорового відображення статусу */
-.participants-table .found {
-  /* Знайдено в базі */
-  opacity: 1;
-}
-
-.participants-table .not-found {
-  /* Не знайдено в базі */
-  opacity: 0.7;
-  color: #ddd;
-  background-color: rgba(80, 80, 80, 0.2);
-}
-
-.participants-table .match-by-translit {
-  /* Знайдено через транслітерацію */
+  font-weight: bold;
   color: #4da6fa;
 }
 
-/* Стилі для співпадінь різної якості */
-.participants-table .exact-match {
-  background-color: rgba(0, 200, 0, 0.1);
-}
-
-.participants-table .fuzzy-match {
-  background-color: rgba(200, 200, 0, 0.1);
-}
-
-/* Адаптивність для маленьких екранів */
-@media (max-width: 640px) {
-  .participants-table th, 
-  .participants-table td {
-    padding: 0.5rem 0.3rem;
-    font-size: 0.85rem;
-  }
-  
-  .participants-table .id-cell {
-    width: 30px;
-    min-width: 30px;
-    max-width: 30px;
-    padding-left: 2px;
-    padding-right: 2px;
-  }
-}
-
-/* Стилі для відображення різних типів співпадінь */
-
-/* Основні стилі для виділення знайдених і не знайдених учасників */
+/* Виправлення стилів для знайдених/не знайдених рядків */
 .participants-table tr.found {
-  background-color: rgba(77, 166, 250, 0.05);
+  background-color: rgba(40, 40, 45, 0.4);
 }
 
 .participants-table tr.not-found {
-  opacity: 0.8;
-  background-color: rgba(80, 80, 80, 0.05);
+  background-color: rgba(50, 45, 45, 0.4);
 }
 
-/* Стилі для різних типів співпадінь */
-.participants-table tr.exact-match td {
-  background-color: rgba(77, 166, 250, 0.15);
+.participants-table tr:hover {
+  background-color: rgba(60, 60, 65, 0.4);
 }
 
-.participants-table tr.standard-order-exact td {
-  background-color: rgba(77, 166, 250, 0.13);
-}
-
-.participants-table tr.real-name-tag td {
-  background-color: rgba(0, 180, 0, 0.07);
-}
-
-/* Стилі для співпадінь зі зворотним порядком */
-.participants-table tr.reversed-order-exact td,
-.participants-table tr.reversed-order-translit td,
-.participants-table tr.reversed-match td {
-  background-color: rgba(255, 153, 0, 0.10);
-}
-
-.participants-table tr.reversed-surname-exact-firstname-fuzzy td {
-  background-color: rgba(255, 153, 0, 0.08);
-}
-
-/* Стилі для співпадінь через транслітерацію */
-.participants-table tr.standard-order-translit td,
-.participants-table tr.match-by-translit td,
-.participants-table tr.full-name-translit td {
-  background-color: rgba(148, 0, 211, 0.07);
-}
-
-.participants-table tr.surname-exact-firstname-fuzzy td {
-  background-color: rgba(77, 166, 250, 0.10);
-}
-
-/* Стилі для однослівних співпадінь */
-.participants-table tr.single-word-surname-match td,
-.participants-table tr.single-word-firstname-match td,
-.participants-table tr.single-word-match td,
-.participants-table tr.single-word-translit td {
-  background-color: rgba(255, 153, 0, 0.05);
-}
-
-/* Індикатори для кожного типу співпадіння */
-.participants-table td.zoom-nickname-cell {
+/* Стилі для zoom nickname cell */
+.participants-table .zoom-nickname-cell {
+  padding-right: 25px; /* Місце для індикаторів */
   position: relative;
 }
 
-/* Індикатор для транслітерації */
-.participants-table tr.match-by-translit td.zoom-nickname-cell::after,
-.participants-table tr.standard-order-translit td.zoom-nickname-cell::after,
-.participants-table tr.reversed-order-translit td.zoom-nickname-cell::after,
-.participants-table tr.full-name-translit td.zoom-nickname-cell::after {
-  content: "ᴛ";
-  position: absolute;
-  right: 5px;
-  font-size: 0.8rem;
-  color: #9400d3;
-  opacity: 0.8;
-}
-
-/* Індикатор для зворотного порядку */
-.participants-table tr.reversed-match td.zoom-nickname-cell::after,
-.participants-table tr.reversed-order-exact td.zoom-nickname-cell::after,
-.participants-table tr.reversed-surname-exact-firstname-fuzzy td.zoom-nickname-cell::after {
-  content: "↔";
-  position: absolute;
-  right: 5px;
-  font-size: 1rem;
-  color: #ff9900;
-  opacity: 0.8;
-}
-
-/* Індикатор для реального імені з тегу rnm: */
-.participants-table tr.real-name-tag td.zoom-nickname-cell::after {
-  content: "ᴿ";
-  position: absolute;
-  right: 5px;
-  font-size: 0.8rem;
-  color: #00b400;
-  opacity: 0.8;
-}
-
-/* Стилі для випадку, коли є і транслітерація, і зворотний порядок */
-.participants-table tr.reversed-order-translit td.zoom-nickname-cell::after {
-  content: "ᴛ↔";
-  position: absolute;
-  right: 5px;
-  font-size: 0.8rem;
-  color: #9400d3;
-  opacity: 0.8;
+/* Стилі для розгорнутого рядка */
+.participants-table tr.expanded {
+  background-color: rgba(60, 60, 70, 0.5);
 }
 
 /* Оновлена легенда */
@@ -1117,4 +1007,74 @@ footer {
 
 .legend-dot.real-name {
   background-color: #00b400;
+}
+
+/* Видаляємо псевдоелементи ::after, що накладаються */
+.participants-table tr.match-by-translit td.zoom-nickname-cell::after,
+.participants-table tr.standard-order-translit td.zoom-nickname-cell::after,
+.participants-table tr.reversed-order-translit td.zoom-nickname-cell::after,
+.participants-table tr.full-name-translit td.zoom-nickname-cell::after,
+.participants-table tr.reversed-match td.zoom-nickname-cell::after,
+.participants-table tr.reversed-order-exact td.zoom-nickname-cell::after,
+.participants-table tr.reversed-surname-exact-firstname-fuzzy td.zoom-nickname-cell::after,
+.participants-table tr.real-name-tag td.zoom-nickname-cell::after,
+.participants-table tr.reversed-order-translit td.zoom-nickname-cell::after {
+  content: none;
+}
+
+/* Покращені стилі для різних типів співпадінь */
+.participants-table tr.exact-match {
+  background-color: rgba(77, 166, 250, 0.08);
+}
+
+.participants-table tr.real-name-tag {
+  background-color: rgba(0, 180, 0, 0.05);
+}
+
+.participants-table tr.standard-order-translit,
+.participants-table tr.full-name-translit {
+  background-color: rgba(148, 0, 211, 0.05);
+}
+
+.participants-table tr.reversed-order-exact,
+.participants-table tr.reversed-order-translit {
+  background-color: rgba(255, 153, 0, 0.05);
+}
+
+/* Покращені стилі для модального вікна */
+.modal-content {
+  background: #373737;
+  border: 1px solid #4da6fa;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+}
+
+.db-list {
+  max-height: 50vh;
+  background-color: #252525;
+}
+
+.db-list-item {
+  transition: background-color 0.2s;
+}
+
+.db-list-item:hover {
+  background-color: #333;
+}
+
+/* Виправлення адаптивності для маленьких екранів */
+@media (max-width: 640px) {
+  .participants-table th, 
+  .participants-table td {
+    padding: 6px 4px;
+    font-size: 0.85rem;
+  }
+  
+  .participants-table .id-cell {
+    width: 40px;
+  }
+  
+  .manual-assign-btn {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
 }

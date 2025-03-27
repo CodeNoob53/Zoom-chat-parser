@@ -2,7 +2,7 @@ import { elements } from './dom.js';
 import { initFileHandlers } from './file-handler.js';
 import { parseChat, getRealNameMap } from './parser.js';
 import { matchNames, getMatchedNames, getNameDatabase, getUnrecognizedNames } from './name-database.js';
-import { renderNames, initSortListeners, setRerenderCallback } from './renderer.js';
+import { initRenderer, updateNamesList } from './renderer.js';
 import { saveList } from './exporter.js';
 import { showNotification } from './notification.js';
 
@@ -25,11 +25,8 @@ function initApp() {
   // Ініціалізуємо обробники файлів
   initFileHandlers();
   
-  // Ініціалізуємо обробники сортування
-  initSortListeners();
-  
-  // Встановлюємо функцію для ререндерингу
-  setRerenderCallback(rerender);
+  // Ініціалізуємо рендерер (включає ініціалізацію обробників сортування)
+  initRenderer();
   
   // Показати / приховати поле для ключового слова
   useKeywordChk.addEventListener("change", () => {
@@ -111,15 +108,15 @@ function handleParse() {
     showNotification(`Парсинг завершено! Імен знайдено: ${displayedNames.length}`, "success");
   }
   
-  // Відображаємо результати
-  renderNames(displayedNames, getRealNameMap(), useDbChk.checked, getMatchedNames());
+  // Відображаємо результати, використовуючи новий модуль renderer
+  updateNamesList(displayedNames, getRealNameMap(), useDbChk.checked, getMatchedNames());
 }
 
 /**
  * Ререндерить список учасників зі збереженням поточних налаштувань
  */
 function rerender() {
-  renderNames(displayedNames, getRealNameMap(), elements.useDbChk.checked, getMatchedNames());
+  updateNamesList(displayedNames, getRealNameMap(), elements.useDbChk.checked, getMatchedNames());
 }
 
 /**

@@ -4,6 +4,332 @@
   box-sizing: border-box;
 }
 
+/* Стилі для нових елементів інтерфейсу */
+
+/* Стилі для рекомендацій та альтернативних співпадінь */
+.recommendations-container,
+.alt-matches {
+  margin-top: 10px;
+  padding: 8px;
+  background-color: rgba(77, 166, 250, 0.1);
+  border-radius: 4px;
+  border: 1px solid rgba(77, 166, 250, 0.3);
+  font-size: 13px;
+  display: none;
+}
+
+tr.expanded .recommendations-container,
+tr.expanded .alt-matches {
+  display: block;
+}
+
+.recommendations-title,
+.alt-matches-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #ccc;
+}
+
+.recommendation-item,
+.alt-match-item {
+  display: flex;
+  align-items: center;
+  margin: 3px 0;
+  padding: 3px;
+  gap: 8px;
+}
+
+.recommendation-item:hover,
+.alt-match-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.similarity,
+.match-quality {
+  color: #4da6fa;
+  font-weight: bold;
+  min-width: 40px;
+}
+
+.match-quality.quality-9 { color: #00cc00; }
+.match-quality.quality-8 { color: #66cc33; }
+.match-quality.quality-7 { color: #99cc33; }
+.match-quality.quality-6 { color: #cccc33; }
+.match-quality.quality-5 { color: #ffcc00; }
+.match-quality.quality-4 { color: #ff9900; }
+.match-quality.quality-3 { color: #ff6600; }
+.match-quality.quality-2 { color: #ff3300; }
+.match-quality.quality-1 { color: #ff0000; }
+
+.db-name {
+  flex: 1;
+}
+
+.apply-recommendation,
+.select-alternative {
+  background-color: #4da6fa;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.apply-recommendation:hover,
+.select-alternative:hover {
+  background-color: #3584d2;
+}
+
+/* Стилі для індикаторів співпадінь */
+.match-indicator {
+  font-weight: bold;
+  font-size: 0.8em;
+  margin-left: 2px;
+}
+
+.match-indicator.translit-indicator {
+  color: #9400d3;
+}
+
+.match-indicator.reversed-indicator {
+  color: #ff9900;
+}
+
+.match-indicator.variant-indicator {
+  color: #00b400;
+}
+
+.match-indicator.auto-indicator {
+  color: #ffcc00;
+}
+
+/* Стилі для автоматичних співпадінь */
+tr.auto-matched {
+  background-color: rgba(255, 204, 0, 0.05);
+}
+
+tr.auto-matched td {
+  border-left: 2px solid rgba(255, 204, 0, 0.5);
+}
+
+/* Стилі для кнопки ручного призначення */
+.manual-assign-btn {
+  background-color: rgba(77, 166, 250, 0.8);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.manual-assign-btn:hover {
+  background-color: rgba(77, 166, 250, 1);
+}
+
+/* Стилі для рядків з альтернативами */
+tr.has-alternatives {
+  cursor: pointer;
+  position: relative;
+}
+
+tr.has-alternatives:after {
+  content: "▼";
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+tr.has-alternatives.expanded:after {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Додаткові зміни для таблиці */
+.participants-table th.actions-cell {
+  width: 80px;
+  text-align: center;
+}
+
+.participants-table td.action-cell {
+  text-align: center;
+}
+
+/* Стилі для модального вікна вибору імені */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.modal-content {
+  background-color: #3d3d3d;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 10px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.close-modal {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-modal:hover {
+  color: #fff;
+}
+
+.search-container {
+  margin-bottom: 15px;
+}
+
+#searchDbInput {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #252525;
+  color: #fff;
+  font-size: 14px;
+}
+
+.db-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 15px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #252525;
+  max-height: 40vh;
+}
+
+.db-list-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid #444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.db-list-item:last-child {
+  border-bottom: none;
+}
+
+.db-list-item:hover {
+  background-color: #444;
+}
+
+.db-item-id {
+  background-color: #4da6fa;
+  color: #222;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-right: 10px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.db-item-name {
+  color: #fff;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-button.cancel {
+  background-color: #555;
+  color: #fff;
+}
+
+.modal-button.confirm {
+  background-color: #4da6fa;
+  color: #fff;
+}
+
+.no-results {
+  padding: 15px;
+  text-align: center;
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    margin: 5% auto;
+  }
+  
+  .recommendations-container,
+  .alt-matches {
+    padding: 5px;
+  }
+  
+  .recommendation-item,
+  .alt-match-item {
+    gap: 5px;
+  }
+  
+  .apply-recommendation,
+  .select-alternative {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .manual-assign-btn {
+    padding: 2px 5px;
+    font-size: 11px;
+  }
+}
+
 body {
   font-family: "Segoe UI", Arial, sans-serif;
   background: radial-gradient(black 15%, transparent 16%) 0 0,
@@ -791,398 +1117,4 @@ footer {
 
 .legend-dot.real-name {
   background-color: #00b400;
-}
-
-/* Стилі для відображення альтернативних співпадінь */
-.alt-matches {
-  display: none;
-  margin-top: 5px;
-  padding: 5px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  font-size: 0.9em;
-}
-
-/* Показуємо альтернативні співпадіння для розгорнутого рядка */
-tr.expanded .alt-matches {
-  display: block;
-}
-
-/* Стилі для елементів альтернативних співпадінь */
-.alt-match-item {
-  padding: 4px 5px;
-  margin: 2px 0;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  transition: background 0.2s;
-  display: flex;
-  align-items: center;
-}
-
-.alt-match-item:hover {
-  background: rgba(77, 166, 250, 0.2);
-}
-
-/* Індикатор якості співпадіння */
-.match-quality {
-  display: inline-block;
-  min-width: 36px;
-  text-align: center;
-  padding: 2px 4px;
-  margin-right: 8px;
-  border-radius: 2px;
-  font-size: 0.85em;
-  font-weight: bold;
-}
-
-/* Кольори для різних рівнів якості співпадіння */
-.quality-10 { background-color: #ff0000; color: white; } /* 10-19% */
-.quality-20 { background-color: #ff4000; color: white; } /* 20-29% */
-.quality-30 { background-color: #ff8000; color: white; } /* 30-39% */
-.quality-40 { background-color: #ffbf00; color: black; } /* 40-49% */
-.quality-50 { background-color: #ffff00; color: black; } /* 50-59% */
-.quality-60 { background-color: #bfff00; color: black; } /* 60-69% */
-.quality-70 { background-color: #80ff00; color: black; } /* 70-79% */
-.quality-80 { background-color: #40ff00; color: black; } /* 80-89% */
-.quality-90 { background-color: #00ff00; color: black; } /* 90-100% */
-
-/* Стилі для контейнера імені з індикаторами */
-.nickname-container {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-/* Стилі для індикаторів типів співпадіння */
-.match-indicator {
-  display: inline-block;
-  font-size: 0.85em;
-  font-weight: bold;
-  padding: 0 4px;
-  border-radius: 2px;
-  margin-left: 5px;
-}
-
-.translit-indicator {
-  color: #9400d3;
-}
-
-.reversed-indicator {
-  color: #ff9900;
-}
-
-.variant-indicator {
-  color: #00b400;
-}
-
-/* Стилі для рядків з альтернативними співпадіннями */
-tr.has-alternatives {
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-tr.has-alternatives:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-tr.expanded {
-  background-color: rgba(77, 166, 250, 0.1);
-}
-
-/* Стилі для інформації про реальне ім'я */
-.real-name {
-  color: #4da6fa;
-  font-style: italic;
-  font-size: 0.9em;
-}
-
-/* Розширена легенда з новими типами співпадінь */
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 0.8rem;
-  margin: 0.5rem 0;
-  font-size: 0.85rem;
-  color: #ccc;
-  padding: 0.7rem;
-  background: rgba(50, 50, 50, 0.2);
-  border-radius: 4px;
-}
-
-.legend div {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  white-space: nowrap;
-}
-
-.legend-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.legend-dot.variant {
-  background-color: #00b400;
-  position: relative;
-}
-
-.legend-dot.variant::after {
-  content: "ᴠ";
-  position: absolute;
-  font-size: 0.7rem;
-  color: #fff;
-  left: 2.5px;
-  top: -1px;
-}
-
-/* Оновлені стилі для різних типів співпадінь */
-.participants-table tr.standard-order-name-variant td,
-.participants-table tr.reversed-order-name-variant td,
-.participants-table tr.single-word-variant-match td {
-  background-color: rgba(0, 180, 0, 0.07);
-}
-
-/* Стилі для покращених кнопок контролю */
-.control-panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.control-btn {
-  background: rgba(70, 70, 70, 0.8);
-  border: 1px solid #444;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 0.9rem;
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  transition: background 0.2s;
-}
-
-.control-btn:hover {
-  background: rgba(134, 134, 134, 0.6);
-}
-
-.control-btn.active {
-  background: rgba(77, 166, 250, 0.5);
-  border-color: rgba(77, 166, 250, 0.8);
-}
-
-/* Стилі для кнопок вибору альтернативних співпадінь */
-.alt-match-select {
-  background: rgba(77, 166, 250, 0.5);
-  border: 1px solid rgba(77, 166, 250, 0.8);
-  border-radius: 3px;
-  color: #fff;
-  font-size: 0.8rem;
-  padding: 2px 8px;
-  cursor: pointer;
-  margin-left: auto;
-  transition: all 0.2s ease;
-}
-
-.alt-match-select:hover {
-  background: rgba(77, 166, 250, 0.8);
-}
-
-/* Стилі для контейнера з альтернативними співпадіннями */
-.alt-match-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 5px 8px;
-  margin: 3px 0;
-}
-
-.alt-match-name {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin: 0 8px;
-}
-
-/* Оновлений стиль індикаторів типів співпадіння */
-.match-indicator {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  font-size: 0.75em;
-  font-weight: bold;
-  border-radius: 50%;
-  margin-left: 5px;
-}
-
-.translit-indicator {
-  color: #9400d3;
-  border: 1px solid #9400d3;
-  background: rgba(148, 0, 211, 0.1);
-}
-
-.reversed-indicator {
-  color: #ff9900;
-  border: 1px solid #ff9900;
-  background: rgba(255, 153, 0, 0.1);
-}
-
-.variant-indicator {
-  color: #00b400;
-  border: 1px solid #00b400;
-  background: rgba(0, 180, 0, 0.1);
-}
-
-.bracket-indicator {
-  color: #0099cc;
-  border: 1px solid #0099cc;
-  background: rgba(0, 153, 204, 0.1);
-}
-
-.abbreviation-indicator {
-  color: #cc00cc;
-  border: 1px solid #cc00cc;
-  background: rgba(204, 0, 204, 0.1);
-}
-
-.manual-indicator {
-  color: #22bb22;
-  border: 1px solid #22bb22;
-  background: rgba(34, 187, 34, 0.1);
-}
-
-/* Стилі для різних типів співпадінь */
-.participants-table tr.bracket-match td {
-  background-color: rgba(0, 153, 204, 0.07);
-}
-
-.participants-table tr.abbreviation-match td {
-  background-color: rgba(204, 0, 204, 0.07);
-}
-
-.participants-table tr.manual-match td {
-  background-color: rgba(34, 187, 34, 0.05);
-}
-
-/* Стилі для індикатора якості */
-.quality-badge {
-  display: inline-block;
-  font-size: 0.75em;
-  background: rgba(77, 166, 250, 0.3);
-  color: white;
-  border-radius: 3px;
-  padding: 1px 3px;
-  margin-left: 5px;
-  opacity: 0.8;
-}
-
-/* Додаткові елементи для легенди */
-.legend-dot.bracket {
-  background-color: #0099cc;
-  position: relative;
-}
-
-.legend-dot.bracket::after {
-  content: "()";
-  position: absolute;
-  font-size: 0.7rem;
-  color: #fff;
-  left: 1px;
-  top: -1px;
-}
-
-.legend-dot.abbr {
-  background-color: #cc00cc;
-  position: relative;
-}
-
-.legend-dot.abbr::after {
-  content: "A";
-  position: absolute;
-  font-size: 0.7rem;
-  color: #fff;
-  left: 3px;
-  top: -1px;
-}
-
-.legend-dot.manual {
-  background-color: #22bb22;
-  position: relative;
-}
-
-.legend-dot.manual::after {
-  content: "✓";
-  position: absolute;
-  font-size: 0.7rem;
-  color: #fff;
-  left: 2px;
-  top: -2px;
-}
-
-/* Покращення навігації з клавіатури */
-.alt-match-select:focus {
-  outline: 2px solid #4da6fa;
-  box-shadow: 0 0 0 2px rgba(77, 166, 250, 0.5);
-}
-
-tr.has-alternatives:focus {
-  outline: 2px solid #4da6fa;
-  position: relative;
-}
-
-/* Стилі для покращеного відображення у малих екранах */
-@media (max-width: 640px) {
-  .match-indicator {
-    width: 16px;
-    height: 16px;
-    font-size: 0.7em;
-    margin-left: 3px;
-  }
-  
-  .quality-badge {
-    font-size: 0.7em;
-    padding: 1px 2px;
-    margin-left: 3px;
-  }
-  
-  .alt-match-select {
-    font-size: 0.7rem;
-    padding: 1px 5px;
-  }
-}
-
-/* Стилі для ефекту під час переключення співпадінь */
-.match-change-effect {
-  animation: match-change 0.5s ease-in-out;
-}
-
-@keyframes match-change {
-  0% { background-color: rgba(77, 166, 250, 0.3); }
-  50% { background-color: rgba(77, 166, 250, 0.8); }
-  100% { background-color: initial; }
-}
-
-/* Покращена навігація з клавіатури для списку альтернатив */
-.alt-match-item:focus-within {
-  background-color: rgba(77, 166, 250, 0.2);
-  outline: 1px solid rgba(77, 166, 250, 0.8);
-}
-
-/* Анімація появи альтернатив */
-tr.expanded .alt-matches {
-  animation: show-alts 0.3s ease-in-out;
-}
-
-@keyframes show-alts {
-  0% { opacity: 0; transform: translateY(-5px); }
-  100% { opacity: 1; transform: translateY(0); }
 }

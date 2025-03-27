@@ -9,11 +9,16 @@ import {
   isVariantOf, 
   getAllPossibleStandardNames 
 } from './name-variants.js';
+import { showNotification } from './notification.js';
 
 // Зберігаємо базу імен
 let nameDatabase = {}; // Формат: {name: id, ...}
 // Зберігаємо знайдені співпадіння
 let matchedNames = {}; // Формат: {name: id, ...} для знайдених співпадінь
+// Зберігаємо ручні призначення
+let manualAssignments = {}; // Формат: {id: [name1, name2, ...], ...}
+// Зберігаємо нерозпізнані імена
+let unrecognizedNames = new Set(); // Set з імен, які не були знайдені в базі
 
 /**
  * Парсинг бази імен з тексту
@@ -118,6 +123,30 @@ function fuzzyMatch(str1, str2, threshold = 0.3) {
 }
 
 /**
+ * Функція для отримання метрики схожості між двома рядками
+ * @param {string} str1 - Перший рядок
+ * @param {string} str2 - Другий рядок
+ * @returns {number} Схожість від 0 до 1, де 1 - повний збіг
+ */
+function getSimilarity(str1, str2) {
+  if (!str1 || !str2) return 0;
+  
+  // Приведення до нижнього регістру
+  const s1 = str1.toLowerCase();
+  const s2 = str2.toLowerCase();
+  
+  // Якщо рядки однакові, повертаємо максимальну схожість
+  if (s1 === s2) return 1;
+  
+  // Обчислюємо відстань Левенштейна
+  const distance = levenshteinDistance(s1, s2);
+  
+  // Нормалізуємо відстань по відношенню до довжини найдовшого рядка
+  const maxLength = Math.max(s1.length, s2.length);
+  return 1 - (distance / maxLength);
+}
+
+/**
  * Розбиває повне ім'я на частини і враховує обидва можливі порядки
  * @param {string} fullName - Повне ім'я
  * @returns {Object} Об'єкт з різними варіантами імені
@@ -163,11 +192,22 @@ function splitName(fullName) {
  */
 export function matchNames(displayedNames, realNameMap) {
   matchedNames = {}; // Очищуємо попередні співпадіння
+  unrecognizedNames.clear(); // Очищуємо нерозпізнані імена
   
   // Перебираємо всі відображувані імена
   displayedNames.forEach(name => {
     // Зберігаємо потенційні співпадіння
     let potentialMatches = [];
+    
+    // Перевіряємо ручні призначення
+    if (manualAssignments[name]) {
+      matchedNames[name] = manualAssignments[name];
+      matchedNames[name + '_matchInfo'] = { 
+        matchType: 'manual-assignment',
+        quality: 100
+      };
+      return; // Далі не шукаємо
+    }
     
     // 1. Перевірка точного співпадіння
     if (nameDatabase[name]) {
@@ -387,10 +427,91 @@ export function matchNames(displayedNames, realNameMap) {
         matchType: 'not-found',
         quality: 0
       };
+      // Додаємо до списку нерозпізнаних імен
+      unrecognizedNames.add(name);
     }
   });
   
+  // Спроба автоматично знайти найкращі співпадіння для нерозпізнаних імен
+  tryAutoMatchUnrecognized();
+  
   return matchedNames;
+}
+
+/**
+ * Спроба автоматично знайти найкращі співпадіння для нерозпізнаних імен
+ * використовуючи загальну схожість
+ */
+function tryAutoMatchUnrecognized() {
+  // Якщо нема нерозпізнаних імен або бази імен, виходимо
+  if (unrecognizedNames.size === 0 || Object.keys(nameDatabase).length === 0) {
+    return;
+  }
+  
+  // Обробляємо кожне нерозпізнане ім'я
+  unrecognizedNames.forEach(unrecognizedName => {
+    // Можливі імена в базі, які ще не були використані
+    const potentialDbMatches = [];
+    
+    // Збираємо всі використані ID з matchedNames
+    const usedIds = new Set();
+    Object.values(matchedNames).forEach(id => {
+      if (id !== "not-in-db") {
+        usedIds.add(id);
+      }
+    });
+    
+    // Шукаємо найкращі співпадіння в базі за схожістю
+    for (const [dbName, dbId] of Object.entries(nameDatabase)) {
+      // Пропускаємо вже використані ID
+      if (usedIds.has(dbId)) {
+        continue;
+      }
+      
+      // Використовуємо повний аналіз схожості
+      let similarity = 0;
+      
+      // Спочатку спробуємо транслітерацію
+      const translit1 = transliterateToLatin(unrecognizedName);
+      const translit2 = transliterateToLatin(dbName);
+      
+      // Оцінюємо схожість на основі різних варіантів транслітерації
+      const sim1 = getSimilarity(unrecognizedName, dbName);
+      const sim2 = getSimilarity(translit1, translit2);
+      
+      // Беремо найкращу схожість
+      similarity = Math.max(sim1, sim2);
+      
+      // Додаємо до потенційних співпадінь, якщо схожість вище порогу
+      if (similarity > 0.5) {
+        potentialDbMatches.push({
+          dbName,
+          id: dbId,
+          similarity,
+          matchType: 'auto-fuzzy-match'
+        });
+      }
+    }
+    
+    // Сортуємо потенційні співпадіння за схожістю
+    potentialDbMatches.sort((a, b) => b.similarity - a.similarity);
+    
+    // Якщо є хороші співпадіння, використовуємо найкраще
+    if (potentialDbMatches.length > 0 && potentialDbMatches[0].similarity > 0.7) {
+      const bestMatch = potentialDbMatches[0];
+      matchedNames[unrecognizedName] = bestMatch.id;
+      matchedNames[unrecognizedName + '_matchInfo'] = {
+        matchType: 'auto-match',
+        quality: Math.round(bestMatch.similarity * 100),
+        dbName: bestMatch.dbName,
+        allMatches: potentialDbMatches.slice(0, 3),
+        autoMatched: true
+      };
+      
+      // Видаляємо з нерозпізнаних
+      unrecognizedNames.delete(unrecognizedName);
+    }
+  });
 }
 
 /**
@@ -399,6 +520,14 @@ export function matchNames(displayedNames, realNameMap) {
  */
 export function getMatchedNames() {
   return matchedNames;
+}
+
+/**
+ * Отримати список нерозпізнаних імен
+ * @returns {Array} Масив нерозпізнаних імен
+ */
+export function getUnrecognizedNames() {
+  return [...unrecognizedNames];
 }
 
 /**
@@ -423,7 +552,8 @@ export function getParticipantInfo(name, realNameMap) {
     nickname: name,
     foundInDb: false,
     matchType: "not-found",
-    alternativeMatches: []
+    alternativeMatches: [],
+    autoMatched: false
   };
   
   // Якщо знайшли співпадіння в базі
@@ -434,6 +564,11 @@ export function getParticipantInfo(name, realNameMap) {
     // Отримуємо додаткову інформацію про тип співпадіння
     const matchInfo = matchedNames[name + '_matchInfo'] || {};
     info.matchType = matchInfo.matchType || "found";
+    
+    // Додаємо інформацію про автоматичне співпадіння
+    if (matchInfo.autoMatched) {
+      info.autoMatched = true;
+    }
     
     // Додаємо альтернативні співпадіння, якщо є
     if (matchInfo.allMatches && matchInfo.allMatches.length > 1) {
@@ -520,6 +655,9 @@ export function setManualMatch(name, dbNameOrId) {
   const existsInDb = Object.values(nameDatabase).includes(id);
   if (!existsInDb) return false;
   
+  // Зберігаємо ручне призначення
+  manualAssignments[name] = id;
+  
   // Зберігаємо співпадіння
   matchedNames[name] = id;
   matchedNames[name + '_matchInfo'] = {
@@ -527,6 +665,12 @@ export function setManualMatch(name, dbNameOrId) {
     quality: 100,
     dbName: Object.keys(nameDatabase).find(key => nameDatabase[key] === id)
   };
+  
+  // Видаляємо з нерозпізнаних, якщо було там
+  unrecognizedNames.delete(name);
+  
+  // Показуємо сповіщення про успішне призначення
+  showNotification("Ручне призначення встановлено успішно!", "success");
   
   return true;
 }
@@ -555,5 +699,93 @@ export function selectAlternativeMatch(name, altIndex) {
     allMatches: allMatches // Зберігаємо всі альтернативи
   };
   
+  // Видаляємо з нерозпізнаних, якщо було там
+  unrecognizedNames.delete(name);
+  
+  // Показуємо сповіщення
+  showNotification("Альтернативне співпадіння вибрано!", "success");
+  
   return true;
+}
+
+/**
+ * Отримати рекомендації для нерозпізнаних імен
+ * @returns {Object} Об'єкт з рекомендаціями у форматі {name: [{id, dbName, similarity}, ...], ...}
+ */
+export function getRecommendations() {
+  const recommendations = {};
+  
+  // Обробляємо кожне нерозпізнане ім'я
+  getUnrecognizedNames().forEach(name => {
+    // Для кожного імені шукаємо до 3 найкращих співпадінь
+    recommendations[name] = findBestMatches(name, 3);
+  });
+  
+  return recommendations;
+}
+
+/**
+ * Знайти найкращі співпадіння для імені
+ * @param {string} name - Ім'я для пошуку
+ * @param {number} limit - Максимальна кількість співпадінь
+ * @returns {Array} Масив об'єктів з інформацією про співпадіння
+ */
+function findBestMatches(name, limit = 3) {
+  const matches = [];
+  
+  // Збираємо всі використані ID з matchedNames
+  const usedIds = new Set();
+  Object.values(matchedNames).forEach(id => {
+    if (id !== "not-in-db") {
+      usedIds.add(id);
+    }
+  });
+  
+  // Обчислюємо різні варіанти транслітерації для імені
+  const nameVariants = [
+    name,
+    transliterateToLatin(name),
+    transliterateToCyrillic(name)
+  ];
+  
+  // Перебираємо всі імена в базі
+  for (const [dbName, dbId] of Object.entries(nameDatabase)) {
+    // Пропускаємо вже використані ID
+    if (usedIds.has(dbId)) {
+      continue;
+    }
+    
+    // Обчислюємо варіанти транслітерації для імені з бази
+    const dbNameVariants = [
+      dbName,
+      transliterateToLatin(dbName),
+      transliterateToCyrillic(dbName)
+    ];
+    
+    // Обчислюємо найкращу схожість між всіма варіантами
+    let bestSimilarity = 0;
+    
+    for (const nameVar of nameVariants) {
+      for (const dbNameVar of dbNameVariants) {
+        const similarity = getSimilarity(nameVar, dbNameVar);
+        if (similarity > bestSimilarity) {
+          bestSimilarity = similarity;
+        }
+      }
+    }
+    
+    // Якщо схожість вище порогу, додаємо до списку співпадінь
+    if (bestSimilarity > 0.5) {
+      matches.push({
+        id: dbId,
+        dbName,
+        similarity: bestSimilarity
+      });
+    }
+  }
+  
+  // Сортуємо за схожістю і обмежуємо кількість
+  return matches
+    .sort((a, b) => b.similarity - a.similarity)
+    .slice(0, limit);
 }

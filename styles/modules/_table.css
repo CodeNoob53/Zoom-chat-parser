@@ -10,9 +10,7 @@
   }
   
   .participants-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+    table-layout: 100% auto;
     border-radius: 4px;
     margin-bottom: 0.5rem;
     table-layout: fixed;
@@ -23,6 +21,7 @@
     padding: 10px 8px;
     border-bottom: 2px solid #444;
     background-color: rgba(40, 40, 40, 0.8);
+    backdrop-filter: blur(5px);
     font-weight: bold;
     font-size: 0.95rem;
     color: #eee;
@@ -48,4 +47,22 @@
   
   .participants-table tr:hover {
     background-color: rgba(60, 60, 65, 0.4);
+  }
+
+  .participants-table th.sorted.asc::after {
+    content: "↑";
+    opacity: 1;
+    color: #fa754d;
+  }
+  
+  .participants-table th.sorted.desc::after {
+    content: "↓"; 
+    opacity: 1;
+    color: #fa754d;
+  }
+
+  .participants-table th::after {
+    content: "↕";
+    margin-left: 5px;
+    opacity: 0.3;
   }

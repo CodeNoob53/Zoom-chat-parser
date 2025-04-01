@@ -315,6 +315,32 @@ function renderParticipantRow (
     nicknameContainer.appendChild(autoIndicator)
   }
 
+  // Duplicate creation of nicknameContainer removed to prevent redeclaration error.
+  
+  // Add interactivity
+  if (actionsContainer.childNodes.length > 0) {
+    row.classList.add('has-alternatives');
+    
+    // Handle click on expander only
+    const expander = row.querySelector('.row-expander');
+    if (expander) {
+      expander.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent row click
+        const isExpanded = row.classList.contains('expanded');
+        
+        if (isExpanded) {
+          row.classList.remove('expanded');
+        } else {
+          // Collapse other rows
+          document.querySelectorAll('.expanded').forEach(el => {
+            el.classList.remove('expanded');
+          });
+          row.classList.add('expanded');
+        }
+      });
+    }
+  }
+
   row.appendChild(nicknameCell)
 
   // Додаємо інтерактивність рядка, якщо є альтернативні співпадіння або рекомендації

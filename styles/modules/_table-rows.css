@@ -1,0 +1,101 @@
+/* Стилі для типів співпадіння в таблиці */
+.match-by-translit {
+    border-left: 2px solid #9400d3;
+  }
+  
+  .reversed-match {
+    border-left: 2px solid #ff9900;
+  }
+  
+  .variant-match {
+    border-left: 2px solid #00b400;
+  }
+  
+  .auto-match {
+    border-left: 2px solid #ff3366;
+  }
+  
+  /* Стилі для рядків з альтернативами */
+  tr.has-alternatives {
+    cursor: pointer;
+    position: relative;
+  }
+  
+    tr.has-alternatives:hover {
+        background-color: rgba(250, 77, 77, 0.1) !important;
+    }
+  .row-expander {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  tr.expanded .row-expander {
+    transform: translateY(-50%) rotate(180deg);
+  }  
+  
+  /* Стилі для розширених рядків */
+  tr.expanded {
+    background-color: rgba(77, 166, 250, 0.05) !important;
+  }
+  
+  /* Стилі для статусів співпадіння */
+  tr.auto-match td {
+    color: #ff702d;
+    background-color: rgba(231, 68, 18, 0.123);
+  }
+  
+  tr.real-name-tag td.surname-cell,
+  tr.real-name-tag td.firstname-cell {
+    color: #00b400;
+  }
+  
+  tr.multiple-matches td.nickname-cell,
+  tr.ambiguous-name td.nickname-cell {
+    color: #ff9900;
+  }
+  
+  /* Контейнери для нікнеймів та дій */
+  .nickname-container {
+    max-width: calc(100% - 25px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .actions-container {
+    width: calc(100% - 10px);
+  }
+
+  /* Задаємо мінімальну та максимальну ширину для кожної колонки */
+.id-cell {
+    width: 5%;
+    min-width: 50px;
+  }
+  
+  .surname-cell {
+    width: 25%;
+    min-width: 100px;
+  }
+  
+  .firstname-cell {
+    width: 25%;
+    min-width: 100px;
+  }
+  
+  .zoom-nickname-cell {
+    width: 45%;
+    min-width: 150px;
+  }
+  
+  /* Переконаємось, що остання колонка не має зайвого простору справа */
+  .zoom-nickname-cell {
+    position: relative;
+    padding-right: 20px; /* Місце для іконки розгортання */
+  }
+
+  

@@ -43,9 +43,11 @@ export function parseNameDatabase (content) {
   if (validEntries > 0) {
     dbStatus.textContent = `База завантажена: ${validEntries} записів`
     dbStatus.classList.add('loaded')
+    console.log(`Базу імен завантажено: ${validEntries} записів`)
   } else {
     dbStatus.textContent = 'Помилка завантаження бази'
     dbStatus.classList.remove('loaded')
+    console.log("Помилка завантаження бази імен")
   }
 }
 
@@ -58,7 +60,9 @@ export function parseNameDatabase (content) {
 export function compareNames(displayedNames, realNameMap) {
   // Скидаємо поточний стан
   matchedNames = {}
-  unrecognizedNames.clear()
+  unrecognizedNames.clear() // Важливо очистити перед заповненням
+  
+  console.log(`Порівнюємо ${displayedNames.length} імен з базою даних...`)
   
   // Запускаємо процес співпадіння імен
   const results = matchNames(
@@ -71,6 +75,16 @@ export function compareNames(displayedNames, realNameMap) {
   
   // Оновлюємо глобальні змінні після співпадіння
   matchedNames = results.matchedNames
+  
+  // Додаємо додаткову перевірку, щоб переконатися що unrecognizedNames заповнено правильно
+  // Перевіряємо всі імена, і якщо їх немає в базі, додаємо в unrecognizedNames
+  displayedNames.forEach(name => {
+    if (matchedNames[name] === 'not-in-db') {
+      unrecognizedNames.add(name)
+    }
+  })
+  
+  console.log(`Порівняння завершено: ${unrecognizedNames.size} імен не знайдено в базі`)
   
   return matchedNames
 }
@@ -88,7 +102,9 @@ export function getMatchedNames () {
  * @returns {Array} Масив нерозпізнаних імен
  */
 export function getUnrecognizedNames () {
-  return [...unrecognizedNames]
+  const namesArray = [...unrecognizedNames];
+  console.log(`getUnrecognizedNames: Повертає ${namesArray.length} нерозпізнаних імен`);
+  return namesArray;
 }
 
 /**
@@ -96,7 +112,8 @@ export function getUnrecognizedNames () {
  * @returns {Object} Об'єкт бази імен
  */
 export function getNameDatabase () {
-  return nameDatabase
+  console.log(`getNameDatabase: Повертає базу з ${Object.keys(nameDatabase).length} записів`);
+  return nameDatabase;
 }
 
 /**
@@ -233,6 +250,7 @@ export function setManualMatch (name, dbNameOrId) {
 
   // Показуємо сповіщення про успішне призначення
   showNotification('Ручне призначення встановлено успішно!', 'success')
+  console.log(`Встановлено ручне призначення для ${name} -> ${id}`)
 
   return true
 }
@@ -270,12 +288,143 @@ export function selectAlternativeMatch (name, altIndex) {
 
   // Показуємо сповіщення
   showNotification('Альтернативне співпадіння вибрано!', 'success')
+  console.log(`Вибрано альтернативне співпадіння для ${name}`)
 
   return true
 }
 
+/**
+ * Отримати рекомендації для нерозпізнаних імен
+ * @param {Array|Set} unrecognizedNames - Список нерозпізнаних імен
+ * @param {Object} nameDatabase - База імен
+ * @param {Object} matchedNames - Співпадіння, що вже знайдені
+ * @returns {Object} Об'єкт з рекомендаціями у форматі {name: [{id, dbName, similarity}, ...], ...}
+ */
+export function getRecommendations(unrecognizedNames = [], nameDatabase = {}, matchedNames = {}) {
+  const recommendations = {};
+  
+  // Переконаємося, що працюємо з масивом
+  const namesArray = Array.isArray(unrecognizedNames) 
+    ? unrecognizedNames 
+    : [...unrecognizedNames];
+  
+  console.log(`getRecommendations отримав ${namesArray.length} імен для пошуку рекомендацій`);
+  console.log(`База імен має ${Object.keys(nameDatabase).length} записів`);
+
+  // Для кожного нерозпізнаного імені шукаємо рекомендації
+  namesArray.forEach(name => {
+    // Отримуємо інформацію про співпадіння
+    const matchInfo = matchedNames[name + '_matchInfo'] || {};
+    
+    // Якщо це неоднозначне ім'я (ambiguous-name), використовуємо вже знайдені варіанти
+    if (matchInfo.matchType === 'ambiguous-name' && matchInfo.allMatches) {
+      // Конвертуємо allMatches у формат рекомендацій
+      recommendations[name] = matchInfo.allMatches.map(match => ({
+        id: match.id,
+        dbName: match.dbName,
+        similarity: match.quality ? match.quality / 100 : 0.7
+      }));
+    } else {
+      // Інакше шукаємо найкращі співпадіння - використовуємо низький поріг для збільшення кількості співпадінь
+      const bestMatches = findBestMatches(name, 3, nameDatabase, matchedNames);
+      // Зберігаємо рекомендації лише якщо вони мають прийнятну схожість
+      if (bestMatches.length > 0) {
+        recommendations[name] = bestMatches;
+      }
+    }
+  });
+  
+  console.log(`Знайдено рекомендації для ${Object.keys(recommendations).length} імен`);
+
+  return recommendations;
+}
+
+/**
+ * Знайти найкращі співпадіння для імені
+ * @param {string} name - Ім'я для пошуку
+ * @param {number} limit - Максимальна кількість співпадінь
+ * @param {Object} nameDatabase - База імен для пошуку
+ * @param {Object} matchedNames - Співпадіння, що вже знайдені
+ * @returns {Array} Масив об'єктів з інформацією про співпадіння
+ */
+export function findBestMatches(name, limit = 3, nameDatabase = {}, matchedNames = {}) {
+  const matches = [];
+  
+  // Якщо ім'я порожнє або бази немає, повертаємо пустий масив
+  if (!name || !nameDatabase || Object.keys(nameDatabase).length === 0) {
+    console.log(`findBestMatches: Немає бази для пошуку або ім'я пусте: ${name}`);
+    return matches;
+  }
+
+  // Збираємо всі використані ID з matchedNames
+  const usedIds = new Set();
+  Object.entries(matchedNames).forEach(([key, id]) => {
+    if (id !== 'not-in-db' && !key.endsWith('_matchInfo')) {
+      usedIds.add(id);
+    }
+  });
+  
+  // Обчислюємо різні варіанти транслітерації для імені
+  const nameVariants = [
+    name, 
+    transliterateToLatin(name), 
+    transliterateToCyrillic(name)
+  ].filter(Boolean); // Видаляємо null/undefined значення
+
+  // Перебираємо всі імена в базі
+  for (const [dbName, dbId] of Object.entries(nameDatabase)) {
+    // Пропускаємо вже використані ID
+    if (usedIds.has(dbId)) {
+      continue;
+    }
+
+    // Обчислюємо варіанти транслітерації для імені з бази
+    const dbNameVariants = [
+      dbName,
+      transliterateToLatin(dbName),
+      transliterateToCyrillic(dbName)
+    ].filter(Boolean);
+
+    // Обчислюємо найкращу схожість між всіма варіантами
+    let bestSimilarity = 0;
+
+    for (const nameVar of nameVariants) {
+      for (const dbNameVar of dbNameVariants) {
+        const similarity = getSimilarity(nameVar, dbNameVar);
+        if (similarity > bestSimilarity) {
+          bestSimilarity = similarity;
+        }
+      }
+    }
+
+    // Знижуємо поріг схожості для отримання більшої кількості рекомендацій
+    // Було 0.5, тепер 0.3
+    if (bestSimilarity > 0.3) {
+      matches.push({
+        id: dbId,
+        dbName,
+        similarity: bestSimilarity
+      });
+    }
+  }
+
+  // Сортуємо за схожістю і обмежуємо кількість
+  const sortedMatches = matches.sort((a, b) => b.similarity - a.similarity).slice(0, limit);
+  
+  return sortedMatches;
+}
+
 // Експортуємо функції з інших модулів для зворотної сумісності
-export { 
-  findBestMatches, 
-  getRecommendations 
+import { 
+  findAllPossibleMatches, 
+  hasAmbiguousNameMatch,
+  tryAutoMatchUnrecognized
 } from './name-recommendation.js'
+
+import {
+  transliterateToLatin,
+  transliterateToCyrillic,
+  areNamesTransliteratedMatches
+} from './transliteration.js'
+
+import { getSimilarity } from './name-utils.js'

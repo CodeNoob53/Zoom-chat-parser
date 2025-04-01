@@ -1078,3 +1078,47 @@ footer {
     font-size: 0.8rem;
   }
 }
+
+/* Угруповання за статусом */
+.participants-table {
+  border-collapse: collapse;
+}
+
+.participants-table tr.group-found + tr.group-not-found {
+  border-top: 3px solid rgba(255, 153, 0, 0.3);
+}
+
+/* Покращений контраст та індикатори */
+.participants-table tr.found td {
+  border-left: 3px solid rgba(77, 166, 250, 0.8);
+}
+
+.participants-table tr.not-found td {
+  border-left: 3px solid rgba(150, 150, 150, 0.5);
+}
+
+.participants-table tr.auto-matched td {
+  border-left: 3px solid rgba(255, 204, 0, 0.8);
+}
+
+/* Анімація пульсації при розкритті */
+@keyframes pulse {
+  0% { background-color: rgba(77, 166, 250, 0.2); }
+  100% { background-color: rgba(60, 60, 70, 0.5); }
+}
+
+/* Покращений вигляд індикаторів типу співпадіння */
+.match-indicator {
+  display: inline-block;
+  margin-left: 5px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* Рівні якості співпадіння */
+.match-quality-90 { background-color: rgba(77, 166, 250, 0.2); }
+.match-quality-80 { background-color: rgba(0, 180, 0, 0.1); }
+.match-quality-70 { background-color: rgba(255, 153, 0, 0.1); }
+.match-quality-60 { background-color: rgba(255, 100, 100, 0.1); }

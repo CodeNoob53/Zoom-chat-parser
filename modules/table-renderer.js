@@ -26,20 +26,21 @@ export function renderNames(list, realNameMap, useDbChk, matchedNames) {
   // Очищаємо таблицю
   participantsList.innerHTML = "";
   
-  // Створюємо набір унікальних ID
-  const uniqueIds = new Set();
+  // Створюємо набір унікальних ідентифікаторів (з урахуванням нікнейму для тих, хто не в базі)
+  const uniqueIdentifiers = new Set();
   
-  // Фільтруємо учасників, щоб видалити дублікати з однаковим ID
+  // Фільтруємо учасників, щоб видалити справжні дублікати, але зберегти всіх учасників "не в базі"
   const uniqueParticipants = sortedParticipants.filter(participant => {
-    const id = participant.id;
+    // Для учасників не в базі використовуємо комбінацію ID + нікнейм як унікальний ідентифікатор
+    const uniqueId = participant.foundInDb ? participant.id : `${participant.id}_${participant.nickname}`;
     
-    // Якщо ID вже бачили, це дублікат - пропускаємо
-    if (uniqueIds.has(id)) {
+    // Якщо ідентифікатор вже бачили, це дублікат - пропускаємо
+    if (uniqueIdentifiers.has(uniqueId)) {
       return false;
     }
     
-    // Інакше додаємо ID в набір і залишаємо учасника
-    uniqueIds.add(id);
+    // Інакше додаємо ідентифікатор в набір і залишаємо учасника
+    uniqueIdentifiers.add(uniqueId);
     return true;
   });
   
@@ -50,7 +51,9 @@ export function renderNames(list, realNameMap, useDbChk, matchedNames) {
   const unrecognizedNames = useDbChk ? getUnrecognizedNames() : [];
   
   // Отримуємо рекомендації для нерозпізнаних імен
-  const recommendations = useDbChk ? getRecommendations(unrecognizedNames) : {};
+  // Передаємо явно всі потрібні параметри
+  const recommendations = useDbChk ? 
+    getRecommendations(unrecognizedNames, getNameDatabase(), matchedNames) : {};
   
   // Відображаємо тільки унікальних учасників
   uniqueParticipants.forEach(participant => {
@@ -136,7 +139,14 @@ function renderParticipantRow(participant, realNameMap, useDbChk, unrecognizedNa
     // Перевіряємо, чи є рекомендації для цього імені
     const nicknameRecs = recommendations[participant.nickname];
     
-    if (nicknameRecs && nicknameRecs.length > 0) {
+    // ЗМІНЕНО: Додаємо додаткову перевірку якості рекомендацій
+    // Фільтруємо рекомендації з якістю 50% і вище
+    const qualityRecs = nicknameRecs ? 
+      nicknameRecs.filter(rec => (rec.similarity * 100) >= 50) : 
+      [];
+    
+    // Показуємо рекомендації тільки якщо є якісні співпадіння
+    if (qualityRecs && qualityRecs.length > 0) {
       const recommendationsContainer = document.createElement("div");
       recommendationsContainer.className = "recommendations-container";
       
@@ -147,7 +157,7 @@ function renderParticipantRow(participant, realNameMap, useDbChk, unrecognizedNa
       recommendationsContainer.appendChild(recommendationsTitle);
       
       // Додаємо рекомендації
-      nicknameRecs.forEach((rec, index) => {
+      qualityRecs.forEach((rec, index) => {
         const recommendationItem = document.createElement("div");
         recommendationItem.className = "recommendation-item";
         
@@ -180,7 +190,7 @@ function renderParticipantRow(participant, realNameMap, useDbChk, unrecognizedNa
       
       actionsContainer.appendChild(recommendationsContainer);
     } else {
-      // Якщо рекомендацій немає, додаємо кнопку призначення
+      // Якщо немає якісних рекомендацій, додаємо кнопку призначення
       const manualAssignButton = document.createElement("button");
       manualAssignButton.className = "manual-assign-btn";
       manualAssignButton.textContent = "Призначити вручну";
@@ -299,6 +309,7 @@ function renderParticipantRow(participant, realNameMap, useDbChk, unrecognizedNa
 import { 
   getUnrecognizedNames, 
   getRecommendations,
+  getNameDatabase,
   setManualMatch, 
   selectAlternativeMatch 
 } from './name-database.js';

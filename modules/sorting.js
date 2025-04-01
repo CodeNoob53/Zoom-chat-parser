@@ -80,11 +80,7 @@ export function initSortListeners() {
                        column === 'firstname' ? sortByFirstname : sortByNickname;
       
       currentTh.classList.add('sorted');
-      if (currentSortDirection === 'asc') {
-        currentTh.classList.add('asc');
-      } else {
-        currentTh.classList.add('desc');
-      }
+      currentTh.classList.add(currentSortDirection);
       
       // Повторно рендеримо з новим сортуванням
       triggerRerender();

@@ -1,12 +1,8 @@
 import { elements } from './dom.js';
 import { getParticipantInfo } from './name-database.js';
-import { sortParticipants } from './sorting.js';
+import { sortParticipants, getCurrentSortState } from './sorting.js';
 import { showAssignmentModal } from './assignment-modal.js';
 import { triggerRerender } from './render-utils.js';
-
-// Поточний стан сортування, тепер імпортується з sorting.js
-let currentSortColumn;
-let currentSortDirection;
 
 /**
  * Відображення списку учасників у таблиці з покращеним інтерфейсом
@@ -18,16 +14,14 @@ let currentSortDirection;
 export function renderNames(list, realNameMap, useDbChk, matchedNames) {
   const { participantsList, countNamesSpan } = elements;
   
-  // Отримуємо поточний стан сортування з модуля sorting
-  const sortState = getSortState();
-  currentSortColumn = sortState.column;
-  currentSortDirection = sortState.direction;
+  // Отримуємо поточний стан сортування
+  const sortState = getCurrentSortState();
   
   // Збираємо повну інформацію про учасників
   const participants = list.map(name => getParticipantInfo(name, realNameMap));
   
   // Сортуємо учасників
-  const sortedParticipants = sortParticipants(participants, currentSortColumn, currentSortDirection);
+  const sortedParticipants = sortParticipants(participants, sortState.column, sortState.direction);
   
   // Очищаємо таблицю
   participantsList.innerHTML = "";
@@ -56,7 +50,7 @@ export function renderNames(list, realNameMap, useDbChk, matchedNames) {
   const unrecognizedNames = useDbChk ? getUnrecognizedNames() : [];
   
   // Отримуємо рекомендації для нерозпізнаних імен
-  const recommendations = useDbChk ? getRecommendations() : {};
+  const recommendations = useDbChk ? getRecommendations(unrecognizedNames) : {};
   
   // Відображаємо тільки унікальних учасників
   uniqueParticipants.forEach(participant => {
@@ -66,6 +60,7 @@ export function renderNames(list, realNameMap, useDbChk, matchedNames) {
   // По дефолту сортуємо за ID (якщо це перший рендер)
   if (!document.querySelector('.sorted')) {
     elements.sortById.classList.add('sorted');
+    elements.sortById.classList.add('asc');
   }
 }
 
@@ -79,12 +74,6 @@ export function renderNames(list, realNameMap, useDbChk, matchedNames) {
  * @param {HTMLElement} participantsList - Елемент таблиці для вставки рядка
  */
 function renderParticipantRow(participant, realNameMap, useDbChk, unrecognizedNames, recommendations, participantsList) {
-  // Перевірка на кілька співпадінь - якщо є кілька, позначаємо як не знайдено в базі
-  if (participant.alternativeMatches && participant.alternativeMatches.length > 0) {
-    participant.foundInDb = false;
-    participant.matchType = "not-found";
-  }
-
   const row = document.createElement("tr");
   row.className = participant.foundInDb ? "found" : "not-found";
   
@@ -144,8 +133,10 @@ function renderParticipantRow(participant, realNameMap, useDbChk, unrecognizedNa
   
   // Якщо ім'я не знайдено в базі і увімкнено використання бази
   if (!participant.foundInDb && useDbChk) {
-    // Спочатку перевіряємо, чи є рекомендації
-    if (unrecognizedNames.includes(participant.nickname) && recommendations[participant.nickname]) {
+    // Перевіряємо, чи є рекомендації для цього імені
+    const nicknameRecs = recommendations[participant.nickname];
+    
+    if (nicknameRecs && nicknameRecs.length > 0) {
       const recommendationsContainer = document.createElement("div");
       recommendationsContainer.className = "recommendations-container";
       
@@ -156,7 +147,7 @@ function renderParticipantRow(participant, realNameMap, useDbChk, unrecognizedNa
       recommendationsContainer.appendChild(recommendationsTitle);
       
       // Додаємо рекомендації
-      recommendations[participant.nickname].forEach((rec, index) => {
+      nicknameRecs.forEach((rec, index) => {
         const recommendationItem = document.createElement("div");
         recommendationItem.className = "recommendation-item";
         
@@ -302,17 +293,6 @@ function renderParticipantRow(participant, realNameMap, useDbChk, unrecognizedNa
   }
   
   participantsList.appendChild(row);
-}
-
-/**
- * Отримати поточний стан сортування з модуля sorting
- */
-function getSortState() {
-  // Імпортується з sorting.js
-  return {
-    column: 'id',  // Значення за замовчуванням
-    direction: 'asc'
-  };
 }
 
 // Ключові функції, які треба імпортувати з інших модулів

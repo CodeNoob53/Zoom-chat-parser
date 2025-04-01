@@ -1,0 +1,26 @@
+:root {
+  /* Кольори */
+  --color-background-primary: #282828;
+  --color-background-secondary: #3d3d3d;
+  --color-text-primary: #e0e0e0;
+  --color-accent-primary: #4da6fa;
+  --color-accent-secondary: #00b400;
+
+  /* Шрифти */
+  --font-primary: "Segoe UI", Arial, sans-serif;
+
+  /* Розміри */
+  --border-radius-default: 4px;
+
+  /* Тіні */
+  --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Змінні для світлої теми */
+.light-theme {
+  --color-background-primary: #f4f4f4;
+  --color-background-secondary: #ffffff;
+  --color-text-primary: #333;
+  --color-accent-primary: #007bff;
+  --color-accent-secondary: #28a745;
+}

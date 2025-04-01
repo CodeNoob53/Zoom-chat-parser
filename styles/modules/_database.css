@@ -1,0 +1,41 @@
+.database-block {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.75rem;
+    border-top: 1px solid #444;
+    padding-top: 0.75rem;
+  }
+  
+  .db-status {
+    width: 100%;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: rgba(50, 50, 50, 0.5);
+    margin-top: 0.5rem;
+  }
+  
+  .db-status.loaded {
+    background: rgba(77, 166, 250, 0.2);
+    border: 1px solid rgba(77, 166, 250, 0.5);
+  }
+  
+  .db-list-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid #444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  
+  .db-item-id {
+    background-color: #4da6fa;
+    color: #222;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 12px;
+  }

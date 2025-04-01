@@ -1,0 +1,31 @@
+#notification {
+    position: fixed;
+    top: 70px;
+    right: 15px;
+    min-width: 250px;
+    padding: 15px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1rem;
+    z-index: 100;
+    backdrop-filter: blur(2px);
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    box-shadow: 0 0 4px #ffffff33;
+  }
+  
+  #notification.success {
+    background-color: #4caf4fbe;
+    border: 1px solid #6cff71;
+  }
+  
+  #notification.warning {
+    background-color: #ff9900bb;
+    border: 1px solid #f8bb5f;
+  }
+  
+  #notification.error {
+    background-color: #f44336bd;
+    border: 1px solid #ff5347;
+  }

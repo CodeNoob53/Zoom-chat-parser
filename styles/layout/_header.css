@@ -1,0 +1,16 @@
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background: rgba(61, 61, 61, 0.6);
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #444;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(2px);
+  }
+  
+  header h1 {
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    color: #fff;
+  }

@@ -1,0 +1,51 @@
+.table-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 0.75rem;
+    max-height: calc(100% - 120px);
+    position: relative;
+    background: #252525;
+    border: 1px solid #555;
+    border-radius: 4px;
+  }
+  
+  .participants-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    table-layout: fixed;
+    background-color: rgba(32, 32, 32, 0.6);
+  }
+  
+  .participants-table th {
+    padding: 10px 8px;
+    border-bottom: 2px solid #444;
+    background-color: rgba(40, 40, 40, 0.8);
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #eee;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-align: left;
+  }
+  
+  .participants-table td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(80, 80, 80, 0.3);
+    vertical-align: middle;
+  }
+  
+  .participants-table tr.found {
+    background-color: rgba(40, 40, 45, 0.4);
+  }
+  
+  .participants-table tr.not-found {
+    background-color: rgba(50, 45, 45, 0.4);
+  }
+  
+  .participants-table tr:hover {
+    background-color: rgba(60, 60, 65, 0.4);
+  }

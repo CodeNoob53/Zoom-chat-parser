@@ -1,0 +1,25 @@
+body {
+    font-family: var(--font-primary);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--color-text-primary);
+  }
+  
+  h1 {
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    color: #fff;
+  }
+  
+  h3 {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    margin-bottom: 20px;
+  }
+  
+  /* Додаткові стилі типографіки */
+  strong {
+    font-weight: bold;
+  }
+  
+  em {
+    font-style: italic;
+  }

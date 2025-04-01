@@ -4,23 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Парсер чату Zoom</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
   </head>
   <body>
+    <!-- Додаємо кнопку перемикання теми -->
+    <button id="themeToggle" class="theme-toggle" title="Змінити тему">
+      <span class="material-icons"> dark_mode </span>
+    </button>
     <header>
-      <h1>Парсер чату <strong style="color: rgb(77, 166, 250);">Zoom</strong></h1>
+      <h1>
+        Парсер чату <strong style="color: rgb(77, 166, 250)">Zoom</strong>
+      </h1>
     </header>
     <main>
       <!-- Панель із вставкою файлу / тексту та кнопкою парсингу -->
       <div class="aero-panel">
-        <div class="aero-header"><h3>Вставте текст чату або завантажте .txt:</h3></div>
+        <div class="aero-header">
+          <h3>Вставте текст чату або завантажте .txt:</h3>
+        </div>
         <textarea
           id="chatInput"
           rows="6"
           placeholder="Вставте текст тут..."
         ></textarea>
-        
+
         <input type="file" id="fileInput" accept=".txt" />
 
         <!-- Блок із чекбоксом і полем -->
@@ -29,13 +40,9 @@
             <input type="checkbox" id="useKeywordChk" />
             За ключовим словом:
           </label>
-          <input
-            type="text"
-            id="keywordInput"
-            placeholder="Введіть слово..."
-          />
+          <input type="text" id="keywordInput" placeholder="Введіть слово..." />
         </div>
-        
+
         <!-- База імен (нова секція) -->
         <div class="database-block">
           <label>
@@ -45,7 +52,7 @@
           <input type="file" id="dbFileInput" accept=".txt" />
           <div id="dbStatus" class="db-status">База не завантажена</div>
         </div>
-        
+
         <!-- Кнопка парсингу -->
         <div class="aero-footer">
           <button id="parseBtn">
@@ -66,7 +73,9 @@
                 <th class="id-cell" id="sortById">ID</th>
                 <th class="surname-cell" id="sortBySurname">Прізвище</th>
                 <th class="firstname-cell" id="sortByFirstname">Ім'я</th>
-                <th class="zoom-nickname-cell" id="sortByNickname">Zoom nickname</th>
+                <th class="zoom-nickname-cell" id="sortByNickname">
+                  Zoom nickname
+                </th>
               </tr>
             </thead>
             <tbody id="participantsList">
@@ -76,9 +85,17 @@
         </div>
         <div class="legend">
           <div><span class="legend-dot found"></span> В базі</div>
-          <div><span class="legend-dot not-found"></span> Не знайдено в базі</div>
-          <div><span class="legend-dot translit"></span> Знайдено через транслітерацію</div>
-          <div><span class="legend-dot reversed"></span> Знайдено в зворотному порядку (Ім'я Прізвище)</div>
+          <div>
+            <span class="legend-dot not-found"></span> Не знайдено в базі
+          </div>
+          <div>
+            <span class="legend-dot translit"></span> Знайдено через
+            транслітерацію
+          </div>
+          <div>
+            <span class="legend-dot reversed"></span> Знайдено в зворотному
+            порядку (Ім'я Прізвище)
+          </div>
         </div>
         <div class="aero-footer">
           <button id="saveBtn">
@@ -87,7 +104,19 @@
         </div>
       </div>
     </main>
-    <footer><p>© 2025 Парсер чату <strong style="color: rgb(77, 166, 250);">Zoom</strong></p>&nbsp;<p>By <a style="color: goldenrod;" href="https://github.com/CodeNoob53">Code Noob</a></p></footer>
+    <footer>
+      <p>
+        © 2025 Парсер чату
+        <strong style="color: rgb(77, 166, 250)">Zoom</strong>
+      </p>
+      &nbsp;
+      <p>
+        By
+        <a style="color: goldenrod" href="https://github.com/CodeNoob53"
+          >Code Noob</a
+        >
+      </p>
+    </footer>
 
     <!-- Notification container -->
     <div id="notification"></div>

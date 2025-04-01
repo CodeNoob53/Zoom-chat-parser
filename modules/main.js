@@ -4,7 +4,13 @@ import { initFileHandlers } from './file-handler.js'
 import { showNotification } from './notification.js'
 import { getRealNameMap, parseChat } from './parser.js'
 import { initRenderer, updateNamesList } from './renderer.js'
-import { compareNames, getMatchedNames, getNameDatabase, getUnrecognizedNames } from './name-database.js'
+import { initTheme } from './theme.js'
+import {
+  compareNames,
+  getMatchedNames,
+  getNameDatabase,
+  getUnrecognizedNames
+} from './name-database.js'
 // Стан додатку
 let displayedNames = []
 
@@ -26,6 +32,9 @@ function initApp () {
 
   // Ініціалізуємо рендерер
   initRenderer()
+
+  // Ініціалізуємо тему
+  initTheme()
 
   // Показати / приховати поле для ключового слова
   useKeywordChk.addEventListener('change', () => {

@@ -1,0 +1,36 @@
+textarea,
+input[type="file"],
+#searchDbInput {
+  width: 100%;
+  background: #252525;
+  color: #f0f0f0;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  transition: border-color 0.2s;
+}
+
+textarea {
+  flex: 1;
+  min-height: 100px;
+  margin-bottom: 0.75rem;
+  resize: none;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.keyword-block label,
+.database-block label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+#keywordInput,
+#dbFileInput {
+  display: none;
+  flex: 1;
+}

@@ -1,0 +1,30 @@
+/* Стилі скролбару */
+body::-webkit-scrollbar {
+    width: 12px;
+  }
+  body::-webkit-scrollbar-track {
+    background: transparent;
+    border: 1px solid #555;
+  }
+  body::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 6px;
+  }
+  body::-webkit-scrollbar-thumb:hover {
+    background: #777;
+  }
+  body::-webkit-scrollbar-button {
+    background: #333;
+    height: 12px;
+    border: 1px solid #555;
+  }
+  body::-webkit-scrollbar-button:vertical:decrement {
+    background: #333
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white"><polygon points="6,2 10,8 2,8"/></svg>')
+      center no-repeat;
+  }
+  body::-webkit-scrollbar-button:vertical:increment {
+    background: #333
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white"><polygon points="6,10 10,4 2,4"/></svg>')
+      center no-repeat;
+  }

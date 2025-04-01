@@ -1,0 +1,32 @@
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.8rem;
+    margin: 0.5rem 0;
+    font-size: 0.85rem;
+    color: #ccc;
+    padding: 0.7rem;
+    background: rgba(50, 50, 50, 0.2);
+    border-radius: 4px;
+  }
+  
+  .legend div {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+  }
+  
+  .legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  
+  .legend-dot.found { background-color: #4da6fa; }
+  .legend-dot.not-found { background-color: #666; }
+  .legend-dot.translit { background-color: #9400d3; }
+  .legend-dot.reversed { background-color: #ff9900; }
+  .legend-dot.real-name { background-color: #00b400; }

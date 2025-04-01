@@ -1,0 +1,26 @@
+footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background: rgba(61, 61, 61, 0.6);
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #444;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(2px);
+  }
+  
+  footer p {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  footer a {
+    color: goldenrod;
+    transition: color 0.3s ease;
+  }
+  
+  footer a:hover {
+    color: #ffd700;
+  }

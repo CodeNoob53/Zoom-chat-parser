@@ -1,0 +1,37 @@
+body {
+    background: radial-gradient(black 15%, transparent 16%) 0 0,
+      radial-gradient(black 15%, transparent 16%) 8px 8px,
+      radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px,
+      radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
+    background-color: #282828;
+    background-size: 16px 16px;
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  
+  /* Глобальні теми для темного режиму */
+  a {
+    color: var(--color-accent-primary);
+    transition: color 0.3s ease;
+  }
+  
+  a:hover {
+    color: lighten(var(--color-accent-primary), 10%);
+  }
+  
+  /* Додаткові глобальні стилі для темної теми */
+  ::selection {
+    background-color: rgba(77, 166, 250, 0.3);
+    color: #fff;
+  }
+  
+  /* Hover ефекти для інтерактивних елементів */
+  button:focus,
+  input:focus,
+  textarea:focus {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: 2px;
+  }

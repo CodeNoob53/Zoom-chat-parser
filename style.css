@@ -1041,6 +1041,15 @@ footer {
   background-color: rgba(255, 153, 0, 0.05);
 }
 
+/* Стиль для рядків з множинними співпадіннями */
+.participants-table tr.multiple-matches {
+  background-color: rgba(255, 204, 0, 0.1);
+}
+
+.participants-table tr.multiple-matches td {
+  border-left: 3px solid rgba(255, 204, 0, 0.7);
+}
+
 /* Покращені стилі для модального вікна */
 .modal-content {
   background: #373737;

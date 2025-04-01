@@ -317,17 +317,31 @@ import {
   
       // 5. Сортуємо потенційні співпадіння за якістю (від кращих до гірших)
       potentialMatches.sort((a, b) => b.quality - a.quality)
-  
+
       // 6. Беремо найкраще співпадіння, якщо є
       if (potentialMatches.length > 0) {
-        const bestMatch = potentialMatches[0]
-        matchedNames[name] = bestMatch.id
-        matchedNames[name + '_matchInfo'] = {
-          matchType: bestMatch.matchType,
-          quality: bestMatch.quality,
-          reversed: bestMatch.reversed || false,
-          dbName: bestMatch.dbName,
-          allMatches: potentialMatches.slice(0, 3) // Зберігаємо до 3-х найкращих співпадінь
+        // Перевіряємо, чи є більше одного потенційного співпадіння
+        if (potentialMatches.length >= 2) {
+          // Якщо є два або більше співпадінь, відмічаємо як "не знайдено в базі"
+          matchedNames[name] = 'not-in-db'
+          matchedNames[name + '_matchInfo'] = {
+            matchType: 'multiple-matches',
+            quality: 0,
+            allMatches: potentialMatches.slice(0, 3) // Зберігаємо до 3-х найкращих співпадінь
+          }
+          // Додаємо до списку нерозпізнаних імен
+          unrecognizedNames.add(name)
+        } else {
+          // Якщо є лише одне співпадіння, використовуємо його
+          const bestMatch = potentialMatches[0]
+          matchedNames[name] = bestMatch.id
+          matchedNames[name + '_matchInfo'] = {
+            matchType: bestMatch.matchType,
+            quality: bestMatch.quality,
+            reversed: bestMatch.reversed || false,
+            dbName: bestMatch.dbName,
+            allMatches: potentialMatches.slice(0, 3) // Зберігаємо до 3-х найкращих співпадінь
+          }
         }
       } else {
         // Не знайдено співпадінь

@@ -309,8 +309,8 @@ export function getRecommendations(unrecognizedNames = [], nameDatabase = {}, ma
     // Отримуємо інформацію про співпадіння
     const matchInfo = matchedNames[name + '_matchInfo'] || {};
     
-    // Якщо це неоднозначне ім'я (ambiguous-name), використовуємо вже знайдені варіанти
-    if (matchInfo.matchType === 'ambiguous-name' && matchInfo.allMatches) {
+    // Якщо це неоднозначне ім'я (ambiguous-name) або є множинні співпадіння (multiple-matches), використовуємо вже знайдені варіанти
+    if ((matchInfo.matchType === 'ambiguous-name' || matchInfo.matchType === 'multiple-matches') && matchInfo.allMatches) {
       // Конвертуємо allMatches у формат рекомендацій
       // Фільтруємо тільки варіанти з високою якістю (від 50%)
       const filteredMatches = matchInfo.allMatches
@@ -323,9 +323,9 @@ export function getRecommendations(unrecognizedNames = [], nameDatabase = {}, ma
         
       if (filteredMatches.length > 0) {
         recommendations[name] = filteredMatches;
-        console.log(`Використано ${filteredMatches.length} якісних варіантів для неоднозначного імені ${name}`);
+        console.log(`Використано ${filteredMatches.length} якісних варіантів для імені з кількома співпадіннями ${name}`);
       } else {
-        console.log(`Немає якісних варіантів для неоднозначного імені ${name}`);
+        console.log(`Немає якісних варіантів для імені з кількома співпадіннями ${name}`);
       }
     } else {
       // Інакше шукаємо найкращі співпадіння з покращеним алгоритмом

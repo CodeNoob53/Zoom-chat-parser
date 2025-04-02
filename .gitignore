@@ -1,0 +1,18 @@
+# Ігнорувати системні файли
+.DS_Store
+Thumbs.db
+
+# Ігнорувати тимчасові файли редакторів
+*.swp
+*.swo
+.idea/
+.vscode/
+*.sublime*
+
+# Ігнорувати логи і бази даних
+*.log
+*.sql
+*.sqlite
+
+# Ігнорувати node_modules якщо використовуєте npm
+node_modules/

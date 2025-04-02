@@ -312,6 +312,8 @@ export function getRecommendations(unrecognizedNames = [], nameDatabase = {}, ma
   console.log(`База імен має ${Object.keys(nameDatabase).length} записів`);
 
   // Для кожного нерозпізнаного імені шукаємо рекомендації
+  let recommendationsCount = 0;
+  
   namesArray.forEach(name => {
     // Отримуємо інформацію про співпадіння
     const matchInfo = matchedNames[name + '_matchInfo'] || {};
@@ -319,22 +321,32 @@ export function getRecommendations(unrecognizedNames = [], nameDatabase = {}, ma
     // Якщо це неоднозначне ім'я (ambiguous-name), використовуємо вже знайдені варіанти
     if (matchInfo.matchType === 'ambiguous-name' && matchInfo.allMatches) {
       // Конвертуємо allMatches у формат рекомендацій
-      recommendations[name] = matchInfo.allMatches.map(match => ({
-        id: match.id,
-        dbName: match.dbName,
-        similarity: match.quality ? match.quality / 100 : 0.7
-      }));
+      const allMatchesArray = matchInfo.allMatches
+        .filter(match => match && match.id) // Фільтруємо неповні співпадіння
+        .map(match => ({
+          id: match.id,
+          dbName: match.dbName,
+          similarity: match.quality ? match.quality / 100 : 0.7
+        }));
+      
+      // Перевіряємо, чи є дійсні співпадіння
+      if (allMatchesArray.length > 0) {
+        recommendations[name] = allMatchesArray;
+        recommendationsCount++;
+      }
     } else {
       // Інакше шукаємо найкращі співпадіння - використовуємо низький поріг для збільшення кількості співпадінь
       const bestMatches = findBestMatches(name, 3, nameDatabase, matchedNames);
-      // Зберігаємо рекомендації лише якщо вони мають прийнятну схожість
-      if (bestMatches.length > 0) {
+      
+      // Зберігаємо рекомендації лише якщо вони мають прийнятну схожість і є непустими
+      if (bestMatches && bestMatches.length > 0) {
         recommendations[name] = bestMatches;
+        recommendationsCount++;
       }
     }
   });
   
-  console.log(`Знайдено рекомендації для ${Object.keys(recommendations).length} імен`);
+  console.log(`Знайдено рекомендації для ${recommendationsCount} імен`);
 
   return recommendations;
 }

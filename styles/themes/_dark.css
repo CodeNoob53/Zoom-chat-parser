@@ -27,11 +27,3 @@ body {
     background-color: rgba(77, 166, 250, 0.3);
     color: #fff;
   }
-  
-  /* Hover ефекти для інтерактивних елементів */
-  button:focus,
-  input:focus,
-  textarea:focus {
-    outline: 2px solid var(--color-accent-primary);
-    outline-offset: 2px;
-  }

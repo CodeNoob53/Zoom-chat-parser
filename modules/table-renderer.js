@@ -86,7 +86,7 @@ export function renderNames (list, realNameMap, useDbChk, matchedNames) {
  * @param {Object} participant - Інформація про учасника
  * @param {Object} realNameMap - Карта відповідності Zoom-імені до реального імені
  * @param {boolean} useDbChk - Чи використовувати базу імен
- * @param {Array} unrecognizedNames - Список нерозпізнаних імен
+ * @param {Array} _unrecognizedNames - Список нерозпізнаних імен
  * @param {Object} recommendations - Рекомендації для нерозпізнаних імен
  * @param {HTMLElement} participantsList - Елемент таблиці для вставки рядка
  */
@@ -94,7 +94,7 @@ function renderParticipantRow (
   participant,
   realNameMap,
   useDbChk,
-  unrecognizedNames,
+  _unrecognizedNames,
   recommendations,
   participantsList
 ) {
@@ -139,7 +139,12 @@ function renderParticipantRow (
   // Створюємо контейнер для основного ім'я
   const nicknameContainer = document.createElement('div')
   nicknameContainer.className = 'nickname-container'
-  nicknameContainer.textContent = participant.nickname
+  
+  // Додаємо текст нікнейму
+  const nicknameText = document.createElement('span')
+  nicknameText.className = 'nickname-text'
+  nicknameText.textContent = participant.nickname
+  nicknameContainer.appendChild(nicknameText)
 
   // Якщо є реальне ім'я з тегу rnm, показуємо його в дужках
   if (realNameMap[participant.nickname]) {
@@ -157,61 +162,128 @@ function renderParticipantRow (
 
   // Якщо ім'я не знайдено в базі і увімкнено використання бази
   if (!participant.foundInDb && useDbChk) {
+    // Перевіряємо, чи має учасник альтернативні співпадіння
+    const hasAlternatives = participant.alternativeMatches && participant.alternativeMatches.length > 0;
+    
+    // Перевіряємо інформацію про тип співпадіння
+    const matchInfo = participant.matchType ? participant.matchType.split(' ') : [];
+    const isAmbiguous = matchInfo.includes('ambiguous-name') || matchInfo.includes('multiple-matches');
+    
     // Перевіряємо, чи є рекомендації для цього імені
-    const nicknameRecs = recommendations[participant.nickname]
-
-    // ЗМІНЕНО: Додаємо додаткову перевірку якості рекомендацій
-    // Фільтруємо рекомендації з якістю 50% і вище
-    const qualityRecs = nicknameRecs
-      ? nicknameRecs.filter(rec => rec.similarity * 100 >= 50)
-      : []
-
-    // Показуємо рекомендації тільки якщо є якісні співпадіння
-    if (qualityRecs && qualityRecs.length > 0) {
-      const recommendationsContainer = document.createElement('div')
-      recommendationsContainer.className = 'recommendations-container'
-
+    const nicknameRecs = recommendations[participant.nickname];
+    
+    // Якщо є альтернативи або це неоднозначне ім'я або є рекомендації
+    if (hasAlternatives || isAmbiguous || (nicknameRecs && nicknameRecs.length > 0)) {
+      // Додаємо іконку стрілки для розгортання списку альтернатив
+      const expandIcon = document.createElement('span')
+      expandIcon.className = 'expand-icon'
+      expandIcon.innerHTML = '▼'
+      expandIcon.title = 'Натисніть, щоб показати варіанти'
+      nicknameContainer.appendChild(expandIcon)
+      
+      // Додаємо контейнер для списку альтернатив
+      const alternativesContainer = document.createElement('div')
+      alternativesContainer.className = 'alternatives-container'
+      
       // Додаємо заголовок
-      const recommendationsTitle = document.createElement('div')
-      recommendationsTitle.className = 'recommendations-title'
-      recommendationsTitle.textContent = 'Можливі співпадіння:'
-      recommendationsContainer.appendChild(recommendationsTitle)
-
-      // Додаємо рекомендації
-      qualityRecs.forEach((rec, index) => {
-        const recommendationItem = document.createElement('div')
-        recommendationItem.className = 'recommendation-item'
-
-        // Відсоток схожості
-        const similaritySpan = document.createElement('span')
-        similaritySpan.className = 'similarity'
-        similaritySpan.textContent = `${Math.round(rec.similarity * 100)}%`
-        recommendationItem.appendChild(similaritySpan)
-
+      const alternativesTitle = document.createElement('div')
+      alternativesTitle.className = 'alternatives-title'
+      alternativesTitle.textContent = 'Виберіть співпадіння:'
+      alternativesContainer.appendChild(alternativesTitle)
+      
+      // Додаємо список альтернатив
+      const alternativesList = [];
+      
+      // Збираємо всі можливі альтернативи
+      if (hasAlternatives) {
+        alternativesList.push(...participant.alternativeMatches);
+      }
+      
+      if (nicknameRecs && nicknameRecs.length > 0) {
+        // Конвертуємо рекомендації в формат альтернатив
+        const recsAsAlternatives = nicknameRecs.map(rec => ({
+          dbName: rec.dbName,
+          id: rec.id,
+          quality: Math.round(rec.similarity * 100)
+        }));
+        alternativesList.push(...recsAsAlternatives);
+      }
+      
+      // Якщо є інформація про співпадіння з кількома варіантами
+      if (isAmbiguous && participant.matchInfo && participant.matchInfo.allMatches) {
+        alternativesList.push(...participant.matchInfo.allMatches);
+      }
+      
+      // Усуваємо дублікати за ID
+      const uniqueAlternatives = [];
+      const seenIds = new Set();
+      
+      for (const alt of alternativesList) {
+        if (!seenIds.has(alt.id)) {
+          uniqueAlternatives.push(alt);
+          seenIds.add(alt.id);
+        }
+      }
+      
+      // Сортуємо за якістю
+      uniqueAlternatives.sort((a, b) => (b.quality || 0) - (a.quality || 0));
+      
+      // Додаємо альтернативи в список
+      uniqueAlternatives.forEach((alt) => {
+        const item = document.createElement('div');
+        item.className = 'alternative-item';
+        
+        // Якість співпадіння
+        const qualitySpan = document.createElement('span');
+        qualitySpan.className = `match-quality quality-${Math.floor((alt.quality || 0) / 10)}`;
+        qualitySpan.textContent = `${alt.quality || 0}%`;
+        item.appendChild(qualitySpan);
+        
         // Ім'я з бази
-        const dbNameSpan = document.createElement('span')
-        dbNameSpan.className = 'db-name'
-        dbNameSpan.textContent = rec.dbName
-        recommendationItem.appendChild(dbNameSpan)
-
-        // Кнопка для застосування рекомендації
-        const applyButton = document.createElement('button')
-        applyButton.className = 'apply-recommendation'
-        applyButton.textContent = '✓'
-        applyButton.title = 'Застосувати це співпадіння'
-        applyButton.addEventListener('click', e => {
-          e.stopPropagation()
-          setManualMatch(participant.nickname, rec.id)
-          triggerRerender()
-        })
-        recommendationItem.appendChild(applyButton)
-
-        recommendationsContainer.appendChild(recommendationItem)
-      })
-
-      actionsContainer.appendChild(recommendationsContainer)
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'db-name';
+        nameSpan.textContent = alt.dbName;
+        item.appendChild(nameSpan);
+        
+        // Кнопка для вибору
+        const selectButton = document.createElement('button');
+        selectButton.className = 'select-alternative';
+        selectButton.textContent = '✓';
+        selectButton.title = 'Вибрати це співпадіння';
+        selectButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setManualMatch(participant.nickname, alt.id);
+          triggerRerender();
+        });
+        item.appendChild(selectButton);
+        
+        alternativesContainer.appendChild(item);
+      });
+      
+      actionsContainer.appendChild(alternativesContainer);
+      
+      // Додаємо клас для розгортання
+      row.classList.add('has-alternatives');
+      
+      // Додаємо обробник кліку для розгортання
+      row.addEventListener('click', () => {
+        const isExpanded = row.classList.contains('expanded');
+        if (isExpanded) {
+          row.classList.remove('expanded');
+          expandIcon.innerHTML = '▼';
+        } else {
+          // Знімаємо expanded з усіх інших рядків
+          document.querySelectorAll('.expanded').forEach(el => {
+            el.classList.remove('expanded');
+            const icon = el.querySelector('.expand-icon');
+            if (icon) icon.innerHTML = '▼';
+          });
+          row.classList.add('expanded');
+          expandIcon.innerHTML = '▲';
+        }
+      });
     } else {
-      // Якщо немає якісних рекомендацій, додаємо кнопку призначення
+      // Якщо немає альтернатив, додаємо кнопку призначення вручну
       const manualAssignButton = document.createElement('button')
       manualAssignButton.className = 'manual-assign-btn'
       manualAssignButton.textContent = 'Призначити вручну'
@@ -222,44 +294,6 @@ function renderParticipantRow (
 
       actionsContainer.appendChild(manualAssignButton)
     }
-  }
-
-  // Додаємо альтернативні співпадіння, якщо є
-  if (
-    participant.alternativeMatches &&
-    participant.alternativeMatches.length > 0
-  ) {
-    const altMatchesContainer = document.createElement('div')
-    altMatchesContainer.className = 'alt-matches'
-
-    const altMatchesTitle = document.createElement('div')
-    altMatchesTitle.className = 'alt-matches-title'
-    altMatchesTitle.textContent = 'Виберіть співпадіння:'
-    altMatchesContainer.appendChild(altMatchesTitle)
-
-    participant.alternativeMatches.forEach((altMatch, index) => {
-      const altMatchItem = document.createElement('div')
-      altMatchItem.className = 'alt-match-item'
-      altMatchItem.innerHTML = `<span class="match-quality quality-${Math.floor(
-        altMatch.quality / 10
-      )}">${altMatch.quality}%</span> ${altMatch.dbName}`
-
-      // Додаємо кнопку для вибору цього співпадіння
-      const selectButton = document.createElement('button')
-      selectButton.className = 'select-alternative'
-      selectButton.textContent = '✓'
-      selectButton.title = 'Вибрати це співпадіння'
-      selectButton.addEventListener('click', e => {
-        e.stopPropagation()
-        selectAlternativeMatch(participant.nickname, index)
-        triggerRerender()
-      })
-      altMatchItem.appendChild(selectButton)
-
-      altMatchesContainer.appendChild(altMatchItem)
-    })
-
-    actionsContainer.appendChild(altMatchesContainer)
   }
 
   // Додаємо контейнер дій до комірки нікнейму
@@ -315,51 +349,7 @@ function renderParticipantRow (
     nicknameContainer.appendChild(autoIndicator)
   }
 
-  // Duplicate creation of nicknameContainer removed to prevent redeclaration error.
-  
-  // Add interactivity
-  if (actionsContainer.childNodes.length > 0) {
-    row.classList.add('has-alternatives');
-    
-    // Handle click on expander only
-    const expander = row.querySelector('.row-expander');
-    if (expander) {
-      expander.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent row click
-        const isExpanded = row.classList.contains('expanded');
-        
-        if (isExpanded) {
-          row.classList.remove('expanded');
-        } else {
-          // Collapse other rows
-          document.querySelectorAll('.expanded').forEach(el => {
-            el.classList.remove('expanded');
-          });
-          row.classList.add('expanded');
-        }
-      });
-    }
-  }
-
   row.appendChild(nicknameCell)
-
-  // Додаємо інтерактивність рядка, якщо є альтернативні співпадіння або рекомендації
-  if (actionsContainer.childNodes.length > 0) {
-    row.classList.add('has-alternatives')
-    // Відображення/приховування альтернативних співпадінь при кліку
-    row.addEventListener('click', () => {
-      const isExpanded = row.classList.contains('expanded')
-      if (isExpanded) {
-        row.classList.remove('expanded')
-      } else {
-        // Знімаємо expanded з усіх інших рядків
-        document.querySelectorAll('.expanded').forEach(el => {
-          el.classList.remove('expanded')
-        })
-        row.classList.add('expanded')
-      }
-    })
-  }
 
   participantsList.appendChild(row)
 }

@@ -98,4 +98,116 @@
     padding-right: 20px; /* Місце для іконки розгортання */
   }
 
-  
+  /* Стилі для іконки розгортання */
+.expand-icon {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 12px;
+  color: #4da6fa;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+/* Стилі для контейнера нікнейму з іконкою розгортання */
+tr.has-alternatives .nickname-container {
+  display: flex;
+  align-items: center;
+}
+
+/* Стилі для іконки при наведенні */
+tr.has-alternatives .expand-icon {
+  opacity: 0.7;
+}
+
+tr.has-alternatives:hover .expand-icon {
+  opacity: 1;
+}
+
+/* Стилі для іконки при розгорнутому стані */
+tr.expanded .expand-icon {
+  color: #fff;
+}
+
+/* Стилі для контейнера альтернатив */
+.alternatives-container {
+  display: none;
+  margin-top: 8px;
+  padding: 10px;
+  background-color: rgba(50, 50, 50, 0.9);
+  border-radius: 4px;
+  border: 1px solid rgba(77, 166, 250, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Показуємо контейнер при розгорнутому стані */
+tr.expanded .alternatives-container {
+  display: block;
+}
+
+/* Стилі для заголовка альтернатив */
+.alternatives-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #ccc;
+  font-size: 13px;
+}
+
+/* Стилі для елементу альтернативи */
+.alternative-item {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  padding: 5px;
+  gap: 8px;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+
+.alternative-item:hover {
+  background-color: rgba(77, 166, 250, 0.1);
+}
+
+/* Стилі для відображення якості співпадіння */
+.match-quality {
+  min-width: 40px;
+  text-align: right;
+  font-weight: bold;
+}
+
+/* Кольори для різних рівнів якості */
+.match-quality.quality-9 { color: #00cc00; }
+.match-quality.quality-8 { color: #66cc33; }
+.match-quality.quality-7 { color: #99cc33; }
+.match-quality.quality-6 { color: #cccc33; }
+.match-quality.quality-5 { color: #ffcc00; }
+.match-quality.quality-4 { color: #ff9900; }
+.match-quality.quality-3 { color: #ff6600; }
+.match-quality.quality-2 { color: #ff3300; }
+.match-quality.quality-1 { color: #ff0000; }
+.match-quality.quality-0 { color: #cc0000; }
+
+/* Стилі для імені з бази */
+.db-name {
+  flex-grow: 1;
+}
+
+/* Стилі для кнопки вибору альтернативи */
+.select-alternative {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background-color: #4da6fa;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.select-alternative:hover {
+  background-color: #2c8ad7;
+}

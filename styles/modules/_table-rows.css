@@ -62,13 +62,15 @@
   
   /* Контейнери для нікнеймів та дій */
   .nickname-container {
-    max-width: calc(100% - 25px);
     overflow: hidden;
-    text-overflow: ellipsis;
   }
   
   .actions-container {
-    width: calc(100% - 10px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    padding: 4px 0;
   }
 
   /* Задаємо мінімальну та максимальну ширину для кожної колонки */

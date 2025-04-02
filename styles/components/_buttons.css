@@ -1,6 +1,5 @@
 #parseBtn,
 #saveBtn,
-.manual-assign-btn,
 .apply-recommendation,
 .select-alternative {
   background: rgba(70, 70, 70, 0.8);
@@ -44,16 +43,31 @@
 }
 
 .manual-assign-btn {
-  background-color: rgba(77, 166, 250, 0.8);
-  color: white;
-  border: none;
+  background-color: rgba(77, 166, 250, 0.1);
+  color: #4da6fa;
+  border: 1px solid rgba(77, 166, 250, 0.5);
   border-radius: 4px;
-  padding: 3px 8px;
+  padding: 4px 10px;
   font-size: 12px;
+  cursor: pointer;
+  transition: 
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .manual-assign-btn:hover {
-  background-color: rgba(77, 166, 250, 1);
+  background-color: rgba(77, 166, 250, 0.2);
+  color: #4da6fa;
+  border-color: rgba(77, 166, 250, 0.7);
+}
+
+.manual-assign-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(77, 166, 250, 0.3);
 }
 
 .theme-toggle {

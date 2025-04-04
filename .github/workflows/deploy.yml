@@ -1,0 +1,39 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Запускати при push в гілку main
+  push:
+    branches: [ main ]
+  # Дозволяє запускати цей робочий процес вручну з вкладки Actions
+  workflow_dispatch:
+
+# Дозволити цьому робочому процесу писати в репозиторій
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Дозволити лише одне паралельне розгортання
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          # Завантажити весь репозиторій
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2

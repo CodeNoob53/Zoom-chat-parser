@@ -2,6 +2,12 @@ import { elements } from './dom.js'
 import { matchNames } from './name-matcher.js'
 import { showNotification } from './notification.js'
 import { splitName } from './name-utils.js'
+import { getSimilarity } from './name-utils.js'
+import {
+  transliterateToLatin,
+  transliterateToCyrillic,
+  areNamesTransliteratedMatches
+} from './transliteration.js'
 
 // Зберігаємо базу імен
 let nameDatabase = {} // Формат: {name: id, ...}
@@ -13,42 +19,113 @@ let manualAssignments = {} // Формат: {id: [name1, name2, ...], ...}
 let unrecognizedNames = new Set() // Set з імен, які не були знайдені в базі
 
 /**
- * Парсинг бази імен з тексту
+ * Парсинг бази імен з тексту з підвищеною безпекою
  * @param {string} content - Вміст файлу бази імен
  */
-export function parseNameDatabase (content) {
-  const { dbStatus } = elements
+export function parseNameDatabase(content) {
+  const { dbStatus } = elements;
 
-  nameDatabase = {} // Очищуємо попередню базу
-  const lines = content.split(/\r?\n/).filter(line => line.trim())
+  // Санітизація вхідних даних
+  if (typeof content !== 'string') {
+    console.error("parseNameDatabase: отримано невалідний контент");
+    dbStatus.textContent = 'Помилка завантаження бази: невалідний формат';
+    dbStatus.classList.remove('loaded');
+    return;
+  }
 
-  let validEntries = 0
+  nameDatabase = {}; // Очищуємо попередню базу
+  
+  // Безпечне розбиття на рядки (обмеження загальної кількості рядків)
+  const lines = content.split(/\r?\n/)
+                      .filter(line => line.trim())
+                      .slice(0, 10000); // Обмеження кількості рядків
+
+  let validEntries = 0;
+  const idSet = new Set(); // Для уникнення дублікатів ID
 
   lines.forEach((line, index) => {
-    // Формат рядка: "Ім'я Прізвище: ID" або просто "Ім'я Прізвище"
-    const match = line.match(/^(.*?)(?::|\s+)(\d+)$/)
+    try {
+      // Перевіряємо, чи рядок це лише число
+      if (/^\d+$/.test(line.trim())) {
+        console.log(`Пропускаємо рядок, що містить лише число: ${line.trim()}`);
+        return; // Пропускаємо такі рядки
+      }
 
-    if (match) {
-      const name = match[1].trim()
-      const id = match[2].trim()
-      nameDatabase[name] = id
-      validEntries++
-    } else if (line.trim()) {
-      // Якщо немає ID, але рядок не пустий, присвоюємо автоматичний ID
-      nameDatabase[line.trim()] = (index + 1).toString()
-      validEntries++
+      // Безпечно перевіряємо на відповідність формату
+      const match = line.match(/^([^:]+)(?::|\s+)(\d+)$/);
+
+      if (match) {
+        const name = sanitizeName(match[1].trim());
+        const id = sanitizeId(match[2].trim());
+        
+        // Додаткова перевірка, що ім'я не порожнє і ID валідний
+        if (name && id && !idSet.has(id)) {
+          nameDatabase[name] = id;
+          idSet.add(id);
+          validEntries++;
+        }
+      } else if (line.trim()) {
+        // Якщо немає ID, але рядок не пустий, присвоюємо автоматичний ID
+        const name = sanitizeName(line.trim());
+        if (name) {
+          const autoId = (index + 1).toString();
+          
+          // Переконуємося, що ID унікальний
+          let uniqueId = autoId;
+          let counter = 1;
+          while (idSet.has(uniqueId)) {
+            uniqueId = `${autoId}_${counter++}`;
+          }
+          
+          nameDatabase[name] = uniqueId;
+          idSet.add(uniqueId);
+          validEntries++;
+        }
+      }
+    } catch (error) {
+      console.error(`Помилка обробки рядка: ${line}`, error);
+      // Пропускаємо проблемні рядки
     }
-  })
+  });
 
   if (validEntries > 0) {
-    dbStatus.textContent = `База завантажена: ${validEntries} записів`
-    dbStatus.classList.add('loaded')
-    console.log(`Базу імен завантажено: ${validEntries} записів`)
+    dbStatus.textContent = `База завантажена: ${validEntries} записів`;
+    dbStatus.classList.add('loaded');
+    console.log(`Безпечно завантажено базу імен: ${validEntries} записів`);
   } else {
-    dbStatus.textContent = 'Помилка завантаження бази'
-    dbStatus.classList.remove('loaded')
-    console.log("Помилка завантаження бази імен")
+    dbStatus.textContent = 'Помилка завантаження бази';
+    dbStatus.classList.remove('loaded');
+    console.log("Помилка завантаження бази імен");
   }
+}
+
+/**
+ * Санітизація імені для запобігання ін'єкціям
+ * @param {string} name - Ім'я для санітизації
+ * @returns {string} - Очищене ім'я
+ */
+function sanitizeName(name) {
+  if (typeof name !== 'string') return '';
+  
+  // Видаляємо потенційно шкідливі символи та обмежуємо довжину
+  return name
+    .replace(/<[^>]*>/g, '') // Видаляємо HTML-теги
+    .replace(/[<>"'&]/g, '') // Видаляємо потенційно небезпечні символи
+    .replace(/javascript:/gi, '') // Видаляємо javascript: URL
+    .substring(0, 100); // Обмеження довжини
+}
+
+/**
+ * Санітизація ID для запобігання ін'єкціям
+ * @param {string} id - ID для санітизації
+ * @returns {string} - Очищений ID
+ */
+function sanitizeId(id) {
+  if (typeof id !== 'string') return '';
+  
+  // Переконуємося, що ID містить тільки цифри та має розумну довжину
+  const sanitized = id.replace(/[^\d]/g, '');
+  return sanitized.substring(0, 10); // Обмеження довжини
 }
 
 /**
@@ -427,16 +504,12 @@ export function findBestMatches(name, limit = 3, nameDatabase = {}, matchedNames
 }
 
 // Експортуємо функції з інших модулів для зворотної сумісності
-import { 
-  findAllPossibleMatches, 
-  hasAmbiguousNameMatch,
-  tryAutoMatchUnrecognized
-} from './name-recommendation.js'
+// Removed unused imports from './name-recommendation.js'
 
-import {
+export {
   transliterateToLatin,
   transliterateToCyrillic,
   areNamesTransliteratedMatches
 } from './transliteration.js'
 
-import { getSimilarity } from './name-utils.js'
+export { getSimilarity } from './name-utils.js'

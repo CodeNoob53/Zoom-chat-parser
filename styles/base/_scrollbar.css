@@ -1,30 +1,60 @@
-/* Стилі скролбару */
-body::-webkit-scrollbar {
-    width: 12px;
-  }
-  body::-webkit-scrollbar-track {
-    background: transparent;
-    border: 1px solid #555;
-  }
-  body::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 6px;
-  }
-  body::-webkit-scrollbar-thumb:hover {
-    background: #777;
-  }
-  body::-webkit-scrollbar-button {
-    background: #333;
-    height: 12px;
-    border: 1px solid #555;
-  }
-  body::-webkit-scrollbar-button:vertical:decrement {
-    background: #333
-      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white"><polygon points="6,2 10,8 2,8"/></svg>')
-      center no-repeat;
-  }
-  body::-webkit-scrollbar-button:vertical:increment {
-    background: #333
-      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white"><polygon points="6,10 10,4 2,4"/></svg>')
-      center no-repeat;
-  }
+/* Покращений стиль скролбарів для кращої інтеграції з темним інтерфейсом */
+/* Стилі для всіх скролбарів у додатку */
+* {
+  scrollbar-color: #444 #222;
+}
+
+/* Стилі для браузерів на основі WebKit (Chrome, Safari, Opera) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+::-webkit-scrollbar-corner {
+  background: #222;
+}
+
+/* Спеціальні стилі для текстових областей і вікон з прокруткою */
+textarea, .table-container {
+
+  scrollbar-color: #444 #222;
+}
+
+textarea::-webkit-scrollbar, .table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+textarea::-webkit-scrollbar-track, .table-container::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb, .table-container::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+  border: 1px solid #333;
+}
+
+textarea::-webkit-scrollbar-thumb:hover, .table-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Видаляємо стандартні кнопки скролбара для чистішого вигляду */
+::-webkit-scrollbar-button {
+  display: none;
+}

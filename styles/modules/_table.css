@@ -4,36 +4,37 @@
     margin-bottom: 0.75rem;
     max-height: calc(100% - 120px);
     position: relative;
-    background: #252525;
+    background: #222222;
     border: 1px solid #555;
     border-radius: 4px;
   }
   
   .participants-table {
-    table-layout: 100% auto;
+    width: 100%;
     border-radius: 4px;
     margin-bottom: 0.5rem;
-    table-layout: fixed;
-    background-color: rgba(32, 32, 32, 0.6);
+    border-collapse: separate;
+    border-spacing: 0;
   }
   
   .participants-table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
     padding: 10px 8px;
-    border-bottom: 2px solid #444;
-    background-color: rgba(40, 40, 40, 0.8);
+    border-bottom: 1px solid #6e6e6e;
+    background-color: rgba(54, 54, 54, 0.692);
     backdrop-filter: blur(5px);
     font-weight: bold;
     font-size: 0.95rem;
     color: #eee;
-    position: sticky;
-    top: 0;
-    z-index: 10;
     text-align: left;
   }
   
+  
   .participants-table td {
     padding: 8px;
-    border-bottom: 1px solid rgba(80, 80, 80, 0.3);
+    border-bottom: 1px solid rgba(80, 80, 80, 0.87);
     vertical-align: middle;
   }
   
@@ -42,7 +43,7 @@
   }
   
   .participants-table tr.not-found {
-    background-color: rgba(50, 45, 45, 0.4);
+    background-color: rgba(83, 83, 83, 0.24);
   }
   
   .participants-table tr:hover {
@@ -64,5 +65,5 @@
   .participants-table th::after {
     content: "↕";
     margin-left: 5px;
-    opacity: 0.3;
+    opacity: 0.8;
   }

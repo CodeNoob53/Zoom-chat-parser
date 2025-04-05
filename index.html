@@ -13,6 +13,10 @@
       http-equiv="Strict-Transport-Security"
       content="max-age=31536000; includeSubDomains; preload"
     />
+    <!-- Захист від clickjacking -->
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <!-- Cross-Origin Opener Policy -->
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin" />
     <title>Парсер чату Zoom</title>
     <link rel="stylesheet" href="styles/main.css" />
     <link

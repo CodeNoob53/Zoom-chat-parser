@@ -1,31 +1,38 @@
 import { elements } from './dom.js'
-import { saveList } from './exporter.js'
+import { saveList, saveCsv, saveJson } from './exporter.js'
 import { initFileHandlers } from './file-handler.js'
 import { showNotification } from './notification.js'
 import { getRealNameMap, parseChat } from './parser.js'
 import { initRenderer, updateNamesList } from './renderer.js'
 import { initTheme } from './theme.js'
+import { initTabs } from './tabs.js'
+import { initDatabaseManager, getOldFormatDatabase } from './database-manager.js'
 import {
   compareNames,
   getMatchedNames,
   getNameDatabase,
-  getUnrecognizedNames
+  getUnrecognizedNames,
+  setNameDatabase
 } from './name-database.js'
+
 // Стан додатку
 let displayedNames = []
 
 /**
  * Ініціалізація додатку
  */
-function initApp () {
+function initApp() {
   const {
     useKeywordChk,
     keywordInput,
-    useDbChk,
-    dbFileInput,
     parseBtn,
-    saveBtn
+    saveBtn,
+    saveCsvBtn,
+    saveJsonBtn
   } = elements
+
+  // Ініціалізуємо вкладки
+  initTabs()
 
   // Ініціалізуємо обробники файлів
   initFileHandlers()
@@ -36,57 +43,121 @@ function initApp () {
   // Ініціалізуємо тему
   initTheme()
 
+  // Ініціалізуємо менеджер бази даних
+  initDatabaseManager()
+
+  // Ініціалізуємо базу даних при запуску
+  setTimeout(() => {
+    // Спробуємо використати базу з менеджера
+    tryUseManagerDatabase();
+  }, 500);
+
+  // Підписуємося на подію зміни вкладки
+  document.addEventListener('tabChanged', (e) => {
+    const tab = e.detail.tab;
+    
+    // Якщо перейшли на вкладку "Учасники", оновлюємо дані
+    if (tab === 'participants' && displayedNames.length > 0) {
+      // Оновлюємо список учасників
+      rerender();
+    }
+  });
+
   // Показати / приховати поле для ключового слова
-  useKeywordChk.addEventListener('change', () => {
-    if (useKeywordChk.checked) {
-      keywordInput.style.display = 'inline-block'
-    } else {
-      keywordInput.style.display = 'none'
-      keywordInput.value = ''
-    }
-  })
-
-  // Показати / приховати поле для файлу бази імен
-  useDbChk.addEventListener('change', () => {
-    if (useDbChk.checked) {
-      dbFileInput.style.display = 'inline-block'
-
-      // Перевіряємо, чи є вже дані в базі
-      const nameDatabase = getNameDatabase()
-      if (Object.keys(nameDatabase).length > 0) {
-        // Якщо база вже завантажена, перестворюємо таблицю з урахуванням бази
-        rerender()
+  if (useKeywordChk) {
+    useKeywordChk.addEventListener('change', () => {
+      if (useKeywordChk.checked) {
+        keywordInput.style.display = 'inline-block'
+      } else {
+        keywordInput.style.display = 'none'
+        keywordInput.value = ''
       }
-    } else {
-      dbFileInput.style.display = 'none'
-      // Скидаємо базу даних при знятті галки
-      elements.dbStatus.textContent = 'База не завантажена'
-      elements.dbStatus.classList.remove('loaded')
-
-      // Перерендерим без порівняння з базою
-      rerender()
-    }
-  })
+    })
+  }
 
   // Кнопка парсингу
-  parseBtn.addEventListener('click', handleParse)
+  if (parseBtn) {
+    parseBtn.addEventListener('click', handleParse)
+  }
 
-  // Кнопка збереження
-  saveBtn.addEventListener('click', handleSave)
+  // Кнопки збереження
+  if (saveBtn) {
+    saveBtn.addEventListener('click', handleSaveTxt)
+  }
+  
+  if (saveCsvBtn) {
+    saveCsvBtn.addEventListener('click', handleSaveCsv)
+  }
+  
+  if (saveJsonBtn) {
+    saveJsonBtn.addEventListener('click', handleSaveJson)
+  }
 
   // Додаємо обробник для клавіші Enter у полі ключового слова
-  keywordInput.addEventListener('keyup', event => {
-    if (event.key === 'Enter') {
-      handleParse()
+  if (keywordInput) {
+    keywordInput.addEventListener('keyup', event => {
+      if (event.key === 'Enter') {
+        handleParse()
+      }
+    })
+  }
+}
+
+/**
+ * Спробувати використати базу даних з менеджера
+ */
+function tryUseManagerDatabase() {
+  // Отримуємо базу в старому форматі
+  const oldFormatDb = getOldFormatDatabase();
+  
+  // Перевіряємо, чи є записи
+  if (Object.keys(oldFormatDb).length > 0) {
+    // Встановлюємо базу для використання
+    setNameDatabase(oldFormatDb);
+    
+    // Оновлюємо статус
+    updateDbStatus(Object.keys(oldFormatDb).length);
+    
+    // Якщо є відображені імена, оновлюємо список
+    if (displayedNames.length > 0) {
+      // Порівнюємо імена з базою
+      compareNames(displayedNames, getRealNameMap());
+      
+      // Оновлюємо відображення
+      rerender();
     }
-  })
+  } else {
+    // Немає записів у базі, встановлюємо статус "не завантажено"
+    const dbStatus = document.getElementById('dbStatus');
+    if (dbStatus) {
+      dbStatus.textContent = 'База не завантажена';
+      dbStatus.classList.remove('loaded');
+    }
+  }
+}
+
+/**
+ * Оновити статус бази даних
+ * @param {number} entriesCount - Кількість записів у базі
+ */
+function updateDbStatus(entriesCount) {
+  const dbStatus = document.getElementById('dbStatus');
+  if (!dbStatus) return;
+  
+  if (entriesCount > 0) {
+    dbStatus.textContent = `База завантажена: ${entriesCount} записів`;
+    dbStatus.classList.add('loaded');
+  } else {
+    dbStatus.textContent = 'База не завантажена';
+    dbStatus.classList.remove('loaded');
+  }
 }
 
 /**
  * Обробник кнопки парсингу
  */
-function handleParse () {
-  const { chatInput, useKeywordChk, keywordInput, useDbChk } = elements
+function handleParse() {
+  const { chatInput, useKeywordChk, keywordInput } = elements
 
   const text = chatInput.value
   if (!text.trim()) {
@@ -95,14 +166,18 @@ function handleParse () {
   }
 
   // Отримуємо ключове слово, якщо вказано
-  const keyword = useKeywordChk.checked ? keywordInput.value.trim() : ''
+  const keyword = useKeywordChk && useKeywordChk.checked ? keywordInput.value.trim() : ''
 
   // Парсимо чат
   const parseResult = parseChat(text, keyword)
   displayedNames = parseResult.displayedNames
 
-  // Якщо увімкнено базу імен, порівнюємо імена
-  if (useDbChk.checked) {
+  // Перевіряємо наявність бази даних
+  const nameDatabase = getNameDatabase();
+  const hasDatabaseEntries = Object.keys(nameDatabase).length > 0;
+
+  // Якщо є база даних, порівнюємо імена
+  if (hasDatabaseEntries) {
     // Змінюємо виклик matchNames на compareNames
     compareNames(displayedNames, getRealNameMap())
 
@@ -130,31 +205,77 @@ function handleParse () {
   updateNamesList(
     displayedNames,
     getRealNameMap(),
-    useDbChk.checked,
+    hasDatabaseEntries,
     getMatchedNames()
   )
+  
+  // Перемикаємося на вкладку "Учасники"
+  const participantsTabBtn = document.querySelector('.tab-button[data-tab="participants"]');
+  if (participantsTabBtn) {
+    participantsTabBtn.click();
+  }
 }
 
 /**
  * Ререндерить список учасників зі збереженням поточних налаштувань
  */
-function rerender () {
+function rerender() {
+  // Перевіряємо наявність бази даних
+  const nameDatabase = getNameDatabase();
+  const hasDatabaseEntries = Object.keys(nameDatabase).length > 0;
+  
   updateNamesList(
     displayedNames,
     getRealNameMap(),
-    elements.useDbChk.checked,
+    hasDatabaseEntries,
     getMatchedNames()
   )
 }
 
 /**
- * Обробник кнопки збереження
+ * Обробник кнопки збереження в TXT
  */
-function handleSave () {
+function handleSaveTxt() {
+  // Перевіряємо наявність бази даних
+  const nameDatabase = getNameDatabase();
+  const hasDatabaseEntries = Object.keys(nameDatabase).length > 0;
+  
   saveList(
     displayedNames,
     getRealNameMap(),
-    elements.useDbChk.checked,
+    hasDatabaseEntries,
+    getMatchedNames()
+  )
+}
+
+/**
+ * Обробник кнопки збереження в CSV
+ */
+function handleSaveCsv() {
+  // Перевіряємо наявність бази даних
+  const nameDatabase = getNameDatabase();
+  const hasDatabaseEntries = Object.keys(nameDatabase).length > 0;
+  
+  saveCsv(
+    displayedNames,
+    getRealNameMap(),
+    hasDatabaseEntries,
+    getMatchedNames()
+  )
+}
+
+/**
+ * Обробник кнопки збереження в JSON
+ */
+function handleSaveJson() {
+  // Перевіряємо наявність бази даних
+  const nameDatabase = getNameDatabase();
+  const hasDatabaseEntries = Object.keys(nameDatabase).length > 0;
+  
+  saveJson(
+    displayedNames,
+    getRealNameMap(),
+    hasDatabaseEntries,
     getMatchedNames()
   )
 }
@@ -164,5 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initApp()
 
   // Задаємо по замовчуванню сортування за ID
-  elements.sortById.click()
+  if (elements.sortById) {
+    elements.sortById.click()
+  }
 })

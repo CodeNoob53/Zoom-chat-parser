@@ -1,0 +1,45 @@
+/* Стилі для підвалу панелі парсера */
+.parser-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .parser-footer .db-status {
+    width: auto;
+    font-size: 0.9rem;
+    padding: 0.3rem 0.6rem;
+    margin: 0;
+    background: rgba(50, 50, 50, 0.5);
+    border-radius: 4px;
+  }
+  
+  .parser-footer .db-status.loaded {
+    background: rgba(77, 166, 250, 0.2);
+    border: 1px solid rgba(77, 166, 250, 0.5);
+  }
+  
+  /* Адаптивний дизайн для малих екранів */
+  @media (max-width: 576px) {
+    .parser-footer {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .parser-footer .db-status {
+      width: 100%;
+      text-align: center;
+    }
+  }
+  
+  /* Світла тема */
+  body.light-theme .parser-footer .db-status {
+    background: rgba(220, 220, 220, 0.5);
+    color: #333;
+  }
+  
+  body.light-theme .parser-footer .db-status.loaded {
+    background: rgba(0, 123, 255, 0.1);
+    border: 1px solid rgba(0, 123, 255, 0.3);
+    color: #0056b3;
+  }

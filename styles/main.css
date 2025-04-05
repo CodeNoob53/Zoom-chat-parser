@@ -12,6 +12,7 @@
 
 /* Components */
 @import 'components/_buttons.css';
+@import 'components/_export-buttons.css';
 @import 'components/_forms.css';
 @import 'components/_modal.css';
 @import 'components/_notifications.css';
@@ -24,6 +25,11 @@
 @import 'modules/_table.css';
 @import 'modules/_table-rows.css';
 @import 'modules/_assignment-modal.css';
+@import 'modules/_tabs.css';
+@import 'modules/_database-form.css';
+@import 'modules/_database-table.css';
+@import 'modules/_parser-footer.css';
+
 
 /* Themes */
 @import 'themes/_dark.css';

@@ -9,7 +9,7 @@ import {
   areNamesTransliteratedMatches
 } from './transliteration.js'
 
-// Зберігаємо базу імен
+// Зберігаємо базу імен (стара структура)
 let nameDatabase = {} // Формат: {name: id, ...}
 // Зберігаємо знайдені співпадіння
 let matchedNames = {} // Формат: {name: id, ...} для знайдених співпадінь
@@ -126,6 +126,14 @@ function sanitizeId(id) {
   // Переконуємося, що ID містить тільки цифри та має розумну довжину
   const sanitized = id.replace(/[^\d]/g, '');
   return sanitized.substring(0, 10); // Обмеження довжини
+}
+
+/**
+ * Встановити базу імен
+ * @param {Object} database - База імен у форматі {name: id, ...}
+ */
+export function setNameDatabase(database) {
+  nameDatabase = database;
 }
 
 /**
@@ -502,14 +510,3 @@ export function findBestMatches(name, limit = 3, nameDatabase = {}, matchedNames
   
   return sortedMatches;
 }
-
-// Експортуємо функції з інших модулів для зворотної сумісності
-// Removed unused imports from './name-recommendation.js'
-
-export {
-  transliterateToLatin,
-  transliterateToCyrillic,
-  areNamesTransliteratedMatches
-} from './transliteration.js'
-
-export { getSimilarity } from './name-utils.js'

@@ -74,22 +74,26 @@ tr.ambiguous-name td.nickname-cell {
 
 /* Задаємо мінімальну та максимальну ширину для кожної колонки */
 .id-cell {
-  min-width: 20px;
+  min-width: 35px;
   text-align: center;
+  border-right: 1px solid rgba(124, 124, 124, 0.3);
+  border-left: 1px solid rgba(124, 124, 124, 0.3);
 }
 
 .surname-cell {
   min-width: 70px;
+  border-right: 1px solid rgba(124, 124, 124, 0.3);
 }
 
 .firstname-cell {
-
   min-width: 100px;
+  border-right: 1px solid rgba(124, 124, 124, 0.3);
 }
 
 .zoom-nickname-cell {
   width: 45%;
   min-width: 150px;
+  border-right: 1px solid rgba(124, 124, 124, 0.3);
 }
 
 /* Переконаємось, що остання колонка не має зайвого простору справа */

@@ -1,0 +1,43 @@
+/* Стилі для стовпця індикаторів */
+.indicators-cell {
+    width: 50px;
+    min-width: 50px;
+    text-align: center;
+  }
+  
+  /* Контейнер з індикаторами */
+  .indicators-container {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  
+  /* Базовий стиль для іконок індикаторів */
+  .indicator-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 16px;
+    color: white;
+  }
+  
+  /* Стилі для різних типів індикаторів */
+  .indicator-icon.translit {
+    background-color: #9400d3;
+  }
+  
+  .indicator-icon.reversed {
+    background-color: #ff9900;
+  }
+  
+  .indicator-icon.variant {
+    background-color: #00b400;
+  }
+  
+  .indicator-icon.auto-match {
+    background-color: #ff3366;
+  }

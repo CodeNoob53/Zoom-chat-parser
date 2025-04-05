@@ -50,20 +50,22 @@
     background-color: rgba(60, 60, 65, 0.4);
   }
 
+  .participants-table th::after {
+    font-family: 'Material Icons';
+    content: "swap_vert";
+    opacity: 0.8;
+    font-size: 14px;
+    padding-left: 5px;
+  }
+  
   .participants-table th.sorted.asc::after {
-    content: "↑";
+    content: "north";
     opacity: 1;
     color: #fa754d;
   }
   
   .participants-table th.sorted.desc::after {
-    content: "↓"; 
+    content: "south";
     opacity: 1;
     color: #fa754d;
-  }
-
-  .participants-table th::after {
-    content: "↕";
-    margin-left: 5px;
-    opacity: 0.8;
   }

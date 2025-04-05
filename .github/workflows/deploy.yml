@@ -27,13 +27,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      
+      - name: Create security headers
+        run: |
+          mkdir -p ./_headers
+          cat > ./_headers/headers << 'EOL'
+          /*
+            Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'
+            Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+          EOL
+      
       - name: Setup Pages
         uses: actions/configure-pages@v3
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
           # Завантажити весь репозиторій
           path: '.'
+      
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2

@@ -3,13 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Content Security Policy -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'"
+    />
+
+    <!-- HTTP Strict Transport Security -->
+    <meta
+      http-equiv="Strict-Transport-Security"
+      content="max-age=31536000; includeSubDomains; preload"
+    />
     <title>Парсер чату Zoom</title>
     <link rel="stylesheet" href="styles/main.css" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
     />
-    
+
     <!-- Google tag (gtag.js) - краще розміщувати в head -->
     <script
       async
@@ -26,69 +37,110 @@
   </head>
   <body>
     <!-- Додаємо кнопку перемикання теми -->
-    <button id="themeToggle" class="theme-toggle" title="Змінити тему" aria-label="Змінити тему сайту">
+    <button
+      id="themeToggle"
+      class="theme-toggle"
+      title="Змінити тему"
+      aria-label="Змінити тему сайту"
+    >
       <span class="material-icons" aria-hidden="true">dark_mode</span>
     </button>
-    
+
     <header role="banner">
       <h1>
         Парсер чату <strong style="color: rgb(77, 166, 250)">Zoom</strong>
       </h1>
     </header>
-    
+
     <main role="main">
       <!-- Обгортаємо все в form -->
       <form id="parserForm" class="aero-panel" action="#" method="post">
         <!-- Панель із вставкою файлу / тексту та кнопкою парсингу -->
-    
-          <div class="aero-header">
-            <h3>Вставте текст чату або завантажте .txt:</h3>
+
+        <div class="aero-header">
+          <h3>Вставте текст чату або завантажте .txt:</h3>
+        </div>
+
+        <textarea
+          id="chatInput"
+          name="chatInput"
+          rows="6"
+          placeholder="Вставте текст тут..."
+          aria-label="Текст чату"
+        ></textarea>
+
+        <input
+          type="file"
+          id="fileInput"
+          name="fileInput"
+          accept=".txt"
+          aria-label="Завантажити файл чату"
+        />
+
+        <!-- Блок із чекбоксом і полем -->
+        <div class="keyword-block">
+          <label for="useKeywordChk">
+            <input type="checkbox" id="useKeywordChk" name="useKeywordChk" />
+            За ключовим словом:
+          </label>
+          <input
+            type="text"
+            id="keywordInput"
+            name="keywordInput"
+            placeholder="Введіть слово..."
+            aria-label="Ключове слово"
+          />
+        </div>
+
+        <!-- База імен (нова секція) -->
+        <div class="database-block">
+          <label for="useDbChk">
+            <input type="checkbox" id="useDbChk" name="useDbChk" />
+            Порівняти з базою імен:
+          </label>
+          <input
+            type="file"
+            id="dbFileInput"
+            name="dbFileInput"
+            accept=".txt"
+            aria-label="Завантажити базу імен"
+          />
+          <div id="dbStatus" class="db-status" aria-live="polite">
+            База не завантажена
           </div>
-          
-          <textarea id="chatInput" name="chatInput" rows="6" placeholder="Вставте текст тут..." aria-label="Текст чату"></textarea>
+        </div>
 
-          <input type="file" id="fileInput" name="fileInput" accept=".txt" aria-label="Завантажити файл чату" />
-
-          <!-- Блок із чекбоксом і полем -->
-          <div class="keyword-block">
-            <label for="useKeywordChk">
-              <input type="checkbox" id="useKeywordChk" name="useKeywordChk" />
-              За ключовим словом:
-            </label>
-            <input type="text" id="keywordInput" name="keywordInput" placeholder="Введіть слово..." aria-label="Ключове слово" />
-          </div>
-
-          <!-- База імен (нова секція) -->
-          <div class="database-block">
-            <label for="useDbChk">
-              <input type="checkbox" id="useDbChk" name="useDbChk" />
-              Порівняти з базою імен:
-            </label>
-            <input type="file" id="dbFileInput" name="dbFileInput" accept=".txt" aria-label="Завантажити базу імен" />
-            <div id="dbStatus" class="db-status" aria-live="polite">База не завантажена</div>
-          </div>
-
-          <!-- Кнопка парсингу -->
-          <div class="aero-footer">
-            <button id="parseBtn" type="button" aria-label="Розпочати парсинг">
-              <span class="material-icons" aria-hidden="true">search</span> Парсити
-            </button>
-          </div>
-
+        <!-- Кнопка парсингу -->
+        <div class="aero-footer">
+          <button id="parseBtn" type="button" aria-label="Розпочати парсинг">
+            <span class="material-icons" aria-hidden="true">search</span>
+            Парсити
+          </button>
+        </div>
       </form>
 
       <!-- Таблиця учасників -->
       <section class="aero-panel" aria-labelledby="participants-heading">
         <div class="aero-header">
-          <h3 id="participants-heading">Учасники (<span id="countNames">0</span>)</h3>
+          <h3 id="participants-heading">
+            Учасники (<span id="countNames">0</span>)
+          </h3>
         </div>
         <div class="table-container">
-          <table class="participants-table" id="participantsTable" aria-label="Список учасників">
+          <table
+            class="participants-table"
+            id="participantsTable"
+            aria-label="Список учасників"
+          >
             <thead>
               <tr>
                 <th class="id-cell" id="sortById" scope="col">ID</th>
-                <th class="surname-cell" id="sortBySurname" scope="col">Прізвище</th>
-                <th class="firstname-cell" id="sortByFirstname" scope="col">Ім'я</th>
+                <th class="surname-cell" id="sortBySurname" scope="col">
+                  Прізвище
+                </th>
+                <th class="firstname-cell" id="sortByFirstname" scope="col">
+                  Ім'я
+                </th>
                 <th class="zoom-nickname-cell" id="sortByNickname" scope="col">
                   Zoom nickname
                 </th>
@@ -99,29 +151,36 @@
             </tbody>
           </table>
         </div>
-        
+
         <div class="legend" role="note" aria-label="Пояснення позначень">
           <div>
-            <span class="legend-dot not-found" aria-hidden="true"></span> Не знайдено в базі
-          </div>
-          <div>Nv
-            <span class="legend-dot translit" aria-hidden="true"></span> Знайдено через
-            транслітерацію
+            <span class="legend-dot not-found" aria-hidden="true"></span> Не
+            знайдено в базі
           </div>
           <div>
-            <span class="legend-dot reversed" aria-hidden="true"></span> Знайдено в зворотному
-            порядку (Ім'я Прізвище)
+            Nv
+            <span class="legend-dot translit" aria-hidden="true"></span>
+            Знайдено через транслітерацію
+          </div>
+          <div>
+            <span class="legend-dot reversed" aria-hidden="true"></span>
+            Знайдено в зворотному порядку (Ім'я Прізвище)
           </div>
         </div>
-        
+
         <div class="aero-footer">
-          <button id="saveBtn" type="button" aria-label="Зберегти список учасників">
-            <span class="material-icons" aria-hidden="true">save</span> Зберегти список
+          <button
+            id="saveBtn"
+            type="button"
+            aria-label="Зберегти список учасників"
+          >
+            <span class="material-icons" aria-hidden="true">save</span> Зберегти
+            список
           </button>
         </div>
       </section>
     </main>
-    
+
     <footer role="contentinfo">
       <p>
         © 2025 Парсер чату
@@ -130,7 +189,11 @@
       &nbsp;
       <p>
         By
-        <a style="color: goldenrod" href="https://github.com/CodeNoob53" aria-label="Перейти на GitHub автора">
+        <a
+          style="color: goldenrod"
+          href="https://github.com/CodeNoob53"
+          aria-label="Перейти на GitHub автора"
+        >
           Code Noob
         </a>
       </p>

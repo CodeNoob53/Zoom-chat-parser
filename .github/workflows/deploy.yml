@@ -33,18 +33,8 @@ jobs:
           mkdir -p ./_headers
           cat > ./_headers/headers << 'EOL'
           /*
-            Content-Security-Policy: default-src 'self'; script-src 'self' 'strict-dynamic' 'nonce-auto' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com
+            Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'
             Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-          EOL
-      
-      - name: Create netlify.toml
-        run: |
-          cat > netlify.toml << 'EOL'
-          [[headers]]
-            for = "/*"
-            [headers.values]
-              Content-Security-Policy = "default-src 'self'; script-src 'self' 'strict-dynamic' 'nonce-auto' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com"
-              Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
           EOL
       
       - name: Setup Pages

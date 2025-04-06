@@ -10,7 +10,9 @@ let activeTab = 'parser';
  */
 export function initTabs() {
   const tabButtons = document.querySelectorAll('.tab-button');
-  const tabContents = document.querySelectorAll('.tab-content');
+  
+  // Якщо вкладок немає, виходимо
+  if (!tabButtons || tabButtons.length === 0) return;
   
   // Встановлюємо початкову активну вкладку з localStorage або за замовчуванням
   const savedTab = localStorage.getItem('activeTab') || 'parser';

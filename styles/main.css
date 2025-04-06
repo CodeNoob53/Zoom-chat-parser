@@ -9,6 +9,7 @@
 @import 'layout/_footer.css';
 @import 'layout/_main.css';
 @import 'layout/_panels.css';
+@import 'layout/_tabs-layout.css';
 
 /* Components */
 @import 'components/_buttons.css';

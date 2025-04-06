@@ -1,8 +1,8 @@
-import { elements } from './dom.js'
-import { getParticipantInfo } from './name-database.js'
-import { sortParticipants, getCurrentSortState } from './sorting.js'
-import { showAssignmentModal } from './assignment-modal.js'
-import { triggerRerender } from './render-utils.js'
+import { elements } from '../core/dom.js';
+import { getParticipantInfo } from '../name-processing/name-database.js';
+import { sortParticipants, getCurrentSortState } from './sorting.js';
+import { showAssignmentModal } from './assignment-modal.js';
+import { triggerRerender } from './render-utils.js';
 
 /**
  * Відображення списку учасників у таблиці з покращеним інтерфейсом
@@ -382,4 +382,5 @@ import {
   getUnrecognizedNames,
   getRecommendations,
   getNameDatabase,
-  setManualMatch} from './name-database.js'
+  setManualMatch
+} from '../name-processing/name-database.js';

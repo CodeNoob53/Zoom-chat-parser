@@ -1,123 +1,137 @@
-/* Стилі для кнопок експорту */
-.export-buttons {
-    display: flex;
-    gap: 0.75rem;
-  }
-  
-  .export-buttons button {
-    padding: 0.5rem 1rem;
-    background: rgba(70, 70, 70, 0.8);
-    border: 1px solid #444;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 0.95rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: background 0.2s, transform 0.1s;
-  }
-  
-  .export-buttons button:hover {
-    background: rgba(85, 85, 85, 0.8);
-  }
-  
-  .export-buttons button:active {
-    transform: translateY(1px);
-  }
-  
-  /* Спеціальні стилі для різних форматів */
-  #saveBtn {
-    background: rgba(70, 70, 70, 0.8);
-  }
-  
-  #saveCsvBtn {
-    background: rgba(40, 167, 69, 0.5);
-    border-color: rgba(40, 167, 69, 0.6);
-  }
-  
-  #saveJsonBtn {
-    background: rgba(255, 193, 7, 0.5);
-    border-color: rgba(255, 193, 7, 0.6);
-    color: #212529;
-  }
-  
-  #saveCsvBtn:hover {
-    background: rgba(40, 167, 69, 0.6);
-  }
-  
-  #saveJsonBtn:hover {
-    background: rgba(255, 193, 7, 0.6);
-  }
-  
-  /* Стилі для кнопок імпорту/експорту бази */
-  .db-buttons button {
-    padding: 0.5rem 1rem;
-    background: rgba(70, 70, 70, 0.8);
-    border: 1px solid #444;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 0.95rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: background 0.2s, transform 0.1s;
-  }
-  
-  .db-buttons button:hover {
-    background: rgba(85, 85, 85, 0.8);
-  }
-  
-  .db-buttons button:active {
-    transform: translateY(1px);
-  }
-  
-  #dbAddBtn {
-    background: rgba(77, 166, 250, 0.5);
-    border-color: rgba(77, 166, 250, 0.6);
-  }
-  
-  #dbImportBtn {
-    background: rgba(70, 70, 70, 0.8);
-  }
-  
-  #dbExportCsvBtn {
-    background: rgba(40, 167, 69, 0.5);
-    border-color: rgba(40, 167, 69, 0.6);
-  }
-  
-  #dbExportJsonBtn {
-    background: rgba(255, 193, 7, 0.5);
-    border-color: rgba(255, 193, 7, 0.6);
-    color: #212529;
-  }
-  
-  #dbAddBtn:hover {
-    background: rgba(77, 166, 250, 0.6);
-  }
-  
-  #dbImportBtn:hover {
-    background: rgba(85, 85, 85, 0.8);
-  }
-  
-  #dbExportCsvBtn:hover {
-    background: rgba(40, 167, 69, 0.6);
-  }
-  
-  #dbExportJsonBtn:hover {
-    background: rgba(255, 193, 7, 0.6);
-  }
-  
-  /* Світла тема */
-  body.light-theme .export-buttons button,
-  body.light-theme .db-buttons button {
-    background: rgba(240, 240, 240, 0.8);
-    color: #333;
-    border-color: #ccc;
-  }
-  
-  body.light-theme .export-buttons button:hover,
-  body.light-theme .db-buttons button:hover {
-    background: rgba(220, 220, 220, 0.8);
-  }
+
+
+/* Навігація вкладок в aero-header */
+.tab-navigation {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  border-bottom: 1px solid #444;
+}
+
+/* Кнопки вкладок */
+.tab-button {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #e0e0e0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Іконки у вкладках */
+.tab-button .material-icons {
+  font-size: 1.2rem;
+}
+
+/* Стилі для активної вкладки */
+.tab-button.active {
+  background: #3d3d3d;
+  color: #4da6fa;
+  border-bottom: 3px solid #4da6fa;
+}
+
+/* Стилі при наведенні */
+.tab-button:hover:not(.active) {
+  background: rgba(77, 166, 250, 0.1);
+  color: #fff;
+}
+
+/* Контейнер для вмісту вкладок */
+.tab-content-container {
+  flex: 1;
+  overflow-y: auto; /* Додаємо прокрутку для вмісту вкладок */
+  padding: 15px;
+}
+
+/* Вміст вкладок */
+.tab-content {
+  display: none;
+  height: 100%;
+}
+
+/* Активний вміст вкладки */
+.tab-content.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Стилі для табличного контейнера */
+.table-container {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #444;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+/* Заголовки для вкладок */
+.participants-header, .database-header {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
+/* Поле для пошуку в базі */
+.search-container {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+#dbSearchInput {
+  flex: 1;
+  padding: 8px;
+  background: #252525;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #e0e0e0;
+}
+
+#dbSearchBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: #4da6fa;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Стилі для світлої теми */
+body.light-theme .tab-button {
+  color: #666;
+}
+
+body.light-theme .tab-button.active {
+  background: #fff;
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+body.light-theme .tab-button:hover:not(.active) {
+  background: rgba(0, 123, 255, 0.1);
+  color: #333;
+}
+
+body.light-theme .participants-header, 
+body.light-theme .database-header {
+  color: #333;
+}
+
+body.light-theme #dbSearchInput {
+  background: #fff;
+  color: #333;
+  border-color: #ccc;
+}
+
+body.light-theme .table-container {
+  border-color: #ccc;
+}

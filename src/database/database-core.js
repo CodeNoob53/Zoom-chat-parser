@@ -1,7 +1,7 @@
 /**
  * Модуль для роботи з ядром бази даних
  */
-import { showNotification } from './notification.js';
+import { showNotification } from '../core/notification.js';
 
 // Структура бази даних
 // {

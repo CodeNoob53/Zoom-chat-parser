@@ -1,13 +1,15 @@
 .table-container {
-    flex: 1;
-    overflow-y: auto;
-    margin-bottom: 0.75rem;
-    max-height: calc(100% - 120px);
-    position: relative;
-    background: #222222;
-    border: 1px solid #555;
-    border-radius: 4px;
-  }
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 15px;
+  background: #222222;
+  border: 1px solid #555;
+  border-radius: 4px;
+  height: 100%;
+  max-height: 400px;
+}
+
+
   
   .participants-table {
     width: 100%;

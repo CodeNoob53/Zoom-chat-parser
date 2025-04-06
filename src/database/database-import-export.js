@@ -1,7 +1,7 @@
 /**
  * Модуль для імпорту/експорту бази даних
  */
-import { showNotification } from './notification.js';
+import { showNotification } from '../core/notification.js';
 import { 
   databaseData, 
   updateMappings, 
@@ -9,7 +9,7 @@ import {
   updateDbStatusDisplay 
 } from './database-core.js';
 import { renderDatabaseTable } from './database-table.js';
-import { initDatabaseImport } from './file-handler.js';
+import { initDatabaseImport } from '../parser/file-handler.js';
 
 /**
  * Ініціалізувати кнопки імпорту/експорту

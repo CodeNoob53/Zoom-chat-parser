@@ -1,19 +1,19 @@
-import { elements } from './dom.js'
-import { saveList, saveCsv, saveJson } from './exporter.js'
-import { initFileHandlers } from './file-handler.js'
-import { showNotification } from './notification.js'
-import { getRealNameMap, parseChat } from './parser.js'
-import { initRenderer, updateNamesList } from './renderer.js'
-import { initTheme } from './theme.js'
-import { initTabs } from './tabs.js'
-import { initDatabaseManager, getOldFormatDatabase } from './database-manager.js'
+import { elements } from './core/dom.js';
+import { saveList, saveCsv, saveJson } from './parser/exporter.js';
+import { initFileHandlers } from './parser/file-handler.js';
+import { showNotification } from './core/notification.js';
+import { getRealNameMap, parseChat } from './parser/parser.js';
+import { initRenderer, updateNamesList } from './ui/renderer.js';
+import { initTheme } from './core/theme.js';
+import { initTabs } from './core/tabs.js';
+import { initDatabaseManager, getOldFormatDatabase } from './database/database-manager.js';
 import {
   compareNames,
   getMatchedNames,
   getNameDatabase,
   getUnrecognizedNames,
   setNameDatabase
-} from './name-database.js'
+} from './name-processing/name-database.js';
 
 // Стан додатку
 let displayedNames = []

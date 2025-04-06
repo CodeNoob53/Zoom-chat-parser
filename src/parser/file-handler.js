@@ -1,7 +1,6 @@
-import { elements } from './dom.js';
-import { showNotification } from './notification.js';
-import { importTxt, importCsv, importJson } from './database-import-export.js';
-
+import { elements } from '../core/dom.js';
+import { showNotification } from '../core/notification.js';
+import { importTxt, importCsv, importJson } from '../database/database-import-export.js';
 /**
  * Ініціалізує обробники подій для файлів з покращеною безпекою
  */

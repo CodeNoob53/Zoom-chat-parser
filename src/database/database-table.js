@@ -1,7 +1,7 @@
 /**
  * Модуль для роботи з таблицею бази даних
  */
-import { showNotification } from './notification.js';
+import { showNotification } from '../core/notification.js';
 import { 
   databaseData, 
   updateMappings, 

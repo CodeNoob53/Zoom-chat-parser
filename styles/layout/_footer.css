@@ -1,14 +1,16 @@
 footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    background: rgba(61, 61, 61, 0.6);
-    padding: 1rem;
-    text-align: center;
-    border-top: 1px solid #444;
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(2px);
-  }
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  background: rgba(61, 61, 61, 0.6);
+  padding: 15px;
+  text-align: center;
+  border-top: 1px solid #444;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
+  margin-top: auto;
+  width: 100%;
+}
   
   footer p {
     display: flex;

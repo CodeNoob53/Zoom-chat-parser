@@ -1,29 +1,27 @@
 main {
-    flex: 1;
-    padding: clamp(1rem, 2vw, 2rem);
-    max-width: 1240px;
-    margin: 0 auto;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  
-  .aero-panel {
-    background: rgba(61, 61, 61, 0.6);
-    border: 1px solid #666;
-    border-radius: 8px;
-    box-shadow: 3px 3px 10px #000000d3, 
-                -3px -3px 10px #4b4b4b, 
-                0 0 4px #ffffff33;
-    padding: 1.25rem;
-    max-width: 600px;
-    width: 100%;
-    flex: 1 1 calc(50% - 0.5rem);
-    min-width: 300px;
-    display: flex;
-    flex-direction: column;
-    min-height: 300px;
-    max-height: 80vh;
-    backdrop-filter: blur(2px);
-  }
+  flex: 1;
+  padding: clamp(1rem, 2vw, 2rem);
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  min-height: calc(100vh - 120px); /* Враховуємо приблизну висоту header та footer */
+}
+
+/* Оновлені стилі для .aero-panel */
+.aero-panel {
+  background: rgba(61, 61, 61, 0.6);
+  border: 1px solid #666;
+  border-radius: 8px;
+  box-shadow: 3px 3px 10px #000000d3, 
+              -3px -3px 10px #4b4b4b, 
+              0 0 4px #ffffff33;
+  width: 100%;
+  max-width: 900px;
+  min-height: 600px;
+  backdrop-filter: blur(2px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Відключаємо переповнення на основному контейнері */
+}

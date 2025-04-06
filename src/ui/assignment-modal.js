@@ -1,4 +1,4 @@
-import { getNameDatabase, setManualMatch } from './name-database.js';
+import { getNameDatabase, setManualMatch } from '../name-processing/name-database.js';
 import { triggerRerender } from './render-utils.js';
 import { getSimilarity } from './utils.js';
 

@@ -1,20 +1,20 @@
 import { 
-    transliterateToLatin,
-    transliterateToCyrillic,
-    areNamesTransliteratedMatches
-  } from './transliteration.js'
-  import {
-    getStandardNameForm,
-    isVariantOf,
-    getAllPossibleStandardNames
-  } from './name-variants.js'
-  import {
-    fuzzyMatch,
-    splitName
-  } from './name-utils.js'
-  import { findAllPossibleMatches, hasAmbiguousNameMatch } from './name-recommendation.js'
-  import { tryAutoMatchUnrecognized } from './name-recommendation.js'
-  
+  transliterateToLatin,
+  transliterateToCyrillic,
+  areNamesTransliteratedMatches
+} from './transliteration.js';
+import {
+  getStandardNameForm,
+  isVariantOf,
+  getAllPossibleStandardNames
+} from './name-variants.js';
+import {
+  fuzzyMatch,
+  splitName
+} from './name-utils.js';
+import { findAllPossibleMatches, hasAmbiguousNameMatch } from './name-recommendation.js';
+import { tryAutoMatchUnrecognized } from './name-recommendation.js';
+
   /**
    * Порівняння імен з базою даних з покращеним алгоритмом
    * @param {string[]} displayedNames - Масив відображуваних імен

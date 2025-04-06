@@ -1,13 +1,13 @@
-import { elements } from './dom.js'
-import { matchNames } from './name-matcher.js'
-import { showNotification } from './notification.js'
-import { splitName } from './name-utils.js'
-import { getSimilarity } from './name-utils.js'
+import { elements } from '../core/dom.js';
+import { matchNames } from './name-matcher.js';
+import { showNotification } from '../core/notification.js';
+import { splitName } from './name-utils.js';
+import { getSimilarity } from './name-utils.js';
 import {
   transliterateToLatin,
   transliterateToCyrillic,
   areNamesTransliteratedMatches
-} from './transliteration.js'
+} from './transliteration.js';
 
 // Зберігаємо базу імен (стара структура)
 let nameDatabase = {} // Формат: {name: id, ...}

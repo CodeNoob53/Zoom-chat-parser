@@ -1,5 +1,5 @@
-import { showNotification } from './notification.js';
-import { getParticipantInfo } from './name-database.js';
+import { showNotification } from '../core/notification.js';
+import { getParticipantInfo } from '../name-processing/name-database.js';
 
 /**
  * Зберегти список імен у файл

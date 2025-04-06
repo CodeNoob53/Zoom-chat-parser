@@ -5,21 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Парсер чату Zoom</title>
     <link rel="stylesheet" href="styles/main.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     
     <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-N3SNM1J7GW"
-    ></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3SNM1J7GW"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
+      function gtag() { dataLayer.push(arguments); }
       gtag("js", new Date());
       gtag("config", "G-N3SNM1J7GW");
     </script>
@@ -36,188 +28,181 @@
       </h1>
     </header>
     
-    <!-- Панель вкладок -->
-    <div class="tabs-container">
-      <div class="tabs">
-        <button class="tab-button active" data-tab="parser">
-          <span class="material-icons">search</span> Парсер
-        </button>
-        <button class="tab-button" data-tab="participants">
-          <span class="material-icons">people</span> Учасники
-        </button>
-        <button class="tab-button" data-tab="database">
-          <span class="material-icons">storage</span> База
-        </button>
-      </div>
-    </div>
-    
+    <!-- Основний контейнер -->
     <main role="main">
-      <!-- Вкладка "Парсер" -->
-      <div class="tab-content active" id="parser-tab">
-        <form id="parserForm" class="aero-panel" action="#" method="post">
-          <div class="aero-header">
-            <h3>Вставте текст чату або завантажте .txt:</h3>
-          </div>
-          
-          <textarea id="chatInput" name="chatInput" rows="6" placeholder="Вставте текст тут..." aria-label="Текст чату"></textarea>
-
-          <input type="file" id="fileInput" name="fileInput" accept=".txt" aria-label="Завантажити файл чату" />
-
-          <!-- Блок із чекбоксом і полем -->
-          <div class="keyword-block">
-            <label for="useKeywordChk">
-              <input type="checkbox" id="useKeywordChk" name="useKeywordChk" />
-              За ключовим словом:
-            </label>
-            <input type="text" id="keywordInput" name="keywordInput" placeholder="Введіть слово..." aria-label="Ключове слово" />
-          </div>
-
-          <!-- Кнопка парсингу та статус бази -->
-          <div class="aero-footer parser-footer">
-            <button id="parseBtn" type="button" aria-label="Розпочати парсинг">
-              <span class="material-icons" aria-hidden="true">search</span> Парсити
-            </button>
-            <div id="dbStatus" class="db-status" aria-live="polite">База не завантажена</div>
-          </div>
-        </form>
-      </div>
-
-      <!-- Вкладка "Учасники" -->
-      <div class="tab-content" id="participants-tab">
-        <section class="aero-panel" aria-labelledby="participants-heading">
-          <div class="aero-header">
-            <h3 id="participants-heading">Учасники (<span id="countNames">0</span>)</h3>
-          </div>
-          
-          <div class="table-container">
-            <table class="participants-table" id="participantsTable" aria-label="Список учасників">
-              <thead>
-                <tr>
-                  <th class="id-cell" id="sortById" scope="col">ID</th>
-                  <th class="surname-cell" id="sortBySurname" scope="col">Прізвище</th>
-                  <th class="firstname-cell" id="sortByFirstname" scope="col">Ім'я</th>
-                  <th class="zoom-nickname-cell" id="sortByNickname" scope="col">
-                    Zoom nickname
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="participantsList">
-                <!-- Тут будуть рядки таблиці -->
-              </tbody>
-            </table>
-          </div>
-          
-          <div class="legend" role="note" aria-label="Пояснення позначень">
-            <div><span class="legend-dot found" aria-hidden="true"></span> В базі</div>
-            <div>
-              <span class="legend-dot not-found" aria-hidden="true"></span> Не знайдено в базі
+      <div class="aero-panel">
+        <!-- Навігація вкладок в aero-header -->
+        <div class="aero-header tab-navigation">
+          <button class="tab-button active" data-tab="parser">
+            <span class="material-icons">search</span>Парсер
+          </button>
+          <button class="tab-button" data-tab="participants">
+            <span class="material-icons">people</span>Учасники
+          </button>
+          <button class="tab-button" data-tab="database">
+            <span class="material-icons">storage</span>База
+          </button>
+        </div>
+        
+        <!-- Контейнер для вмісту вкладок -->
+        <div class="tab-content-container">
+          <!-- Вкладка "Парсер" -->
+          <div class="tab-content active" id="parser-tab">
+            <textarea id="chatInput" name="chatInput" rows="6" placeholder="Вставте текст тут..." aria-label="Текст чату"></textarea>
+  
+            <input type="file" id="fileInput" name="fileInput" accept=".txt" aria-label="Завантажити файл чату" />
+  
+            <!-- Блок із чекбоксом і полем -->
+            <div class="keyword-block">
+              <label for="useKeywordChk">
+                <input type="checkbox" id="useKeywordChk" name="useKeywordChk" />
+                За ключовим словом:
+              </label>
+              <input type="text" id="keywordInput" name="keywordInput" placeholder="Введіть слово..." aria-label="Ключове слово" />
             </div>
-            <div>
-              <span class="legend-dot translit" aria-hidden="true"></span> Знайдено через
-              транслітерацію
-            </div>
-            <div>
-              <span class="legend-dot reversed" aria-hidden="true"></span> Знайдено в зворотному
-              порядку (Ім'я Прізвище)
+  
+            <!-- Кнопка парсингу та статус бази -->
+            <div class="aero-footer parser-footer">
+              <button id="parseBtn" type="button" aria-label="Розпочати парсинг">
+                <span class="material-icons" aria-hidden="true">search</span> Парсити
+              </button>
+              <div id="dbStatus" class="db-status" aria-live="polite">База не завантажена</div>
             </div>
           </div>
-          
-          <div class="aero-footer">
-            <div class="export-buttons">
-              <button id="saveBtn" type="button" aria-label="Зберегти список учасників">
-                <span class="material-icons" aria-hidden="true">save</span> TXT
-              </button>
-              <button id="saveCsvBtn" type="button" aria-label="Зберегти список у CSV">
-                <span class="material-icons" aria-hidden="true">table_view</span> CSV
-              </button>
-              <button id="saveJsonBtn" type="button" aria-label="Зберегти список у JSON">
-                <span class="material-icons" aria-hidden="true">code</span> JSON
-              </button>
+  
+          <!-- Вкладка "Учасники" -->
+          <div class="tab-content" id="participants-tab">
+            <div class="participants-header">
+              <span>Учасники (<span id="countNames">0</span>)</span>
             </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- Вкладка "База" -->
-      <div class="tab-content" id="database-tab">
-        <section class="aero-panel" aria-labelledby="database-heading">
-          <div class="aero-header">
-            <h3 id="database-heading">База імен</h3>
-            <div class="search-container">
-              <input type="text" id="dbSearchInput" placeholder="Пошук у базі..." aria-label="Пошук у базі імен">
-              <button id="dbSearchBtn" aria-label="Шукати">
-                <span class="material-icons">search</span>
-              </button>
+            
+            <div class="table-container">
+              <table class="participants-table" id="participantsTable" aria-label="Список учасників">
+                <thead>
+                  <tr>
+                    <th class="id-cell" id="sortById" scope="col">ID</th>
+                    <th class="surname-cell" id="sortBySurname" scope="col">Прізвище</th>
+                    <th class="firstname-cell" id="sortByFirstname" scope="col">Ім'я</th>
+                    <th class="zoom-nickname-cell" id="sortByNickname" scope="col">
+                      Zoom nickname
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="participantsList">
+                  <!-- Тут будуть рядки таблиці -->
+                </tbody>
+              </table>
             </div>
-          </div>
-          
-          <div class="table-container">
-            <table class="database-table" id="databaseTable" aria-label="База імен">
-              <thead>
-                <tr>
-                  <th id="sortDbById" scope="col">ID</th>
-                  <th id="sortDbBySurname" scope="col">Прізвище</th>
-                  <th id="sortDbByFirstname" scope="col">Ім'я</th>
-                  <th id="sortDbByNicknames" scope="col">Нікнейми</th>
-                  <th scope="col">Дії</th>
-                </tr>
-              </thead>
-              <tbody id="databaseList">
-                <!-- Тут будуть рядки бази даних -->
-              </tbody>
-            </table>
-          </div>
-          
-          <div class="database-form-container">
-            <h4>Додати/Редагувати запис</h4>
-            <form id="databaseForm" class="database-form">
-              <div class="form-row">
-                <label for="dbFormId">ID:</label>
-                <input type="text" id="dbFormId" name="id" readonly>
+            
+            <div class="legend" role="note" aria-label="Пояснення позначень">
+              <div><span class="legend-dot found" aria-hidden="true"></span> В базі</div>
+              <div>
+                <span class="legend-dot not-found" aria-hidden="true"></span> Не знайдено в базі
               </div>
-              <div class="form-row">
-                <label for="dbFormSurname">Прізвище:</label>
-                <input type="text" id="dbFormSurname" name="surname" required>
+              <div>
+                <span class="legend-dot translit" aria-hidden="true"></span> Знайдено через
+                транслітерацію
               </div>
-              <div class="form-row">
-                <label for="dbFormFirstname">Ім'я:</label>
-                <input type="text" id="dbFormFirstname" name="firstname" required>
+              <div>
+                <span class="legend-dot reversed" aria-hidden="true"></span> Знайдено в зворотному
+                порядку (Ім'я Прізвище)
               </div>
-              <div class="form-row">
-                <label for="dbFormNickname1">Нікнейм 1:</label>
-                <input type="text" id="dbFormNickname1" name="nickname1">
-              </div>
-              <div class="form-row">
-                <label for="dbFormNickname2">Нікнейм 2:</label>
-                <input type="text" id="dbFormNickname2" name="nickname2">
-              </div>
-              <div class="form-buttons">
-                <button type="button" id="dbFormClearBtn">Очистити</button>
-                <button type="submit" id="dbFormSaveBtn">Зберегти</button>
-              </div>
-            </form>
-          </div>
-          
-          <div class="aero-footer">
-            <div class="db-buttons">
-              <button id="dbAddBtn" type="button" aria-label="Додати новий запис">
-                <span class="material-icons" aria-hidden="true">add</span> Додати
-              </button>
-              <div class="import-export-buttons">
-                <button id="dbImportBtn" type="button" aria-label="Імпортувати базу">
-                  <span class="material-icons" aria-hidden="true">download</span> Імпорт
+            </div>
+            
+            <div class="aero-footer">
+              <div class="export-buttons">
+                <button id="saveBtn" type="button" aria-label="Зберегти список учасників">
+                  <span class="material-icons" aria-hidden="true">save</span> TXT
                 </button>
-                <button id="dbExportCsvBtn" type="button" aria-label="Експортувати базу в CSV">
-                  <span class="material-icons" aria-hidden="true">upload</span> CSV
+                <button id="saveCsvBtn" type="button" aria-label="Зберегти список у CSV">
+                  <span class="material-icons" aria-hidden="true">table_view</span> CSV
                 </button>
-                <button id="dbExportJsonBtn" type="button" aria-label="Експортувати базу в JSON">
-                  <span class="material-icons" aria-hidden="true">upload</span> JSON
+                <button id="saveJsonBtn" type="button" aria-label="Зберегти список у JSON">
+                  <span class="material-icons" aria-hidden="true">code</span> JSON
                 </button>
-                <input type="file" id="dbImportFile" accept=".csv,.json,.txt" style="display: none;">
               </div>
             </div>
           </div>
-        </section>
+  
+          <!-- Вкладка "База" -->
+          <div class="tab-content" id="database-tab">
+            <div class="database-header">
+              <div class="search-container">
+                <input type="text" id="dbSearchInput" placeholder="Пошук у базі..." aria-label="Пошук у базі імен">
+                <button id="dbSearchBtn" aria-label="Шукати">
+                  <span class="material-icons">search</span>
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-container">
+              <table class="database-table" id="databaseTable" aria-label="База імен">
+                <thead>
+                  <tr>
+                    <th id="sortDbById" scope="col">ID</th>
+                    <th id="sortDbBySurname" scope="col">Прізвище</th>
+                    <th id="sortDbByFirstname" scope="col">Ім'я</th>
+                    <th id="sortDbByNicknames" scope="col">Нікнейми</th>
+                    <th scope="col">Дії</th>
+                  </tr>
+                </thead>
+                <tbody id="databaseList">
+                  <!-- Тут будуть рядки бази даних -->
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="database-form-container">
+              <h4>Додати/Редагувати запис</h4>
+              <form id="databaseForm" class="database-form">
+                <div class="form-row">
+                  <label for="dbFormId">ID:</label>
+                  <input type="text" id="dbFormId" name="id" readonly>
+                </div>
+                <div class="form-row">
+                  <label for="dbFormSurname">Прізвище:</label>
+                  <input type="text" id="dbFormSurname" name="surname" required>
+                </div>
+                <div class="form-row">
+                  <label for="dbFormFirstname">Ім'я:</label>
+                  <input type="text" id="dbFormFirstname" name="firstname" required>
+                </div>
+                <div class="form-row">
+                  <label for="dbFormNickname1">Нікнейм 1:</label>
+                  <input type="text" id="dbFormNickname1" name="nickname1">
+                </div>
+                <div class="form-row">
+                  <label for="dbFormNickname2">Нікнейм 2:</label>
+                  <input type="text" id="dbFormNickname2" name="nickname2">
+                </div>
+                <div class="form-buttons">
+                  <button type="button" id="dbFormClearBtn">Очистити</button>
+                  <button type="submit" id="dbFormSaveBtn">Зберегти</button>
+                </div>
+              </form>
+            </div>
+            
+            <div class="aero-footer">
+              <div class="db-buttons">
+                <button id="dbAddBtn" type="button" aria-label="Додати новий запис">
+                  <span class="material-icons" aria-hidden="true">add</span> Додати
+                </button>
+                <div class="import-export-buttons">
+                  <button id="dbImportBtn" type="button" aria-label="Імпортувати базу">
+                    <span class="material-icons" aria-hidden="true">download</span> Імпорт
+                  </button>
+                  <button id="dbExportCsvBtn" type="button" aria-label="Експортувати базу в CSV">
+                    <span class="material-icons" aria-hidden="true">upload</span> CSV
+                  </button>
+                  <button id="dbExportJsonBtn" type="button" aria-label="Експортувати базу в JSON">
+                    <span class="material-icons" aria-hidden="true">upload</span> JSON
+                  </button>
+                  <input type="file" id="dbImportFile" accept=".csv,.json,.txt" style="display: none;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
     

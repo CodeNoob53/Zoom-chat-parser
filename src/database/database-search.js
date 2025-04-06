@@ -1,7 +1,7 @@
 /**
  * Модуль для пошуку в базі даних
  */
-import { showNotification } from './notification.js';
+import { showNotification } from '../core/notification.js';
 import { databaseData } from './database-core.js';
 import { renderDatabaseTable } from './database-table.js';
 

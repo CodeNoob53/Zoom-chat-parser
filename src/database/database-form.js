@@ -1,7 +1,7 @@
 /**
  * Модуль для роботи з формою бази даних
  */
-import { showNotification } from './notification.js';
+import { showNotification } from '../core/notification.js';
 import { 
   databaseData, 
   getNextId, 

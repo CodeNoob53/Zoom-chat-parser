@@ -12,19 +12,56 @@ let uniqueNames = new Set();
 let realNameMap = {};
 
 /**
+ * Підтримувані формати чату за мовами
+ */
+const chatPatterns = {
+  english: {
+    from: "From",
+    to: "to",
+    everyone: "Everyone",
+    replyPrefix: "Replying to"
+  },
+  ukrainian: {
+    from: "Від",
+    to: "до",
+    everyone: "Всі",
+    replyPrefix: "Відповідь на"
+  },
+  russian: {
+    from: "От",
+    to: "кому",
+    everyone: "Все",
+    replyPrefix: "Ответ на"
+  }
+};
+
+/**
  * "Очистка" повідомлення від цитат і емоджі-реакцій
  * @param {string} rawMsg - Сире повідомлення
  * @returns {string} Очищене повідомлення
  */
 function sanitizeMessage(rawMsg) {
   let sanitized = rawMsg;
-  sanitized = sanitized.replace(/^Replying to\s+"[^"]*":.*$/gm, "");
+  
+  // Очищення відповідей у всіх підтримуваних мовах
+  Object.values(chatPatterns).forEach(pattern => {
+    const escapeRegExp = (string) => {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    };
+    const escapedPrefix = escapeRegExp(pattern.replyPrefix);
+    sanitized = sanitized.replace(new RegExp(`^${escapedPrefix}\\s+"[^"]*":.*$`, 'gm'), "");
+  });
+  
+  // Очищення емоджі-реакцій
   sanitized = sanitized.replace(
     /^[\p{L}\p{M}\s,'-]+:[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{So}]+$/gmu,
     ""
   );
+  
+  // Прибирання зайвих порожніх рядків
   sanitized = sanitized.replace(/\n\s*\n+/g, "\n");
   sanitized = sanitized.trim();
+  
   return sanitized;
 }
 
@@ -99,13 +136,22 @@ export function parseChat(text, keyword = "") {
   uniqueNames.clear();
   realNameMap = {};
   
-  const regex = /(\d{2}:\d{2}:\d{2})\s+From\s+(.*?)\s+to\s+(.*?):(.*?)(?=\d{2}:\d{2}:\d{2}\s+From|$)/gs;
+  // Створюємо шаблон регулярного виразу на основі підтримуваних мовних патернів
+  const fromOptions = Object.values(chatPatterns).map(p => p.from).join('|');
+  const toOptions = Object.values(chatPatterns).map(p => p.to).join('|');
+  const everyoneOptions = Object.values(chatPatterns).map(p => p.everyone).join('|');
+  
+  // Модифікований регулярний вираз для підтримки різних мовних форматів
+  const regex = new RegExp(
+    `(\\d{2}:\\d{2}:\\d{2})\\s+(?:${fromOptions})\\s+(.*?)\\s+(?:${toOptions})\\s+(?:${everyoneOptions}):(.*?)(?=\\d{2}:\\d{2}:\\d{2}\\s+(?:${fromOptions})|$)`,
+    'gs'
+  );
 
   let match;
   while ((match = regex.exec(text)) !== null) {
     const time = match[1];
     const rawName = match[2].trim();
-    const fullBlock = match[4] || "";
+    const fullBlock = match[3] || "";
     const blockLines = fullBlock
       .split(/\r?\n/)
       .map((line) => line.trim())
@@ -116,7 +162,12 @@ export function parseChat(text, keyword = "") {
 
     let userMessage = "";
     if (blockLines.length > 0) {
-      if (blockLines[0].startsWith('Replying to "')) {
+      // Перевіряємо, чи повідомлення є відповіддю на інше повідомлення у будь-якій мові
+      const isReply = Object.values(chatPatterns).some(pattern => 
+        blockLines[0].startsWith(`${pattern.replyPrefix} "`)
+      );
+      
+      if (isReply) {
         userMessage = blockLines[1] || "";
       } else {
         userMessage = blockLines[0];

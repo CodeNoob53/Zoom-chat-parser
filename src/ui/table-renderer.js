@@ -337,6 +337,18 @@ function renderParticipantRow (
     nicknameContainer.appendChild(translitIndicator)
   }
 
+  // Додано: Індикація розпізнавання склеєних імен
+  if (
+    participant.matchType.includes('split-name-match')
+  ) {
+    nicknameCell.classList.add('split-name-match');
+    const splitIndicator = document.createElement('span');
+    splitIndicator.className = 'match-indicator split-name-indicator';
+    splitIndicator.title = 'Автоматично розпізнане склеєне ім\'я';
+    splitIndicator.textContent = ' ｓ';
+    nicknameContainer.appendChild(splitIndicator);
+  }
+
   if (
     participant.matchType.includes('reversed') ||
     participant.matchType.includes('reverse')

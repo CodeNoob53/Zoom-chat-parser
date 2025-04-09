@@ -8,6 +8,7 @@ import {
   transliterateToCyrillic,
   areNamesTransliteratedMatches
 } from './transliteration.js';
+import { processCombinedName } from './advanced-name-processing.js';
 
 // Зберігаємо базу імен (стара структура)
 let nameDatabase = {} // Формат: {name: id, ...}
@@ -385,54 +386,76 @@ export function selectAlternativeMatch (name, altIndex) {
  * @param {Object} matchedNames - Співпадіння, що вже знайдені
  * @returns {Object} Об'єкт з рекомендаціями у форматі {name: [{id, dbName, similarity}, ...], ...}
  */
-export function getRecommendations(unrecognizedNames = [], nameDatabase = {}, matchedNames = {}) {
-  const recommendations = {};
-  
+export function getRecommendations (
+  unrecognizedNames = [],
+  nameDatabase = {},
+  matchedNames = {}
+) {
+  const recommendations = {}
+
   // Переконаємося, що працюємо з масивом
-  const namesArray = Array.isArray(unrecognizedNames) 
-    ? unrecognizedNames 
-    : [...unrecognizedNames];
-  
-  console.log(`getRecommendations отримав ${namesArray.length} імен для пошуку рекомендацій`);
-  console.log(`База імен має ${Object.keys(nameDatabase).length} записів`);
+  const namesArray = Array.isArray(unrecognizedNames)
+    ? unrecognizedNames
+    : [...unrecognizedNames]
+
+  console.log(
+    `getRecommendations отримав ${namesArray.length} імен:`,
+    namesArray
+  )
+  console.log(`База імен має ${Object.keys(nameDatabase).length} записів`)
 
   // Для кожного нерозпізнаного імені шукаємо рекомендації
-  let recommendationsCount = 0;
-  
   namesArray.forEach(name => {
     // Отримуємо інформацію про співпадіння
-    const matchInfo = matchedNames[name + '_matchInfo'] || {};
-    
-    // Якщо це неоднозначне ім'я (ambiguous-name), використовуємо вже знайдені варіанти
-    if (matchInfo.matchType === 'ambiguous-name' && matchInfo.allMatches) {
+    const matchInfo = matchedNames[name + '_matchInfo'] || {}
+
+    // Якщо це неоднозначне ім'я (ambiguous-name) або є множинні співпадіння (multiple-matches), 
+    // використовуємо вже знайдені варіанти
+    if (
+      (matchInfo.matchType === 'ambiguous-name' ||
+       matchInfo.matchType === 'multiple-matches' ||
+       matchInfo.matchType === 'split-name-match') &&
+      matchInfo.allMatches
+    ) {
       // Конвертуємо allMatches у формат рекомендацій
-      const allMatchesArray = matchInfo.allMatches
-        .filter(match => match && match.id) // Фільтруємо неповні співпадіння
+      // Фільтруємо тільки варіанти з високою якістю (від 50%)
+      const filteredMatches = matchInfo.allMatches
+        .filter(match => (match.quality || 0) >= 50)
         .map(match => ({
           id: match.id,
           dbName: match.dbName,
           similarity: match.quality ? match.quality / 100 : 0.7
         }));
-      
-      // Перевіряємо, чи є дійсні співпадіння
-      if (allMatchesArray.length > 0) {
-        recommendations[name] = allMatchesArray;
-        recommendationsCount++;
+
+      if (filteredMatches.length > 0) {
+        recommendations[name] = filteredMatches;
+        console.log(
+          `Використано ${filteredMatches.length} якісних варіантів для імені з кількома співпадіннями ${name}`
+        );
+      } else {
+        console.log(
+          `Немає якісних варіантів для імені з кількома співпадіннями ${name}`
+        );
       }
     } else {
-      // Інакше шукаємо найкращі співпадіння - використовуємо низький поріг для збільшення кількості співпадінь
+      // Інакше шукаємо найкращі співпадіння з покращеним алгоритмом
       const bestMatches = findBestMatches(name, 3, nameDatabase, matchedNames);
-      
-      // Зберігаємо рекомендації лише якщо вони мають прийнятну схожість і є непустими
-      if (bestMatches && bestMatches.length > 0) {
+
+      // Зберігаємо рекомендації лише якщо вони є і мають високу якість
+      if (bestMatches.length > 0) {
         recommendations[name] = bestMatches;
-        recommendationsCount++;
+        console.log(`Знайдено ${bestMatches.length} рекомендацій для ${name}`);
+      } else {
+        console.log(`Не знайдено якісних рекомендацій для ${name}`);
       }
     }
   });
-  
-  console.log(`Знайдено рекомендації для ${recommendationsCount} імен`);
 
+  console.log(
+    `Загалом знайдено рекомендації для ${
+      Object.keys(recommendations).length
+    } імен з ${namesArray.length}`
+  );
   return recommendations;
 }
 
@@ -444,7 +467,51 @@ export function getRecommendations(unrecognizedNames = [], nameDatabase = {}, ma
  * @param {Object} matchedNames - Співпадіння, що вже знайдені
  * @returns {Array} Масив об'єктів з інформацією про співпадіння
  */
-export function findBestMatches(name, limit = 3, nameDatabase = {}, matchedNames = {}) {
+export function findBestMatches (
+  name,
+  limit = 3,
+  nameDatabase = {},
+  matchedNames = {}
+) {
+  // Перевіряємо, чи є це склеєне однослівне ім'я
+  const isOneWordName = name.split(/\s+/).length === 1 && /^[A-Za-zА-Яа-яІіЇїЄєҐґ']+$/.test(name);
+  
+  if (isOneWordName && name.length >= 6) {
+    // Спробуємо розбити склеєне ім'я
+    const possibleSplits = processCombinedName(name, nameDatabase);
+    
+    // Якщо знайдено високоякісні співпадіння, використовуємо їх
+    if (possibleSplits.length > 0) {
+      const matchQualityThreshold = 0.7; // 70% мінімальна якість
+      
+      const goodSplits = possibleSplits
+        .filter(split => split.quality >= matchQualityThreshold)
+        .map(split => ({
+          id: split.id,
+          dbName: split.dbFullName,
+          similarity: split.quality,
+          matchType: 'split-name-match'
+        }));
+      
+      if (goodSplits.length > 0) {
+        console.log(`Знайдено ${goodSplits.length} можливих співпадінь для склеєного імені ${name}`);
+        
+        // Збираємо всі використані ID з matchedNames
+        const usedIds = new Set();
+        Object.entries(matchedNames).forEach(([key, id]) => {
+          if (id !== 'not-in-db' && !key.endsWith('_matchInfo')) {
+            usedIds.add(id);
+          }
+        });
+        
+        // Фільтруємо вже використані ID
+        const availableSplits = goodSplits.filter(match => !usedIds.has(match.id));
+        
+        return availableSplits.slice(0, limit);
+      }
+    }
+  }
+
   const matches = [];
   
   // Якщо ім'я порожнє або бази немає, повертаємо пустий масив

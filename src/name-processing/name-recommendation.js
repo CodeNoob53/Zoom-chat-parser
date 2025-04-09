@@ -4,6 +4,7 @@ import {
   areNamesTransliteratedMatches
 } from './transliteration.js'
 import { areStringSimilar, getSimilarity } from './name-utils.js'
+import { processCombinedName } from './advanced-name-processing.js'
 
 /**
  * Перевірка, чи існує кілька можливих співпадінь для імені
@@ -23,6 +24,29 @@ export function findAllPossibleMatches (name, nameDatabase) {
 
   // Переводимо ім'я в нижній регістр для пошуку
   const nameLower = name.toLowerCase()
+
+  // Перевіряємо, чи це можливе склеєне ім'я
+  if (isOneWordName && name.length >= 6) {
+    const possibleSplits = processCombinedName(name, nameDatabase)
+    if (possibleSplits.length > 0) {
+      // Додаємо результати розбиття як можливі співпадіння
+      possibleSplits.forEach(split => {
+        possibleMatches.push({
+          dbName: split.dbFullName,
+          id: split.id,
+          part: 'split-name-' + split.combined,
+          quality: Math.round(split.quality * 100),
+          splitName: true
+        })
+      })
+      
+      // Якщо знайдено якісні розбиття, повертаємо їх
+      if (possibleMatches.length > 0 && possibleMatches[0].quality > 85) {
+        console.log(`Знайдено ${possibleMatches.length} співпадінь для склеєного імені ${name}`)
+        return possibleMatches
+      }
+    }
+  }
 
   // Отримуємо можливі кириличні варіанти імені
   let nameVariants = []
@@ -274,6 +298,21 @@ export function hasAmbiguousNameMatch(name, nameDatabase) {
   
   if (!isOneWordName) return false;
   
+  // НОВА ФУНКЦІОНАЛЬНІСТЬ: Перевіряємо, чи може це бути склеєне ім'я
+  const possibleSplits = processCombinedName(name, nameDatabase);
+  
+  // Якщо знайдено однозначне високоякісне співпадіння склеєного імені, це не неоднозначне ім'я
+  if (possibleSplits.length === 1 && possibleSplits[0].quality > 0.9) {
+    console.log(`Знайдено однозначне співпадіння для склеєного імені ${name} -> ${possibleSplits[0].dbFullName}`);
+    return false;
+  }
+  
+  // Якщо знайдено кілька можливих варіантів, це неоднозначне ім'я
+  if (possibleSplits.length > 1) {
+    console.log(`Знайдено ${possibleSplits.length} варіантів розбиття для склеєного імені ${name}`);
+    return true;
+  }
+  
   // Знаходимо всі можливі варіанти імені (кирилицею і латиницею)
   const nameVariants = [];
   const nameLower = name.toLowerCase();
@@ -376,13 +415,46 @@ export function tryAutoMatchUnrecognized (
 
   // Обробляємо кожне нерозпізнане ім'я
   for (const unrecognizedName of unrecognizedNames) {
-    // НОВА ПЕРЕВІРКА: Перевіряємо, чи це однослівне ім'я (як "Serhiy", "Taras")
+    // Перевіряємо, чи це однослівне ім'я
     const isOneWordName =
       unrecognizedName.split(/\s+/).length === 1 &&
       /^[A-Za-zА-Яа-яІіЇїЄєҐґ']+$/.test(unrecognizedName)
 
-    // Якщо це однослівне ім'я, не робимо автоматичне співпадіння
     if (isOneWordName) {
+      // НОВА ФУНКЦІОНАЛЬНІСТЬ: Обробка склеєних імен
+      const possibleSplits = processCombinedName(unrecognizedName, nameDatabase);
+      
+      // Якщо знайдено високоякісне співпадіння, використовуємо його
+      if (possibleSplits.length > 0 && possibleSplits[0].quality > 0.85 && !usedIds.has(possibleSplits[0].id)) {
+        const bestMatch = possibleSplits[0];
+        
+        matchedNames[unrecognizedName] = bestMatch.id;
+        matchedNames[unrecognizedName + '_matchInfo'] = {
+          matchType: 'split-name-match',
+          quality: Math.round(bestMatch.quality * 100),
+          dbName: bestMatch.dbFullName,
+          allMatches: possibleSplits.map(split => ({
+            id: split.id,
+            dbName: split.dbFullName,
+            quality: Math.round(split.quality * 100)
+          })),
+          autoMatched: true
+        };
+        
+        // Додаємо ID до використаних
+        usedIds.add(bestMatch.id);
+        
+        // Видаляємо з нерозпізнаних
+        unrecognizedNames.delete(unrecognizedName);
+        console.log(
+          `Автоматично знайдено співпадіння для склеєного імені ${unrecognizedName}: ${bestMatch.dbFullName} (${Math.round(bestMatch.quality * 100)}%)`
+        );
+        
+        continue; // Переходимо до наступного імені
+      }
+
+      // Якщо імена не склеєні або немає надійного співпадіння для склеєного імені,
+      // пропускаємо автоматичне співпадіння для однослівних імен без точного співпадіння
       console.log(
         `Пропускаємо автоматичне співпадіння для однослівного імені: ${unrecognizedName}`
       )
@@ -460,6 +532,45 @@ export function findBestMatches (
   nameDatabase = {},
   matchedNames = {}
 ) {
+  // Перевіряємо, чи є це склеєне однослівне ім'я
+  const isOneWordName = name.split(/\s+/).length === 1 && /^[A-Za-zА-Яа-яІіЇїЄєҐґ']+$/.test(name);
+  
+  if (isOneWordName && name.length >= 6) {
+    // Спробуємо розбити склеєне ім'я
+    const possibleSplits = processCombinedName(name, nameDatabase);
+    
+    // Якщо знайдено високоякісні співпадіння, використовуємо їх
+    if (possibleSplits.length > 0) {
+      const matchQualityThreshold = 0.7; // 70% мінімальна якість
+      
+      const goodSplits = possibleSplits
+        .filter(split => split.quality >= matchQualityThreshold)
+        .map(split => ({
+          id: split.id,
+          dbName: split.dbFullName,
+          similarity: split.quality,
+          matchType: 'split-name-match'
+        }));
+      
+      if (goodSplits.length > 0) {
+        console.log(`Знайдено ${goodSplits.length} можливих співпадінь для склеєного імені ${name}`);
+        
+        // Збираємо всі використані ID з matchedNames
+        const usedIds = new Set();
+        Object.entries(matchedNames).forEach(([key, id]) => {
+          if (id !== 'not-in-db' && !key.endsWith('_matchInfo')) {
+            usedIds.add(id);
+          }
+        });
+        
+        // Фільтруємо вже використані ID
+        const availableSplits = goodSplits.filter(match => !usedIds.has(match.id));
+        
+        return availableSplits.slice(0, limit);
+      }
+    }
+  }
+
   // Використовуємо покращену функцію для пошуку всіх можливих співпадінь
   const possibleMatches = findAllPossibleMatches(name, nameDatabase)
 
@@ -519,10 +630,12 @@ export function getRecommendations (
     // Отримуємо інформацію про співпадіння
     const matchInfo = matchedNames[name + '_matchInfo'] || {}
 
-    // Якщо це неоднозначне ім'я (ambiguous-name) або є множинні співпадіння (multiple-matches), використовуємо вже знайдені варіанти
+    // Якщо це неоднозначне ім'я (ambiguous-name) або є множинні співпадіння (multiple-matches), 
+    // використовуємо вже знайдені варіанти
     if (
       (matchInfo.matchType === 'ambiguous-name' ||
-        matchInfo.matchType === 'multiple-matches') &&
+       matchInfo.matchType === 'multiple-matches' ||
+       matchInfo.matchType === 'split-name-match') &&
       matchInfo.allMatches
     ) {
       // Конвертуємо allMatches у формат рекомендацій
@@ -533,36 +646,31 @@ export function getRecommendations (
           id: match.id,
           dbName: match.dbName,
           similarity: match.quality ? match.quality / 100 : 0.7
-        }))
+        }));
 
       if (filteredMatches.length > 0) {
-        recommendations[name] = filteredMatches
+        recommendations[name] = filteredMatches;
         console.log(
           `Використано ${filteredMatches.length} якісних варіантів для імені з кількома співпадіннями ${name}`
-        )
+        );
       } else {
         console.log(
           `Немає якісних варіантів для імені з кількома співпадіннями ${name}`
-        )
+        );
       }
     } else {
       // Інакше шукаємо найкращі співпадіння з покращеним алгоритмом
-      const bestMatches = findBestMatches(name, 3, nameDatabase, matchedNames)
+      const bestMatches = findBestMatches(name, 3, nameDatabase, matchedNames);
 
       // Зберігаємо рекомендації лише якщо вони є і мають високу якість
-      if (bestMatches.length > 0) {
-        recommendations[name] = bestMatches
-        console.log(`Знайдено ${bestMatches.length} рекомендацій для ${name}`)
+      if (bestMatches && bestMatches.length > 0) {
+        recommendations[name] = bestMatches;
+        console.log(`Знайдено ${bestMatches.length} рекомендацій для ${name}`);
       } else {
-        console.log(`Не знайдено якісних рекомендацій для ${name}`)
+        console.log(`Не знайдено якісних рекомендацій для ${name}`);
       }
     }
   })
 
-  console.log(
-    `Загалом знайдено рекомендації для ${
-      Object.keys(recommendations).length
-    } імен з ${namesArray.length}`
-  )
   return recommendations
 }

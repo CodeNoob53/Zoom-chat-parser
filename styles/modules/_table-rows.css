@@ -240,3 +240,9 @@ tr.expanded .alternatives-container {
 .select-alternative:hover {
   background-color: #2c8ad7;
 }
+
+
+.split-name-match {
+  border-left: 2px solid #ff6600;
+}
+

@@ -8,7 +8,7 @@ import {
   saveDatabaseToLocalStorage, 
   updateDbStatusDisplay 
 } from './database-core.js';
-import { editEntry, getEditingId, clearForm } from './database-form.js';
+import { editEntry } from './database-form-modal.js'; // Оновлено шлях імпорту
 
 /**
  * Відрендерити таблицю бази даних
@@ -16,6 +16,7 @@ import { editEntry, getEditingId, clearForm } from './database-form.js';
  */
 export function renderDatabaseTable(filteredEntries) {
   const tableBody = document.getElementById('databaseList');
+  if (!tableBody) return;
   
   // Очищаємо таблицю
   tableBody.innerHTML = '';
@@ -140,9 +141,4 @@ export function deleteEntry(id) {
   updateDbStatusDisplay();
   
   showNotification('Запис видалено', 'success');
-  
-  // Якщо редагуємо цей запис, очищаємо форму
-  if (getEditingId() === id) {
-    clearForm();
-  }
 }

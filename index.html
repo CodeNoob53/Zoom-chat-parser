@@ -5,29 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Парсер чату Zoom</title>
     <link rel="stylesheet" href="styles/main.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-    
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3SNM1J7GW"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-N3SNM1J7GW"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
+      function gtag() {
+        dataLayer.push(arguments);
+      }
       gtag("js", new Date());
       gtag("config", "G-N3SNM1J7GW");
     </script>
   </head>
   <body>
     <!-- Кнопка перемикання теми -->
-    <button id="themeToggle" class="theme-toggle" title="Змінити тему" aria-label="Змінити тему сайту">
+    <button
+      id="themeToggle"
+      class="theme-toggle"
+      title="Змінити тему"
+      aria-label="Змінити тему сайту"
+    >
       <span class="material-icons" aria-hidden="true">dark_mode</span>
     </button>
-    
+
     <header role="banner">
       <h1>
         Парсер чату <strong style="color: rgb(77, 166, 250)">Zoom</strong>
       </h1>
     </header>
-    
+
     <!-- Основний контейнер -->
     <main role="main">
       <div class="aero-panel">
@@ -43,47 +56,88 @@
             <span class="material-icons">storage</span>База
           </button>
         </div>
-        
+
         <!-- Контейнер для вмісту вкладок -->
         <div class="tab-content-container">
           <!-- Вкладка "Парсер" -->
           <div class="tab-content active" id="parser-tab">
-            <textarea id="chatInput" name="chatInput" rows="6" placeholder="Вставте текст тут..." aria-label="Текст чату"></textarea>
-  
-            <input type="file" id="fileInput" name="fileInput" accept=".txt" aria-label="Завантажити файл чату" />
-  
+            <textarea
+              id="chatInput"
+              name="chatInput"
+              rows="6"
+              placeholder="Вставте текст тут..."
+              aria-label="Текст чату"
+            ></textarea>
+
+            <input
+              type="file"
+              id="fileInput"
+              name="fileInput"
+              accept=".txt"
+              aria-label="Завантажити файл чату"
+            />
+
             <!-- Блок із чекбоксом і полем -->
             <div class="keyword-block">
               <label for="useKeywordChk">
-                <input type="checkbox" id="useKeywordChk" name="useKeywordChk" />
+                <input
+                  type="checkbox"
+                  id="useKeywordChk"
+                  name="useKeywordChk"
+                />
                 За ключовим словом:
               </label>
-              <input type="text" id="keywordInput" name="keywordInput" placeholder="Введіть слово..." aria-label="Ключове слово" />
+              <input
+                type="text"
+                id="keywordInput"
+                name="keywordInput"
+                placeholder="Введіть слово..."
+                aria-label="Ключове слово"
+              />
             </div>
-  
+
             <!-- Кнопка парсингу та статус бази -->
             <div class="aero-footer parser-footer">
-              <button id="parseBtn" type="button" aria-label="Розпочати парсинг">
-                <span class="material-icons" aria-hidden="true">search</span> Парсити
+              <button
+                id="parseBtn"
+                type="button"
+                aria-label="Розпочати парсинг"
+              >
+                <span class="material-icons" aria-hidden="true">search</span>
+                Парсити
               </button>
-              <div id="dbStatus" class="db-status" aria-live="polite">База не завантажена</div>
+              <div id="dbStatus" class="db-status" aria-live="polite">
+                База не завантажена
+              </div>
             </div>
           </div>
-  
+
           <!-- Вкладка "Учасники" -->
           <div class="tab-content" id="participants-tab">
             <div class="participants-header">
               <span>Учасники (<span id="countNames">0</span>)</span>
             </div>
-            
+
             <div class="table-container">
-              <table class="participants-table" id="participantsTable" aria-label="Список учасників">
+              <table
+                class="participants-table"
+                id="participantsTable"
+                aria-label="Список учасників"
+              >
                 <thead>
                   <tr>
                     <th class="id-cell" id="sortById" scope="col">ID</th>
-                    <th class="surname-cell" id="sortBySurname" scope="col">Прізвище</th>
-                    <th class="firstname-cell" id="sortByFirstname" scope="col">Ім'я</th>
-                    <th class="zoom-nickname-cell" id="sortByNickname" scope="col">
+                    <th class="surname-cell" id="sortBySurname" scope="col">
+                      Прізвище
+                    </th>
+                    <th class="firstname-cell" id="sortByFirstname" scope="col">
+                      Ім'я
+                    </th>
+                    <th
+                      class="zoom-nickname-cell"
+                      id="sortByNickname"
+                      scope="col"
+                    >
                       Zoom nickname
                     </th>
                   </tr>
@@ -93,50 +147,79 @@
                 </tbody>
               </table>
             </div>
-            
+
             <div class="legend" role="note" aria-label="Пояснення позначень">
-              <div><span class="legend-dot found" aria-hidden="true"></span> В базі</div>
               <div>
-                <span class="legend-dot not-found" aria-hidden="true"></span> Не знайдено в базі
+                <span class="legend-dot found" aria-hidden="true"></span> В базі
               </div>
               <div>
-                <span class="legend-dot translit" aria-hidden="true"></span> Знайдено через
-                транслітерацію
+                <span class="legend-dot not-found" aria-hidden="true"></span> Не
+                знайдено в базі
               </div>
               <div>
-                <span class="legend-dot reversed" aria-hidden="true"></span> Знайдено в зворотному
-                порядку (Ім'я Прізвище)
+                <span class="legend-dot translit" aria-hidden="true"></span>
+                Знайдено через транслітерацію
+              </div>
+              <div>
+                <span class="legend-dot reversed" aria-hidden="true"></span>
+                Знайдено в зворотному порядку (Ім'я Прізвище)
               </div>
             </div>
-            
+
             <div class="aero-footer">
               <div class="export-buttons">
-                <button id="saveBtn" type="button" aria-label="Зберегти список учасників">
-                  <span class="material-icons" aria-hidden="true">save</span> TXT
+                <button
+                  id="saveBtn"
+                  type="button"
+                  aria-label="Зберегти список учасників"
+                >
+                  <span class="material-icons" aria-hidden="true">save</span>
+                  TXT
                 </button>
-                <button id="saveCsvBtn" type="button" aria-label="Зберегти список у CSV">
-                  <span class="material-icons" aria-hidden="true">table_view</span> CSV
+                <button
+                  id="saveCsvBtn"
+                  type="button"
+                  aria-label="Зберегти список у CSV"
+                >
+                  <span class="material-icons" aria-hidden="true"
+                    >table_view</span
+                  >
+                  CSV
                 </button>
-                <button id="saveJsonBtn" type="button" aria-label="Зберегти список у JSON">
-                  <span class="material-icons" aria-hidden="true">code</span> JSON
+                <button
+                  id="saveJsonBtn"
+                  type="button"
+                  aria-label="Зберегти список у JSON"
+                >
+                  <span class="material-icons" aria-hidden="true">code</span>
+                  JSON
                 </button>
               </div>
             </div>
           </div>
-  
+
           <!-- Вкладка "База" -->
           <div class="tab-content" id="database-tab">
             <div class="database-header">
               <div class="search-container">
-                <input type="text" id="dbSearchInput" placeholder="Пошук у базі..." aria-label="Пошук у базі імен">
+                <input
+                  type="text"
+                  id="dbSearchInput"
+                  placeholder="Пошук у базі..."
+                  aria-label="Пошук у базі імен"
+                />
                 <button id="dbSearchBtn" aria-label="Шукати">
                   <span class="material-icons">search</span>
                 </button>
               </div>
             </div>
-            
+
             <div class="table-container">
-              <table class="database-table" id="databaseTable" aria-label="База імен">
+              <table
+                class="database-table"
+                id="databaseTable"
+                aria-label="База імен"
+              >
                 <thead>
                   <tr>
                     <th id="sortDbById" scope="col">ID</th>
@@ -151,42 +234,13 @@
                 </tbody>
               </table>
             </div>
-            
-            <div class="database-form-container">
-              <h4>Додати/Редагувати запис</h4>
-              <form id="databaseForm" class="database-form">
-                <div class="form-row">
-                  <label for="dbFormId">ID:</label>
-                  <input type="text" id="dbFormId" name="id" readonly>
-                </div>
-                <div class="form-row">
-                  <label for="dbFormSurname">Прізвище:</label>
-                  <input type="text" id="dbFormSurname" name="surname" required>
-                </div>
-                <div class="form-row">
-                  <label for="dbFormFirstname">Ім'я:</label>
-                  <input type="text" id="dbFormFirstname" name="firstname" required>
-                </div>
-                <div class="form-row">
-                  <label for="dbFormNickname1">Нікнейм 1:</label>
-                  <input type="text" id="dbFormNickname1" name="nickname1">
-                </div>
-                <div class="form-row">
-                  <label for="dbFormNickname2">Нікнейм 2:</label>
-                  <input type="text" id="dbFormNickname2" name="nickname2">
-                </div>
-                <div class="form-buttons">
-                  <button type="button" id="dbFormClearBtn">Очистити</button>
-                  <button type="submit" id="dbFormSaveBtn">Зберегти</button>
-                </div>
-              </form>
-            </div>
-            
+
             <div class="aero-footer">
-              <div class="db-buttons">
-                <button id="dbAddBtn" type="button" aria-label="Додати новий запис">
-                  <span class="material-icons" aria-hidden="true">add</span> Додати
+              <div class="database-actions">
+                <button id="dbAddBtn" type="button" class="primary-button" aria-label="Додати новий запис">
+                  <span class="material-icons" aria-hidden="true">add</span> Додати запис
                 </button>
+                
                 <div class="import-export-buttons">
                   <button id="dbImportBtn" type="button" aria-label="Імпортувати базу">
                     <span class="material-icons" aria-hidden="true">download</span> Імпорт
@@ -205,7 +259,7 @@
         </div>
       </div>
     </main>
-    
+
     <footer role="contentinfo">
       <p>
         © 2025 Парсер чату
@@ -214,11 +268,56 @@
       &nbsp;
       <p>
         By
-        <a style="color: goldenrod" href="https://github.com/CodeNoob53" aria-label="Перейти на GitHub автора">
+        <a
+          style="color: goldenrod"
+          href="https://github.com/CodeNoob53"
+          aria-label="Перейти на GitHub автора"
+        >
           Code Noob
         </a>
       </p>
     </footer>
+
+    <!-- Модальне вікно для форми бази даних -->
+    <div id="databaseFormModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Додати/Редагувати запис</h3>
+          <span class="close-modal" id="closeDbFormModal">&times;</span>
+        </div>
+
+        <form id="databaseForm" class="database-form">
+          <div class="form-row">
+            <label for="dbFormId">ID:</label>
+            <input type="text" id="dbFormId" name="id" readonly />
+          </div>
+          <div class="form-row">
+            <label for="dbFormSurname">Прізвище:</label>
+            <input type="text" id="dbFormSurname" name="surname" required />
+          </div>
+          <div class="form-row">
+            <label for="dbFormFirstname">Ім'я:</label>
+            <input type="text" id="dbFormFirstname" name="firstname" required />
+          </div>
+          <div class="form-row">
+            <label for="dbFormNickname1">Нікнейм 1:</label>
+            <input type="text" id="dbFormNickname1" name="nickname1" />
+          </div>
+          <div class="form-row">
+            <label for="dbFormNickname2">Нікнейм 2:</label>
+            <input type="text" id="dbFormNickname2" name="nickname2" />
+          </div>
+          <div class="form-buttons">
+            <button type="button" id="dbFormClearBtn" class="secondary-button">
+              Очистити
+            </button>
+            <button type="submit" id="dbFormSaveBtn" class="primary-button">
+              Зберегти
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- Notification container -->
     <div id="notification" role="alert" aria-live="assertive"></div>

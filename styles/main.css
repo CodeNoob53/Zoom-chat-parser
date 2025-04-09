@@ -18,6 +18,7 @@
 @import 'components/_modal.css';
 @import 'components/_notifications.css';
 @import 'components/_indicators.css';
+@import 'components/_modal-form.css';
 
 /* Modules */
 @import 'modules/_database.css';
@@ -30,6 +31,7 @@
 @import 'modules/_database-form.css';
 @import 'modules/_database-table.css';
 @import 'modules/_parser-footer.css';
+@import 'modules/_database-actions.css';
 
 
 /* Themes */

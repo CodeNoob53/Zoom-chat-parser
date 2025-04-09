@@ -47,6 +47,10 @@
   background-color: #00b400;
 }
 
+.legend-dot.split-name {
+  background-color: #ff6600;
+}
+
 /* Адаптація легенди під світлу тему */
 body.light-theme .legend {
   background: rgba(230, 230, 230, 0.4);

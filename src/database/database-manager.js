@@ -5,7 +5,7 @@
 
 // Імпорт основних компонентів
 import { loadDatabaseFromLocalStorage, updateDbStatusDisplay } from './database-core.js';
-import { initDatabaseForm } from './database-form.js';
+import { initDatabaseFormModal } from './database-form-modal.js'; // Змінено з initDatabaseForm на initDatabaseFormModal
 import { initImportExportButtons } from './database-import-export.js';
 import { renderDatabaseTable } from './database-table.js';
 import { initDatabaseSearch } from './database-search.js';
@@ -28,8 +28,8 @@ export function initDatabaseManager() {
   // Завантажуємо збережену базу з localStorage
   loadDatabaseFromLocalStorage();
   
-  // Ініціалізуємо форму
-  initDatabaseForm();
+  // Ініціалізуємо модальну форму (замість звичайної форми)
+  initDatabaseFormModal();
   
   // Ініціалізуємо кнопки імпорту/експорту
   initImportExportButtons();

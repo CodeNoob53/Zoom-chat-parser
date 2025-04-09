@@ -386,7 +386,7 @@ export function selectAlternativeMatch (name, altIndex) {
  * @param {Object} matchedNames - Співпадіння, що вже знайдені
  * @returns {Object} Об'єкт з рекомендаціями у форматі {name: [{id, dbName, similarity}, ...], ...}
  */
-export function getRecommendations (
+export function getRecommendations(
   unrecognizedNames = [],
   nameDatabase = {},
   matchedNames = {}
@@ -438,13 +438,48 @@ export function getRecommendations (
         );
       }
     } else {
-      // Інакше шукаємо найкращі співпадіння з покращеним алгоритмом
+      // Для однослівних імен, перевіряємо точні співпадіння з іменами у базі
+      const isOneWordName = name.split(/\s+/).length === 1;
+      
+      if (isOneWordName) {
+        // Шукаємо точні співпадіння за іменем (не прізвищем)
+        const exactNameMatches = findExactNameMatches(name, nameDatabase);
+        
+        if (exactNameMatches.length === 1) {
+          // Якщо знайдено лише одне точне співпадіння за іменем
+          recommendations[name] = [
+            {
+              id: exactNameMatches[0].id,
+              dbName: exactNameMatches[0].dbName,
+              similarity: 0.95
+            }
+          ];
+          console.log(`Знайдено точне однозначне співпадіння для ${name}: ${exactNameMatches[0].dbName}`);
+          return;
+        } else if (exactNameMatches.length > 1) {
+          // Якщо знайдено кілька співпадінь за іменем (неоднозначне)
+          const mappedMatches = exactNameMatches.map(match => ({
+            id: match.id,
+            dbName: match.dbName,
+            similarity: 0.9
+          }));
+          
+          recommendations[name] = mappedMatches;
+          console.log(`Знайдено ${mappedMatches.length} точних співпадінь для імені ${name}`);
+          return;
+        }
+      }
+      
+      // Якщо не знайдено точних співпадінь за іменем, шукаємо інші варіанти
       const bestMatches = findBestMatches(name, 3, nameDatabase, matchedNames);
 
+      // Фільтруємо рекомендації за порогом якості
+      const qualityMatches = bestMatches.filter(match => match.similarity >= 0.6);
+      
       // Зберігаємо рекомендації лише якщо вони є і мають високу якість
-      if (bestMatches.length > 0) {
-        recommendations[name] = bestMatches;
-        console.log(`Знайдено ${bestMatches.length} рекомендацій для ${name}`);
+      if (qualityMatches.length > 0) {
+        recommendations[name] = qualityMatches;
+        console.log(`Знайдено ${qualityMatches.length} якісних рекомендацій для ${name}`);
       } else {
         console.log(`Не знайдено якісних рекомендацій для ${name}`);
       }
@@ -457,6 +492,32 @@ export function getRecommendations (
     } імен з ${namesArray.length}`
   );
   return recommendations;
+}
+
+/**
+ * Знайти точні співпадіння за іменем (без прізвища)
+ * @param {string} name - Ім'я для пошуку
+ * @param {Object} nameDatabase - База імен для пошуку
+ * @returns {Array} Масив знайдених точних співпадінь за іменем
+ */
+function findExactNameMatches(name, nameDatabase) {
+  const results = [];
+  const nameLower = name.toLowerCase();
+  
+  // Перевіряємо кожне ім'я в базі
+  for (const dbName in nameDatabase) {
+    const dbNameParts = dbName.toLowerCase().split(/\s+/);
+    
+    // Перевіряємо, чи це другий компонент (ім'я) співпадає з пошуковим
+    if (dbNameParts.length > 1 && dbNameParts[1] === nameLower) {
+      results.push({
+        dbName: dbName,
+        id: nameDatabase[dbName]
+      });
+    }
+  }
+  
+  return results;
 }
 
 /**

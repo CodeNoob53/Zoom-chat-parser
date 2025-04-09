@@ -3,12 +3,10 @@
  */
 import { showNotification } from '../core/notification.js';
 import { 
-  databaseData, 
-  updateMappings, 
-  saveDatabaseToLocalStorage, 
-  updateDbStatusDisplay 
-} from './database-core.js';
-import { editEntry } from './database-form-modal.js'; // Оновлено шлях імпорту
+  getAllEntries, 
+  deleteEntry
+} from './database-service.js';
+import { editDatabaseEntry } from './database-form-manager.js';
 
 /**
  * Відрендерити таблицю бази даних
@@ -22,7 +20,7 @@ export function renderDatabaseTable(filteredEntries) {
   tableBody.innerHTML = '';
   
   // Визначаємо, які записи відображати
-  const entries = filteredEntries || databaseData.entries;
+  const entries = filteredEntries || getAllEntries();
   
   if (entries.length === 0) {
     // Показуємо повідомлення про порожню базу
@@ -86,7 +84,7 @@ export function renderDatabaseTable(filteredEntries) {
     editBtn.title = 'Редагувати';
     editBtn.innerHTML = '<span class="material-icons">edit</span>';
     editBtn.addEventListener('click', () => {
-      editEntry(entry.id);
+      editDatabaseEntry(entry.id);
     });
     actions.appendChild(editBtn);
     
@@ -96,7 +94,7 @@ export function renderDatabaseTable(filteredEntries) {
     deleteBtn.title = 'Видалити';
     deleteBtn.innerHTML = '<span class="material-icons">delete</span>';
     deleteBtn.addEventListener('click', () => {
-      deleteEntry(entry.id);
+      deleteEntryWithConfirmation(entry.id);
     });
     actions.appendChild(deleteBtn);
     
@@ -108,37 +106,21 @@ export function renderDatabaseTable(filteredEntries) {
 }
 
 /**
- * Видалити запис
+ * Видалити запис з підтвердженням
  * @param {string} id - ID запису для видалення
  */
-export function deleteEntry(id) {
+export function deleteEntryWithConfirmation(id) {
   // Запитуємо підтвердження
   if (!confirm('Ви впевнені, що хочете видалити цей запис?')) {
     return;
   }
   
-  // Знаходимо індекс запису
-  const index = databaseData.entries.findIndex(e => e.id === id);
-  
-  if (index === -1) {
-    showNotification('Запис не знайдено', 'error');
-    return;
-  }
-  
   // Видаляємо запис
-  databaseData.entries.splice(index, 1);
-  
-  // Оновлюємо карти відповідності
-  updateMappings();
-  
-  // Зберігаємо базу даних
-  saveDatabaseToLocalStorage();
-  
-  // Оновлюємо таблицю
-  renderDatabaseTable();
-  
-  // Оновлюємо статус бази даних на вкладці "Парсер"
-  updateDbStatusDisplay();
-  
-  showNotification('Запис видалено', 'success');
+  if (deleteEntry(id)) {
+    // Оновлюємо таблицю
+    renderDatabaseTable();
+    showNotification('Запис видалено', 'success');
+  } else {
+    showNotification('Помилка видалення запису', 'error');
+  }
 }

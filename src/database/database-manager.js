@@ -4,8 +4,26 @@
  */
 
 // Імпорт основних компонентів
-import { loadDatabaseFromLocalStorage, updateDbStatusDisplay } from './database-core.js';
-import { initDatabaseFormModal } from './database-form-modal.js'; // Змінено з initDatabaseForm на initDatabaseFormModal
+import { 
+  initDatabaseService,
+  updateDbStatusDisplay, 
+  getDatabase,
+  findEntryByNickname,
+  findEntryByFullName,
+  addNicknameToEntry,
+  convertOldDatabase,
+  getOldFormatDatabase,
+  addEntry,
+  getAllEntries,
+  searchEntries
+} from './database-service.js';
+
+import { 
+  initDatabaseForm, 
+  editDatabaseEntry, 
+  deleteDatabaseEntry 
+} from './database-form-manager.js';
+
 import { initImportExportButtons } from './database-import-export.js';
 import { renderDatabaseTable } from './database-table.js';
 import { initDatabaseSearch } from './database-search.js';
@@ -13,23 +31,28 @@ import { initDatabaseSearch } from './database-search.js';
 // Реекспорт API функцій для зовнішнього використання
 export { 
   getDatabase,
+  getAllEntries,
   findEntryByNickname,
   findEntryByFullName,
   addNicknameToEntry,
   convertOldDatabase,
   getOldFormatDatabase,
-  addEntry
-} from './database-api.js';
+  addEntry,
+  editDatabaseEntry,
+  deleteDatabaseEntry,
+  searchEntries
+};
 
 /**
  * Ініціалізувати менеджер бази даних
+ * @param {Object} options - Налаштування
  */
-export function initDatabaseManager() {
-  // Завантажуємо збережену базу з localStorage
-  loadDatabaseFromLocalStorage();
+export function initDatabaseManager(options = {}) {
+  // Ініціалізуємо сервіс бази даних з налаштуваннями
+  initDatabaseService(options);
   
-  // Ініціалізуємо модальну форму (замість звичайної форми)
-  initDatabaseFormModal();
+  // Ініціалізуємо форму бази даних
+  initDatabaseForm();
   
   // Ініціалізуємо кнопки імпорту/експорту
   initImportExportButtons();
@@ -42,4 +65,6 @@ export function initDatabaseManager() {
   
   // Оновлюємо статус бази даних на вкладці "Парсер"
   updateDbStatusDisplay();
+  
+  console.log('Менеджер бази даних ініціалізовано');
 }

@@ -2,7 +2,7 @@
  * Модуль для пошуку в базі даних
  */
 import { showNotification } from '../core/notification.js';
-import { databaseData } from './database-core.js';
+import * as DatabaseService from './database-service.js';
 import { renderDatabaseTable } from './database-table.js';
 
 /**
@@ -11,6 +11,8 @@ import { renderDatabaseTable } from './database-table.js';
 export function initDatabaseSearch() {
   const searchInput = document.getElementById('dbSearchInput');
   const searchBtn = document.getElementById('dbSearchBtn');
+  
+  if (!searchInput || !searchBtn) return;
   
   // Обробник кнопки пошуку
   searchBtn.addEventListener('click', () => {
@@ -21,60 +23,52 @@ export function initDatabaseSearch() {
   searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       performSearch(searchInput.value);
+      e.preventDefault();
     }
   });
   
   // Обробник зміни тексту в полі пошуку
   searchInput.addEventListener('input', () => {
+    // Для реалізації "живого пошуку" додамо debounce
+    clearTimeout(searchInput.debounceTimer);
+    
     // Якщо поле порожнє, показуємо всі записи
     if (!searchInput.value.trim()) {
       renderDatabaseTable();
+      return;
     }
+    
+    // Затримка для зменшення навантаження при швидкому введенні
+    searchInput.debounceTimer = setTimeout(() => {
+      performSearch(searchInput.value, true);
+    }, 300);
   });
 }
 
 /**
  * Виконати пошук в базі даних
  * @param {string} query - Пошуковий запит
+ * @param {boolean} silent - Не показувати сповіщення при пошуку
  */
-export function performSearch(query) {
+export function performSearch(query, silent = false) {
   // Якщо поле порожнє, показуємо всі записи
   if (!query.trim()) {
     renderDatabaseTable();
     return;
   }
   
-  // Шукаємо записи, що відповідають запиту
-  const filteredEntries = databaseData.entries.filter(entry => {
-    const searchLower = query.toLowerCase();
-    
-    // Пошук у прізвищі та імені
-    if (entry.surname.toLowerCase().includes(searchLower) ||
-        entry.firstname.toLowerCase().includes(searchLower)) {
-      return true;
-    }
-    
-    // Пошук у нікнеймах
-    if (entry.nicknames && entry.nicknames.some(nick => 
-        nick && nick.toLowerCase().includes(searchLower))) {
-      return true;
-    }
-    
-    // Пошук за ID
-    if (entry.id.includes(query)) {
-      return true;
-    }
-    
-    return false;
-  });
+  // Шукаємо записи через сервіс
+  const filteredEntries = DatabaseService.searchEntries(query);
   
   // Відображаємо результати
   renderDatabaseTable(filteredEntries);
   
-  // Показуємо результати пошуку
-  if (filteredEntries.length === 0) {
-    showNotification('Не знайдено записів, що відповідають запиту', 'warning');
-  } else {
-    showNotification(`Знайдено ${filteredEntries.length} записів`, 'success');
+  // Показуємо сповіщення про результат, якщо не silent
+  if (!silent) {
+    if (filteredEntries.length === 0) {
+      showNotification('Не знайдено записів, що відповідають запиту', 'warning');
+    } else {
+      showNotification(`Знайдено ${filteredEntries.length} записів`, 'success');
+    }
   }
 }

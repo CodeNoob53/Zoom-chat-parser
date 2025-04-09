@@ -3,13 +3,15 @@
  */
 import { showNotification } from '../core/notification.js';
 import { 
-  databaseData, 
-  updateMappings, 
-  saveDatabaseToLocalStorage, 
-  updateDbStatusDisplay 
-} from './database-core.js';
+  getDatabase, 
+  getAllEntries, 
+  importDatabase 
+} from './database-service.js';
 import { renderDatabaseTable } from './database-table.js';
-import { initDatabaseImport } from '../parser/file-handler.js';
+import { 
+  createDownloadUrl, 
+  downloadFile 
+} from '../utils/file-utils.js';
 
 /**
  * Ініціалізувати кнопки імпорту/експорту
@@ -25,9 +27,6 @@ export function initImportExportButtons() {
     importBtn.addEventListener('click', () => {
       importFile.click();
     });
-    
-    // Ініціалізуємо обробник для імпорту файлів
-    initDatabaseImport(importFile);
   }
   
   // Обробник кнопки експорту CSV
@@ -51,44 +50,24 @@ export function initImportExportButtons() {
  */
 export function importJson(content) {
   try {
+    // Парсимо JSON у об'єкт
     const data = JSON.parse(content);
     
     // Перевіряємо структуру
-    if (data.entries && Array.isArray(data.entries)) {
-      databaseData.version = data.version || "3.0";
-      databaseData.entries = data.entries;
+    if ((data.entries && Array.isArray(data.entries)) || 
+        (data.database && Array.isArray(data.database))) {
       
-      // Оновлюємо карти відповідності
-      updateMappings();
-      
-      // Зберігаємо базу даних
-      saveDatabaseToLocalStorage();
-      
-      // Оновлюємо таблицю
-      renderDatabaseTable();
-      
-      // Оновлюємо статус бази даних на вкладці "Парсер"
-      updateDbStatusDisplay();
-      
-      showNotification(`Імпортовано ${data.entries.length} записів з JSON`, 'success');
-    } else if (data.database && Array.isArray(data.database)) {
-      // Альтернативна структура
-      databaseData.version = data.version || "3.0";
-      databaseData.entries = data.database;
-      
-      // Оновлюємо карти відповідності
-      updateMappings();
-      
-      // Зберігаємо базу даних
-      saveDatabaseToLocalStorage();
-      
-      // Оновлюємо таблицю
-      renderDatabaseTable();
-      
-      // Оновлюємо статус бази даних на вкладці "Парсер"
-      updateDbStatusDisplay();
-      
-      showNotification(`Імпортовано ${data.database.length} записів з JSON`, 'success');
+      // Імпортуємо дані
+      if (importDatabase(data)) {
+        // Оновлюємо таблицю
+        renderDatabaseTable();
+        
+        // Повідомляємо про успіх
+        const entriesCount = data.entries ? data.entries.length : data.database.length;
+        showNotification(`Імпортовано ${entriesCount} записів з JSON`, 'success');
+      } else {
+        showNotification('Помилка імпорту JSON', 'error');
+      }
     } else {
       showNotification('Невірний формат JSON', 'error');
     }
@@ -124,58 +103,98 @@ export function importCsv(content) {
     }
     
     // Створюємо нову базу
-    const newEntries = [];
+    const entries = [];
     
     // Парсимо дані
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',');
+      // Підтримка CSV з лапками та комами всередині значень
+      const parsedValues = parseCSVLine(lines[i]);
       
       // Якщо рядок порожній або має недостатньо колонок, пропускаємо
-      if (values.length <= Math.max(surnameIndex, firstnameIndex)) {
+      if (parsedValues.length <= Math.max(surnameIndex, firstnameIndex)) {
         continue;
       }
       
       // Формуємо нікнейми
       const nicknames = [];
       
-      if (nickname1Index !== -1 && values[nickname1Index] && values[nickname1Index].trim()) {
-        nicknames.push(values[nickname1Index].trim());
+      if (nickname1Index !== -1 && parsedValues[nickname1Index] && parsedValues[nickname1Index].trim()) {
+        nicknames.push(parsedValues[nickname1Index].trim());
       }
       
-      if (nickname2Index !== -1 && values[nickname2Index] && values[nickname2Index].trim()) {
-        nicknames.push(values[nickname2Index].trim());
+      if (nickname2Index !== -1 && parsedValues[nickname2Index] && parsedValues[nickname2Index].trim()) {
+        nicknames.push(parsedValues[nickname2Index].trim());
       }
       
       // Додаємо запис
-      newEntries.push({
-        id: idIndex !== -1 && values[idIndex] ? values[idIndex].trim() : (i).toString(),
-        surname: values[surnameIndex].trim(),
-        firstname: values[firstnameIndex].trim(),
+      entries.push({
+        id: idIndex !== -1 && parsedValues[idIndex] ? parsedValues[idIndex].trim() : (i).toString(),
+        surname: parsedValues[surnameIndex].trim(),
+        firstname: parsedValues[firstnameIndex].trim(),
         nicknames
       });
     }
     
-    // Оновлюємо базу
-    databaseData.version = "3.0";
-    databaseData.entries = newEntries;
+    // Створюємо об'єкт з даними для імпорту
+    const importData = {
+      version: "3.0",
+      entries
+    };
     
-    // Оновлюємо карти відповідності
-    updateMappings();
-    
-    // Зберігаємо базу даних
-    saveDatabaseToLocalStorage();
-    
-    // Оновлюємо таблицю
-    renderDatabaseTable();
-    
-    // Оновлюємо статус бази даних на вкладці "Парсер"
-    updateDbStatusDisplay();
-    
-    showNotification(`Імпортовано ${newEntries.length} записів з CSV`, 'success');
+    // Імпортуємо дані
+    if (importDatabase(importData)) {
+      // Оновлюємо таблицю
+      renderDatabaseTable();
+      
+      // Повідомляємо про успіх
+      showNotification(`Імпортовано ${entries.length} записів з CSV`, 'success');
+    } else {
+      showNotification('Помилка імпорту CSV', 'error');
+    }
   } catch (error) {
     console.error('Помилка імпорту CSV:', error);
     showNotification('Помилка імпорту CSV', 'error');
   }
+}
+
+/**
+ * Розбирає рядок CSV, враховуючи лапки та екрановані коми
+ * @param {string} line - Рядок CSV
+ * @returns {string[]} Масив значень
+ */
+function parseCSVLine(line) {
+  const result = [];
+  let currentValue = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    const nextChar = line[i + 1];
+    
+    // Обробка подвійних лапок
+    if (char === '"') {
+      if (nextChar === '"') {
+        // Екрановані лапки
+        currentValue += '"';
+        i++; // Пропускаємо наступний символ
+      } else {
+        // Перемикаємо режим лапок
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      // Додаємо значення і переходимо до наступного
+      result.push(currentValue);
+      currentValue = '';
+    } else {
+      // Звичайний символ
+      currentValue += char;
+    }
+  }
+  
+  // Додаємо останнє значення
+  result.push(currentValue);
+  
+  return result;
 }
 
 /**
@@ -188,7 +207,7 @@ export function importTxt(content) {
     const lines = content.split(/\r?\n/).filter(line => line.trim());
     
     // Створюємо нову базу
-    const newEntries = [];
+    const entries = [];
     
     // Парсимо дані
     for (let i = 0; i < lines.length; i++) {
@@ -208,7 +227,7 @@ export function importTxt(content) {
       const firstname = parts.slice(1).join(' ');
       
       // Додаємо запис
-      newEntries.push({
+      entries.push({
         id: (i + 1).toString(),
         surname,
         firstname,
@@ -216,23 +235,22 @@ export function importTxt(content) {
       });
     }
     
-    // Оновлюємо базу
-    databaseData.version = "3.0";
-    databaseData.entries = newEntries;
+    // Створюємо об'єкт з даними для імпорту
+    const importData = {
+      version: "3.0",
+      entries
+    };
     
-    // Оновлюємо карти відповідності
-    updateMappings();
-    
-    // Зберігаємо базу даних
-    saveDatabaseToLocalStorage();
-    
-    // Оновлюємо таблицю
-    renderDatabaseTable();
-    
-    // Оновлюємо статус бази даних на вкладці "Парсер"
-    updateDbStatusDisplay();
-    
-    showNotification(`Імпортовано ${newEntries.length} записів з текстового файлу`, 'success');
+    // Імпортуємо дані
+    if (importDatabase(importData)) {
+      // Оновлюємо таблицю
+      renderDatabaseTable();
+      
+      // Повідомляємо про успіх
+      showNotification(`Імпортовано ${entries.length} записів з текстового файлу`, 'success');
+    } else {
+      showNotification('Помилка імпорту текстового файлу', 'error');
+    }
   } catch (error) {
     console.error('Помилка імпорту TXT:', error);
     showNotification('Помилка імпорту текстового файлу', 'error');
@@ -244,15 +262,31 @@ export function importTxt(content) {
  */
 export function exportCsv() {
   try {
+    // Отримуємо список записів
+    const entries = getAllEntries();
+    
+    if (entries.length === 0) {
+      showNotification('База даних порожня', 'warning');
+      return;
+    }
+    
     // Заголовки
     const headers = ['ID', 'Прізвище', 'Ім\'я', 'Нікнейм1', 'Нікнейм2'];
     
     // Рядки даних
-    const rows = databaseData.entries.map(entry => {
-      const nickname1 = entry.nicknames && entry.nicknames.length > 0 ? entry.nicknames[0] : '';
-      const nickname2 = entry.nicknames && entry.nicknames.length > 1 ? entry.nicknames[1] : '';
+    const rows = entries.map(entry => {
+      const nickname1 = entry.nicknames && entry.nicknames.length > 0 ? 
+        escapeCsvValue(entry.nicknames[0]) : '';
+      const nickname2 = entry.nicknames && entry.nicknames.length > 1 ? 
+        escapeCsvValue(entry.nicknames[1]) : '';
       
-      return [entry.id, entry.surname, entry.firstname, nickname1, nickname2];
+      return [
+        entry.id, 
+        escapeCsvValue(entry.surname), 
+        escapeCsvValue(entry.firstname), 
+        nickname1, 
+        nickname2
+      ];
     });
     
     // Об'єднуємо в CSV
@@ -261,18 +295,11 @@ export function exportCsv() {
       ...rows.map(row => row.join(','))
     ].join('\n');
     
-    // Зберігаємо файл
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    // Створюємо URL для завантаження
+    const url = createDownloadUrl(csvContent, 'text/csv');
     
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'database.csv';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    URL.revokeObjectURL(url);
+    // Завантажуємо файл
+    downloadFile(url, 'database.csv');
     
     showNotification('Базу даних експортовано в CSV', 'success');
   } catch (error) {
@@ -282,23 +309,46 @@ export function exportCsv() {
 }
 
 /**
+ * Екранує значення для CSV
+ * @param {string} value - Значення для екранування
+ * @returns {string} Екрановане значення
+ */
+function escapeCsvValue(value) {
+  if (!value) return '';
+  
+  // Якщо значення містить коми, лапки або переноси рядка, обгортаємо його в лапки
+  const needsQuotes = /[",\n\r]/.test(value);
+  
+  if (needsQuotes) {
+    // Дублюємо лапки всередині значення
+    const escaped = value.replace(/"/g, '""');
+    return `"${escaped}"`;
+  }
+  
+  return value;
+}
+
+/**
  * Експортувати дані в JSON
  */
 export function exportJson() {
   try {
-    // Зберігаємо файл
-    const jsonContent = JSON.stringify(databaseData, null, 2);
-    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    // Отримуємо дані бази
+    const database = getDatabase();
     
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'database.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (database.entries.length === 0) {
+      showNotification('База даних порожня', 'warning');
+      return;
+    }
     
-    URL.revokeObjectURL(url);
+    // Форматуємо JSON
+    const jsonContent = JSON.stringify(database, null, 2);
+    
+    // Створюємо URL для завантаження
+    const url = createDownloadUrl(jsonContent, 'application/json');
+    
+    // Завантажуємо файл
+    downloadFile(url, 'database.json');
     
     showNotification('Базу даних експортовано в JSON', 'success');
   } catch (error) {

@@ -1,6 +1,45 @@
 import { elements } from '../core/dom.js';
 import { showNotification } from '../core/notification.js';
 import { importTxt, importCsv, importJson } from '../database/database-import-export.js';
+import { containsScriptTags, sanitizeContent } from '../utils/string-utils.js';
+
+/**
+ * Максимальні розміри файлів (у байтах)
+ */
+const MAX_CHAT_FILE_SIZE = 5 * 1024 * 1024; // 5 МБ для чату
+const MAX_DB_FILE_SIZE = 2 * 1024 * 1024;   // 2 МБ для бази даних
+
+/**
+ * Дозволені типи MIME і розширення файлів
+ */
+const ALLOWED_TEXT_TYPES = [
+  'text/plain', 
+  'text/csv', 
+  'application/json',
+  'text/x-csv', 
+  'application/x-csv',
+  'text/comma-separated-values'
+];
+
+const ALLOWED_EXTENSIONS = ['.txt', '.csv', '.json'];
+
+/**
+ * Перевіряє, чи є файл допустимим текстовим файлом
+ * @param {File} file - Файл для перевірки
+ * @param {string[]} allowedExts - Масив дозволених розширень
+ * @returns {boolean} - Чи є файл допустимим
+ */
+function isValidTextFile(file, allowedExts = ALLOWED_EXTENSIONS) {
+  // Перевірка MIME-типу
+  const isValidMime = ALLOWED_TEXT_TYPES.includes(file.type) || file.type === '';
+  
+  // Перевірка розширення файлу
+  const fileName = file.name.toLowerCase();
+  const isValidExt = allowedExts.some(ext => fileName.endsWith(ext));
+  
+  return isValidMime && isValidExt;
+}
+
 /**
  * Ініціалізує обробники подій для файлів з покращеною безпекою
  */
@@ -14,15 +53,15 @@ export function initFileHandlers() {
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         
-        // Перевірка розміру файлу (не більше 5 МБ)
-        if (file.size > 5 * 1024 * 1024) {
+        // Перевірка розміру файлу
+        if (file.size > MAX_CHAT_FILE_SIZE) {
           showNotification("Файл занадто великий. Максимальний розмір 5 МБ.", "error");
           fileInput.value = "";
           return;
         }
         
-        // Перевірка типу файлу (дозволяємо тільки текстові файли)
-        if (file.type && !file.type.match('text.*') && !file.name.endsWith('.txt')) {
+        // Перевірка типу файлу
+        if (!isValidTextFile(file, ['.txt'])) {
           showNotification("Дозволені тільки текстові файли (.txt)", "error");
           fileInput.value = "";
           return;
@@ -38,7 +77,7 @@ export function initFileHandlers() {
         
         reader.onload = (e) => {
           try {
-            // Перевірка на потенційно шкідливий контент (XSS, JavaScript ін'єкції)
+            // Перевірка на потенційно шкідливий контент
             const content = e.target.result;
             
             // Перевіряємо наявність скриптів та HTML
@@ -65,9 +104,6 @@ export function initFileHandlers() {
       }
     });
   }
-  
-  // Тепер в елементі dbFileInput немає потреби, 
-  // оскільки ми використовуємо dbImportFile з database-import-export.js
 }
 
 /**
@@ -81,20 +117,15 @@ export function initDatabaseImport(importFile) {
     const file = e.target.files[0];
     if (!file) return;
     
-    // Перевірка розміру файлу (не більше 2 МБ)
-    if (file.size > 2 * 1024 * 1024) {
+    // Перевірка розміру файлу
+    if (file.size > MAX_DB_FILE_SIZE) {
       showNotification("Файл бази занадто великий. Максимальний розмір 2 МБ.", "error");
       importFile.value = "";
       return;
     }
     
     // Перевірка типу файлу
-    const isValidType = file.type.match('text.*') || 
-                      file.name.endsWith('.txt') || 
-                      file.name.endsWith('.csv') || 
-                      file.name.endsWith('.json');
-    
-    if (!isValidType) {
+    if (!isValidTextFile(file)) {
       showNotification("Підтримуються формати: TXT, CSV, JSON", "error");
       importFile.value = "";
       return;
@@ -140,41 +171,5 @@ export function initDatabaseImport(importFile) {
   });
 }
 
-/**
- * Перевіряє, чи містить контент потенційно шкідливі скрипти
- * @param {string} content - Контент для перевірки
- * @returns {boolean} - true, якщо знайдено небезпечний контент
- */
-function containsScriptTags(content) {
-  if (typeof content !== 'string') return false;
-  
-  // Шаблони для пошуку потенційно шкідливого коду
-  const dangerousPatterns = [
-    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, // <script> теги
-    /javascript:/gi,                                       // javascript: протокол
-    /on\w+\s*=/gi,                                         // onload, onclick і т.д.
-    /document\.cookie/gi,                                  // доступ до кукі
-    /eval\s*\(/gi,                                         // виклики eval
-    /execScript/gi,                                        // execScript
-    /Function\s*\(/gi,                                     // Function constructor
-    /setInterval|setTimeout|setImmediate/gi                // setTimeout і т.д.
-  ];
-  
-  return dangerousPatterns.some(pattern => pattern.test(content));
-}
-
-/**
- * Санітизує вхідний контент від потенційно шкідливих елементів
- * @param {string} content - Контент для санітизації
- * @returns {string} - Очищений контент
- */
-export function sanitizeContent(content) {
-  if (typeof content !== 'string') return '';
-  
-  // Заміна потенційно небезпечних символів на безпечні еквіваленти
-  return content
-    .replace(/<script/gi, '&lt;script')
-    .replace(/<\/script>/gi, '&lt;/script&gt;')
-    .replace(/javascript:/gi, 'javascript_blocked:')
-    .replace(/on\w+\s*=/gi, 'data-blocked-event=');
-}
+// Експортуємо sanitizeContent для зворотної сумісності
+export { sanitizeContent };

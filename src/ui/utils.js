@@ -1,59 +1,87 @@
 /**
- * Функція для обчислення відстані Левенштейна між двома рядками
- * @param {string} a - Перший рядок
- * @param {string} b - Другий рядок
- * @returns {number} Відстань Левенштейна
+ * Утилітарні функції для UI компонентів
  */
-export function levenshteinDistance(a, b) {
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
+import { 
+  levenshteinDistance, 
+  getSimilarity, 
+  areStringSimilar 
+} from '../utils/string-utils.js';
+
+// Експортуємо функції зі string-utils для зворотної сумісності
+export { 
+  levenshteinDistance, 
+  getSimilarity, 
+  areStringSimilar 
+};
+
+/**
+ * Форматує дату у людино-читабельний формат
+ * @param {Date|string} date - Дата для форматування
+ * @param {boolean} includeTime - Чи включати час
+ * @returns {string} Форматована дата
+ */
+export function formatDate(date, includeTime = false) {
+  if (!date) return '';
   
-    const matrix = [];
+  const d = typeof date === 'string' ? new Date(date) : date;
   
-    // Ініціалізуємо матрицю
-    for (let i = 0; i <= b.length; i++) {
-      matrix[i] = [i];
-    }
+  if (isNaN(d.getTime())) return '';
   
-    for (let j = 0; j <= a.length; j++) {
-      matrix[0][j] = j;
-    }
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
   
-    // Заповнюємо матрицю
-    for (let i = 1; i <= b.length; i++) {
-      for (let j = 1; j <= a.length; j++) {
-        const cost = a[j - 1] === b[i - 1] ? 0 : 1;
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1,      // видалення
-          matrix[i][j - 1] + 1,      // вставка
-          matrix[i - 1][j - 1] + cost // заміна
-        );
-      }
-    }
+  let result = `${day}.${month}.${year}`;
   
-    return matrix[b.length][a.length];
+  if (includeTime) {
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    result += ` ${hours}:${minutes}`;
   }
   
-  /**
-   * Функція для обчислення метрики схожості між двома рядками
-   * @param {string} str1 - Перший рядок
-   * @param {string} str2 - Другий рядок
-   * @returns {number} Схожість від 0 до 1, де 1 - повний збіг
-   */
-  export function getSimilarity(str1, str2) {
-    if (!str1 || !str2) return 0;
-    
-    // Приведення до нижнього регістру
-    const s1 = str1.toLowerCase();
-    const s2 = str2.toLowerCase();
-    
-    // Якщо рядки однакові, повертаємо максимальну схожість
-    if (s1 === s2) return 1;
-    
-    // Обчислюємо відстань Левенштейна
-    const distance = levenshteinDistance(s1, s2);
-    
-    // Нормалізуємо відстань по відношенню до довжини найдовшого рядка
-    const maxLength = Math.max(s1.length, s2.length);
-    return 1 - (distance / maxLength);
-  }
+  return result;
+}
+
+/**
+ * Створює ідентифікатор елемента на основі тексту
+ * @param {string} text - Текст для перетворення на ідентифікатор
+ * @returns {string} Безпечний ідентифікатор
+ */
+export function createElementId(text) {
+  if (!text) return 'id-' + Math.random().toString(36).substring(2, 9);
+  
+  return text
+    .toLowerCase()
+    .replace(/[^\w\u0400-\u04FF]+/g, '-') // Заміна не-буквених символів на дефіс
+    .replace(/^-+|-+$/g, '') // Видалення початкових і кінцевих дефісів
+    .substring(0, 30) // Обмеження довжини
+    || 'id-' + Math.random().toString(36).substring(2, 9); // Запасний варіант
+}
+
+/**
+ * Ескейпить HTML-символи для безпечного відображення в DOM
+ * @param {string} html - Текст для ескейпу
+ * @returns {string} Безпечний HTML-текст
+ */
+export function escapeHtml(html) {
+  if (!html) return '';
+  
+  return String(html)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
+ * Скорочує текст до певної довжини з додаванням багатокрапки
+ * @param {string} text - Текст для скорочення
+ * @param {number} maxLength - Максимальна довжина
+ * @returns {string} Скорочений текст
+ */
+export function truncateText(text, maxLength = 100) {
+  if (!text || text.length <= maxLength) return text || '';
+  
+  return text.substring(0, maxLength - 3) + '...';
+}

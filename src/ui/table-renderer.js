@@ -316,7 +316,7 @@ function addMatchTypeIndicators(participant, container) {
       createElement('span', {
         className: 'match-indicator translit-indicator',
         title: 'Знайдено через транслітерацію'
-      }, ' ᴛ')
+      }, 'Т')
     );
   }
   
@@ -326,7 +326,7 @@ function addMatchTypeIndicators(participant, container) {
       createElement('span', {
         className: 'match-indicator split-name-indicator',
         title: 'Автоматично розпізнане склеєне ім\'я'
-      }, ' ｓ')
+      }, 'S')
     );
   }
   
@@ -335,11 +335,12 @@ function addMatchTypeIndicators(participant, container) {
     participant.matchType.includes('reversed') ||
     participant.matchType.includes('reverse')
   ) {
+    // Використовуємо Material Icon замість символу ↔
     container.appendChild(
       createElement('span', {
-        className: 'match-indicator reversed-indicator',
+        className: 'match-indicator reversed-indicator material-icons',
         title: 'Знайдено в базі у зворотному порядку (Ім\'я Прізвище)'
-      }, ' ↔')
+      }, 'swap_horiz')
     );
   }
   
@@ -352,7 +353,7 @@ function addMatchTypeIndicators(participant, container) {
       createElement('span', {
         className: 'match-indicator variant-indicator',
         title: 'Знайдено зменшувальну форму імені'
-      }, ' ᴠ')
+      }, 'V')
     );
   }
   
@@ -362,11 +363,10 @@ function addMatchTypeIndicators(participant, container) {
       createElement('span', {
         className: 'match-indicator auto-indicator',
         title: 'Автоматично знайдене співпадіння'
-      }, ' ᴀ')
+      }, 'А')
     );
   }
 }
-
 /**
  * Створює контейнер з альтернативними варіантами
  * @param {Object} participant - Інформація про учасника

@@ -1,43 +1,53 @@
 /* Стилі для стовпця індикаторів */
 .indicators-cell {
-    width: 50px;
-    min-width: 50px;
-    text-align: center;
-  }
-  
-  /* Контейнер з індикаторами */
-  .indicators-container {
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    flex-wrap: wrap;
-  }
-  
-  /* Базовий стиль для іконок індикаторів */
-  .indicator-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    font-size: 16px;
-    color: white;
-  }
-  
-  /* Стилі для різних типів індикаторів */
-  .indicator-icon.translit {
-    background-color: #9400d3;
-  }
-  
-  .indicator-icon.reversed {
-    background-color: #ff9900;
-  }
-  
-  .indicator-icon.variant {
-    background-color: #00b400;
-  }
-  
-  .indicator-icon.auto-match {
-    background-color: #ff3366;
-  }
+  width: 50px;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* Контейнер з індикаторами */
+.indicators-container {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* Стилі для індикаторів біля імен */
+.match-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  font-weight: bold;
+  font-family: "Consolas", monospace;
+  font-size: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.match-indicator.translit-indicator {
+  background-color: #9400d3;
+}
+
+.match-indicator.reversed-indicator {
+  background-color: #ff9900;
+  font-family: 'Material Icons';
+  font-size: 14px;
+}
+
+.match-indicator.variant-indicator {
+  background-color: #00b400;
+}
+
+.match-indicator.auto-indicator {
+  background-color: #ff3366;
+}
+
+.match-indicator.split-name-indicator {
+  background-color: #ff6600;
+}

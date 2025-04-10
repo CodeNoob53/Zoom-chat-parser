@@ -157,12 +157,34 @@
                 знайдено в базі
               </div>
               <div>
-                <span class="legend-dot translit" aria-hidden="true"></span>
+                <span class="legend-indicator translit" aria-hidden="true"
+                  >Т</span
+                >
                 Знайдено через транслітерацію
               </div>
               <div>
-                <span class="legend-dot reversed" aria-hidden="true"></span>
+                <span class="legend-indicator reversed" aria-hidden="true"
+                  >↔</span
+                >
                 Знайдено в зворотному порядку (Ім'я Прізвище)
+              </div>
+              <div>
+                <span class="legend-indicator variant" aria-hidden="true"
+                  >V</span
+                >
+                Знайдено зменшувальну форму імені
+              </div>
+              <div>
+                <span class="legend-indicator auto-match" aria-hidden="true"
+                  >А</span
+                >
+                Автоматично знайдене співпадіння
+              </div>
+              <div>
+                <span class="legend-indicator split-name" aria-hidden="true"
+                  >S</span
+                >
+                Автоматично розпізнане склеєне ім'я
               </div>
             </div>
 
@@ -237,21 +259,53 @@
 
             <div class="aero-footer">
               <div class="database-actions">
-                <button id="dbAddBtn" type="button" class="primary-button" aria-label="Додати новий запис">
-                  <span class="material-icons" aria-hidden="true">add</span> Додати запис
+                <button
+                  id="dbAddBtn"
+                  type="button"
+                  class="primary-button"
+                  aria-label="Додати новий запис"
+                >
+                  <span class="material-icons" aria-hidden="true">add</span>
+                  Додати запис
                 </button>
-                
+
                 <div class="import-export-buttons">
-                  <button id="dbImportBtn" type="button" aria-label="Імпортувати базу">
-                    <span class="material-icons" aria-hidden="true">download</span> Імпорт
+                  <button
+                    id="dbImportBtn"
+                    type="button"
+                    aria-label="Імпортувати базу"
+                  >
+                    <span class="material-icons" aria-hidden="true"
+                      >download</span
+                    >
+                    Імпорт
                   </button>
-                  <button id="dbExportCsvBtn" type="button" aria-label="Експортувати базу в CSV">
-                    <span class="material-icons" aria-hidden="true">upload</span> CSV
+                  <button
+                    id="dbExportCsvBtn"
+                    type="button"
+                    aria-label="Експортувати базу в CSV"
+                  >
+                    <span class="material-icons" aria-hidden="true"
+                      >upload</span
+                    >
+                    CSV
                   </button>
-                  <button id="dbExportJsonBtn" type="button" aria-label="Експортувати базу в JSON">
-                    <span class="material-icons" aria-hidden="true">upload</span> JSON
+                  <button
+                    id="dbExportJsonBtn"
+                    type="button"
+                    aria-label="Експортувати базу в JSON"
+                  >
+                    <span class="material-icons" aria-hidden="true"
+                      >upload</span
+                    >
+                    JSON
                   </button>
-                  <input type="file" id="dbImportFile" accept=".csv,.json,.txt" style="display: none;">
+                  <input
+                    type="file"
+                    id="dbImportFile"
+                    accept=".csv,.json,.txt"
+                    style="display: none"
+                  />
                 </div>
               </div>
             </div>

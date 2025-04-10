@@ -1,0 +1,229 @@
+/* Оновлені стилі для вкладки парсера */
+
+/* Покращене текстове поле */
+textarea#chatInput {
+    width: 100%;
+    min-height: 150px;
+    background: rgba(35, 35, 35, 0.6);
+    color: #f0f0f0;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    margin-bottom: 15px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  textarea#chatInput:focus {
+    border-color: #4da6fa;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(77, 166, 250, 0.25), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Стилізація завантаження файлу */
+  .file-upload {
+    width: 100%;
+    margin-bottom: 15px;
+    position: relative;
+  }
+  
+  .file-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px;
+    background: rgba(50, 50, 50, 0.7);
+    color: #e0e0e0;
+    border: 1px dashed #666;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .file-upload-label:hover {
+    background: rgba(60, 60, 60, 0.7);
+    border-color: #4da6fa;
+  }
+  
+  .file-upload-label .material-icons {
+    font-size: 20px;
+  }
+  
+  .file-upload input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  /* Покращений блок для ключового слова */
+  .keyword-block {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(40, 40, 40, 0.4);
+    border-radius: 6px;
+    border: 1px solid #444;
+  }
+  
+  .keyword-block label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .keyword-block input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #4da6fa;
+  }
+  
+  .keyword-block input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    background: rgba(35, 35, 35, 0.6);
+    color: #f0f0f0;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .keyword-block input[type="text"]:focus {
+    border-color: #4da6fa;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(77, 166, 250, 0.25);
+  }
+  
+  /* Покращений футер парсера */
+  .parser-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  /* Кнопка парсингу */
+  #parseBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #4da6fa;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  #parseBtn:hover {
+    background: #3b8fe3;
+  }
+  
+  #parseBtn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  #parseBtn .material-icons {
+    font-size: 18px;
+  }
+  
+  /* Статус бази даних */
+  .db-status {
+    padding: 8px 12px;
+    background: rgba(50, 50, 50, 0.7);
+    color: #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .db-status.loaded {
+    background: rgba(77, 166, 250, 0.15);
+    color: #4da6fa;
+    border: 1px solid rgba(77, 166, 250, 0.3);
+  }
+  
+  .db-status.loaded::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #4da6fa;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  
+  /* Адаптація для світлої теми */
+  body.light-theme textarea#chatInput {
+    background: rgba(245, 245, 245, 0.8);
+    color: #333;
+    border-color: #ccc;
+  }
+  
+  body.light-theme .file-upload-label {
+    background: rgba(240, 240, 240, 0.8);
+    color: #333;
+    border-color: #ccc;
+  }
+  
+  body.light-theme .file-upload-label:hover {
+    background: rgba(230, 230, 230, 0.8);
+    border-color: #007bff;
+  }
+  
+  body.light-theme .keyword-block {
+    background: rgba(240, 240, 240, 0.5);
+    border-color: #ddd;
+  }
+  
+  body.light-theme .keyword-block input[type="text"] {
+    background: white;
+    color: #333;
+    border-color: #ccc;
+  }
+  
+  body.light-theme #parseBtn {
+    background: #007bff;
+  }
+  
+  body.light-theme #parseBtn:hover {
+    background: #0069d9;
+  }
+  
+  body.light-theme .db-status {
+    background: rgba(240, 240, 240, 0.8);
+    color: #666;
+  }
+  
+  body.light-theme .db-status.loaded {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+    border-color: rgba(0, 123, 255, 0.3);
+  }
+  
+  body.light-theme .db-status.loaded::before {
+    background-color: #007bff;
+  }

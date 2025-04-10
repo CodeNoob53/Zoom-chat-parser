@@ -79,7 +79,23 @@ export function loadDatabase() {
  */
 export function saveDatabase() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(databaseData));
+    // Переконаємося, що дані серіалізуються правильно
+    const serializedData = JSON.stringify(databaseData);
+    
+    // Логуємо для налагодження
+    console.log(`Зберігаємо базу даних в localStorage: ${serializedData.length} байт`);
+    
+    // Зберігаємо в localStorage
+    localStorage.setItem(STORAGE_KEY, serializedData);
+    
+    // Перевіряємо збереження
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (!savedData) {
+      console.error('Дані не збережені в localStorage!');
+      return false;
+    }
+    
+    console.log('База даних успішно збережена в localStorage');
     return true;
   } catch (error) {
     console.error('Помилка збереження бази даних:', error);

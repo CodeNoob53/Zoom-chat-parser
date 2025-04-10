@@ -197,11 +197,44 @@ export function getUnrecognizedNames () {
  * Отримати поточну базу імен
  * @returns {Object} Об'єкт бази імен
  */
-export function getNameDatabase () {
+export function getNameDatabase() {
+  // Отримуємо оновлену базу з модуля database-service.js
+  import('../database/database-service.js').then(module => {
+    const oldFormatDb = module.getOldFormatDatabase();
+    if (Object.keys(oldFormatDb).length > 0) {
+      // Оновлюємо локальну базу
+      nameDatabase = oldFormatDb;
+      console.log(`getNameDatabase: Отримано оновлену базу з ${Object.keys(nameDatabase).length} записів`);
+    }
+  }).catch(err => {
+    console.error('Помилка отримання оновленої бази:', err);
+  });
+  
   console.log(`getNameDatabase: Повертає базу з ${Object.keys(nameDatabase).length} записів`);
   return nameDatabase;
 }
 
+/**
+ * Синхронізувати базу імен з базою даних
+ */
+export function syncNameDatabase() {
+  // Отримуємо посилання на функцію getOldFormatDatabase
+  const { getOldFormatDatabase } = require('../database/database-service.js');
+  
+  // Отримуємо базу в старому форматі
+  const oldFormatDb = getOldFormatDatabase();
+  
+  // Перевіряємо, чи є записи
+  if (Object.keys(oldFormatDb).length > 0) {
+    // Встановлюємо базу для використання
+    nameDatabase = oldFormatDb;
+    console.log(`syncNameDatabase: База синхронізована, ${Object.keys(nameDatabase).length} записів`);
+    return true;
+  }
+  
+  console.log('syncNameDatabase: Нема записів для синхронізації');
+  return false;
+}
 /**
  * Отримати повну інформацію про учасника з бази
  * @param {string} name - Ім'я учасника з чату

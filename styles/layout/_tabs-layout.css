@@ -69,6 +69,8 @@ textarea#chatInput {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    height: 73px;
+    justify-content: space-between;
     gap: 10px;
     margin-bottom: 20px;
     padding: 15px;

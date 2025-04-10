@@ -198,9 +198,15 @@ function renderParticipantRow(
   }
   
   // Додаємо клас "has-alternatives", якщо є альтернативи
-  const hasAlternatives = !participant.foundInDb && 
-    (participant.alternativeMatches || 
-     recommendations[participant.nickname]);
+  // ВИПРАВЛЕНО: Перевіряємо не лише наявність масиву alternatives, але й що він не порожній
+  const hasRealAlternatives = participant.alternativeMatches && 
+                             participant.alternativeMatches.length > 0;
+  
+  // ВИПРАВЛЕНО: Перевіряємо не лише наявність recommendations, але й що масив рекомендацій не порожній
+  const hasRealRecommendations = recommendations[participant.nickname] && 
+                                recommendations[participant.nickname].length > 0;
+  
+  const hasAlternatives = !participant.foundInDb && (hasRealAlternatives || hasRealRecommendations);
   
   if (hasAlternatives) {
     rowClasses.push('has-alternatives');
@@ -384,13 +390,49 @@ function createAlternativesContainer(participant, recsList) {
   }
   
   // Додаємо рекомендації
-  if (recsList.length > 0) {
+  if (recsList && recsList.length > 0) {
     const recsAsAlternatives = recsList.map(rec => ({
       dbName: rec.dbName,
       id: rec.id,
       quality: Math.round(rec.similarity * 100)
     }));
     alternativesList.push(...recsAsAlternatives);
+  }
+  
+  // ВИПРАВЛЕНО: Перевіряємо, чи є хоч якісь альтернативи
+  if (alternativesList.length === 0) {
+    // Якщо немає альтернатив, додаємо повідомлення про це
+    alternativesContainer.appendChild(
+      createElement('div', { 
+        className: 'no-alternatives',
+        style: { 
+          padding: '10px',
+          textAlign: 'center',
+          color: '#999'
+        }
+      }, 'Немає варіантів для вибору. Використовуйте кнопку "Призначити вручну".')
+    );
+    
+    // Додаємо кнопку ручного призначення
+    const manualButtonContainer = createElement('div', { 
+      style: { 
+        textAlign: 'center',
+        marginTop: '10px'
+      }
+    });
+    
+    const manualButton = createElement('button', {
+      className: 'manual-assign-btn',
+      onclick: (e) => {
+        e.stopPropagation();
+        showAssignmentModal(participant.nickname);
+      }
+    }, 'Призначити вручну');
+    
+    manualButtonContainer.appendChild(manualButton);
+    alternativesContainer.appendChild(manualButtonContainer);
+    
+    return alternativesContainer;
   }
   
   // Усуваємо дублікати за ID
@@ -406,6 +448,42 @@ function createAlternativesContainer(participant, recsList) {
   
   // Сортуємо за якістю
   uniqueAlternatives.sort((a, b) => (b.quality || 0) - (a.quality || 0));
+  
+  // Перевіряємо, чи залишились варіанти після фільтрації
+  if (uniqueAlternatives.length === 0) {
+    // Якщо після фільтрації не залишилось варіантів, показуємо повідомлення
+    alternativesContainer.appendChild(
+      createElement('div', { 
+        className: 'no-alternatives',
+        style: { 
+          padding: '10px',
+          textAlign: 'center',
+          color: '#999'
+        }
+      }, 'Немає унікальних варіантів для вибору. Використовуйте кнопку "Призначити вручну".')
+    );
+    
+    // Додаємо кнопку ручного призначення
+    const manualButtonContainer = createElement('div', { 
+      style: { 
+        textAlign: 'center',
+        marginTop: '10px'
+      }
+    });
+    
+    const manualButton = createElement('button', {
+      className: 'manual-assign-btn',
+      onclick: (e) => {
+        e.stopPropagation();
+        showAssignmentModal(participant.nickname);
+      }
+    }, 'Призначити вручну');
+    
+    manualButtonContainer.appendChild(manualButton);
+    alternativesContainer.appendChild(manualButtonContainer);
+    
+    return alternativesContainer;
+  }
   
   // Створюємо елементи для альтернатив
   uniqueAlternatives.forEach(alt => {

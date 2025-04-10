@@ -467,6 +467,9 @@ export function importDatabase(data) {
     // Зберігаємо базу даних
     saveDatabase();
     
+    // Сповіщаємо про оновлення бази даних
+    dispatchDatabaseUpdateEvent();
+    
     return true;
   } catch (error) {
     console.error('Помилка імпорту бази даних:', error);
@@ -474,6 +477,17 @@ export function importDatabase(data) {
   }
 }
 
+/**
+ * Сповіщає про оновлення бази даних
+ */
+function dispatchDatabaseUpdateEvent() {
+  const event = new CustomEvent('databaseUpdated', {
+    detail: { databaseSize: databaseData.entries.length }
+  });
+  document.dispatchEvent(event);
+  
+  console.log('Сповіщення про оновлення бази даних відправлено');
+}
 /**
  * Оновити статус відображення бази даних
  * @param {HTMLElement} statusElement - Елемент для відображення статусу

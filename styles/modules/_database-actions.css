@@ -1,144 +1,187 @@
 /* Стилі для кнопок дій бази даних */
 .database-actions {
-    display: flex;
-    justify-content: space-between;
-    margin: 20px 0;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.database-actions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+/* Оновлений контейнер пошуку */
+.search-container {
+  max-width: 250px;
+  position: relative;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 8px;
+  color: #666;
+  font-size: 18px;
+  pointer-events: none;
+}
+
+.import-export-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Кнопка додавання запису */
+#dbAddBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #4da6fa;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.import-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+#dbAddBtn:hover {
+  background-color: #3b8adc;
+}
+
+#dbAddBtn:active {
+  transform: translateY(1px);
+}
+
+#dbAddBtn .material-icons {
+  font-size: 1.2rem;
+}
+
+.import-export-buttons button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.import-export-buttons button:hover {
+  background-color: #666;
+}
+
+.import-export-buttons button:active {
+  transform: translateY(1px);
+}
+
+.import-export-buttons .material-icons {
+  font-size: 1rem;
+}
+
+#dbExportCsvBtn {
+  background-color: #28a745;
+  color: white;
+}
+
+#dbExportJsonBtn {
+  background-color: #ffc107;
+  color: #333;
+}
+
+#dbImportBtn {
+  background-color: #6c757d;
+}
+
+#dbExportCsvBtn:hover {
+  background-color: #218838;
+}
+
+#dbExportJsonBtn:hover {
+  background-color: #e0a800;
+}
+
+#dbImportBtn:hover {
+  background-color: #5a6268;
+}
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 576px) {
+  .database-actions {
+    flex-direction: column;
   }
-  
+
   .import-export-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
   }
-  
-  #dbAddBtn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #4da6fa;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 16px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-  }
-  
-  #dbAddBtn:hover {
-    background-color: #3b8adc;
-  }
-  
-  #dbAddBtn:active {
-    transform: translateY(1px);
-  }
-  
-  #dbAddBtn .material-icons {
-    font-size: 1.2rem;
-  }
-  
+
+  #dbAddBtn,
   .import-export-buttons button {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background-color: #555;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 12px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
   }
-  
-  .import-export-buttons button:hover {
-    background-color: #666;
-  }
-  
-  .import-export-buttons button:active {
-    transform: translateY(1px);
-  }
-  
-  .import-export-buttons .material-icons {
-    font-size: 1rem;
-  }
-  
-  #dbExportCsvBtn {
-    background-color: #28a745;
-    color: white;
-  }
-  
-  #dbExportJsonBtn {
-    background-color: #ffc107;
-    color: #333;
-  }
-  
-  #dbImportBtn {
-    background-color: #6c757d;
-  }
-  
-  #dbExportCsvBtn:hover {
-    background-color: #218838;
-  }
-  
-  #dbExportJsonBtn:hover {
-    background-color: #e0a800;
-  }
-  
-  #dbImportBtn:hover {
-    background-color: #5a6268;
-  }
-  
-  /* Адаптивність для мобільних пристроїв */
-  @media (max-width: 576px) {
-    .database-actions {
-      flex-direction: column;
-    }
-    
-    .import-export-buttons {
-      width: 100%;
-      justify-content: space-between;
-    }
-    
-    #dbAddBtn, 
-    .import-export-buttons button {
-      width: 100%;
-      justify-content: center;
-      padding: 10px;
-    }
-  }
-  
-  /* Стилі для світлої теми */
-  body.light-theme #dbAddBtn {
-    background-color: #007bff;
-  }
-  
-  body.light-theme #dbAddBtn:hover {
-    background-color: #0069d9;
-  }
-  
-  body.light-theme .import-export-buttons button {
-    background-color: #e2e2e2;
-    color: #333;
-  }
-  
-  body.light-theme .import-export-buttons button:hover {
-    background-color: #d0d0d0;
-  }
-  
-  body.light-theme #dbExportCsvBtn {
-    background-color: #28a745;
-    color: white;
-  }
-  
-  body.light-theme #dbExportJsonBtn {
-    background-color: #ffc107;
-    color: #333;
-  }
-  
-  body.light-theme #dbImportBtn {
-    background-color: #6c757d;
-    color: white;
-  }
+}
+
+/* Стилі для світлої теми */
+body.light-theme #dbAddBtn {
+  background-color: #007bff;
+}
+
+body.light-theme #dbAddBtn:hover {
+  background-color: #0069d9;
+}
+
+body.light-theme .import-export-buttons button {
+  background-color: #e2e2e2;
+  color: #333;
+}
+
+body.light-theme .import-export-buttons button:hover {
+  background-color: #d0d0d0;
+}
+
+body.light-theme #dbExportCsvBtn {
+  background-color: #28a745;
+  color: white;
+}
+
+body.light-theme #dbExportJsonBtn {
+  background-color: #ffc107;
+  color: #333;
+}
+
+body.light-theme #dbImportBtn {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Світла тема */
+body.light-theme #dbSearchInput {
+  background: #fff;
+  color: #333;
+  border-color: #ddd;
+}
+
+body.light-theme .search-icon {
+  color: #999;
+}

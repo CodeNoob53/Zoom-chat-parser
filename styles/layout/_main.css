@@ -1,3 +1,9 @@
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 main {
   flex: 1;
   padding: clamp(1rem, 2vw, 2rem);
@@ -6,17 +12,17 @@ main {
   width: 100%;
   display: flex;
   justify-content: center;
-  min-height: calc(100vh - 120px); /* Враховуємо приблизну висоту header та footer */
+  min-height: calc(
+    100vh - 120px
+  ); /* Враховуємо приблизну висоту header та footer */
 }
 
 /* Оновлені стилі для .aero-panel */
 .aero-panel {
-  background: rgba(61, 61, 61, 0.6);
+  background: var(--aero-panel-background);
   border: 1px solid #666;
   border-radius: 8px;
-  box-shadow: 3px 3px 10px #000000d3, 
-              -3px -3px 10px #4b4b4b, 
-              0 0 4px #ffffff33;
+  box-shadow: 3px 3px 10px #000000d3, -3px -3px 10px #4b4b4b, 0 0 4px #ffffff33;
   width: 100%;
   max-width: 900px;
   min-height: 600px;

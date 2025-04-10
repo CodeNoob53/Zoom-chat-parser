@@ -1,12 +1,13 @@
 body.light-theme {
+  --aero-panel-background: rgba(206, 206, 206, 0.6);
   --color-background-primary: #f4f4f4;
   --color-background-secondary: #ffffff;
-  --color-text-primary: #333;
+  --color-text-primary: #b85151;
   --color-accent-primary: #007bff;
   --color-accent-secondary: #28a745;
 
-  background: #f4f4f4;
-  color: #333;
+  color: 
+  #ffffff;
 }
 
 body.light-theme a {

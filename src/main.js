@@ -143,6 +143,28 @@ function tryUseManagerDatabase () {
   }
 }
 
+// Додаємо обробник події оновлення бази даних
+document.addEventListener('databaseUpdated', (e) => {
+  console.log('Отримано подію оновлення бази даних:', e.detail);
+  
+  // Отримуємо останню версію бази даних
+  const nameDatabase = getNameDatabase();
+  
+  // Оновлюємо статус бази даних
+  updateDbStatus(e.detail.databaseSize);
+  
+  // Якщо є відображені імена, оновлюємо список
+  if (displayedNames.length > 0) {
+    // Порівнюємо імена з базою
+    compareNames(displayedNames, getRealNameMap());
+    
+    // Оновлюємо відображення
+    rerender();
+    
+    console.log('Список учасників оновлено з новою базою даних');
+  }
+});
+
 /**
  * Оновити статус бази даних
  * @param {number} entriesCount - Кількість записів у базі
@@ -163,50 +185,52 @@ function updateDbStatus (entriesCount) {
 /**
  * Обробник кнопки парсингу
  */
-function handleParse () {
-  const { chatInput, useKeywordChk, keywordInput } = elements
+function handleParse() {
+  const { chatInput, useKeywordChk, keywordInput } = elements;
 
-  const text = chatInput.value
+  const text = chatInput.value;
   if (!text.trim()) {
-    showNotification('Вставте текст чату або завантажте файл!', 'warning')
-    return
+    showNotification('Вставте текст чату або завантажте файл!', 'warning');
+    return;
   }
 
   // Отримуємо ключове слово, якщо вказано
   const keyword =
-    useKeywordChk && useKeywordChk.checked ? keywordInput.value.trim() : ''
+    useKeywordChk && useKeywordChk.checked ? keywordInput.value.trim() : '';
 
   // Парсимо чат
-  const parseResult = parseChat(text, keyword)
-  displayedNames = parseResult.displayedNames
+  const parseResult = parseChat(text, keyword);
+  displayedNames = parseResult.displayedNames;
 
-  // Перевіряємо наявність бази даних
-  const nameDatabase = getNameDatabase()
-  const hasDatabaseEntries = Object.keys(nameDatabase).length > 0
+  // Завжди отримуємо свіжу версію бази даних
+  const nameDatabase = getNameDatabase();
+  console.log(`Отримано базу даних з ${Object.keys(nameDatabase).length} записів`);
+  
+  const hasDatabaseEntries = Object.keys(nameDatabase).length > 0;
 
   // Якщо є база даних, порівнюємо імена
   if (hasDatabaseEntries) {
     // Змінюємо виклик matchNames на compareNames
-    compareNames(displayedNames, getRealNameMap())
+    compareNames(displayedNames, getRealNameMap());
 
     // Отримуємо кількість нерозпізнаних імен
-    const unrecognizedNames = getUnrecognizedNames()
+    const unrecognizedNames = getUnrecognizedNames();
     if (unrecognizedNames.length > 0) {
       showNotification(
         `Парсинг завершено! Знайдено ${displayedNames.length} імен, ${unrecognizedNames.length} не розпізнано.`,
         'success'
-      )
+      );
     } else {
       showNotification(
         `Парсинг завершено! Всі ${displayedNames.length} імен знайдено в базі.`,
         'success'
-      )
+      );
     }
   } else {
     showNotification(
       `Парсинг завершено! Імен знайдено: ${displayedNames.length}`,
       'success'
-    )
+    );
   }
 
   // Відображаємо результати
@@ -215,14 +239,14 @@ function handleParse () {
     getRealNameMap(),
     hasDatabaseEntries,
     getMatchedNames()
-  )
+  );
 
   // Перемикаємося на вкладку "Учасники"
   const participantsTabBtn = document.querySelector(
     '.tab-button[data-tab="participants"]'
-  )
+  );
   if (participantsTabBtn) {
-    participantsTabBtn.click()
+    participantsTabBtn.click();
   }
 }
 

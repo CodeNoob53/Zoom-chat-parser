@@ -25,7 +25,54 @@ export function initImportExportButtons() {
   // Обробник кнопки імпорту
   if (importBtn && importFile) {
     importBtn.addEventListener('click', () => {
+      console.log('Кнопка імпорту натиснута, відкриваємо діалог вибору файлу');
       importFile.click();
+    });
+    
+    // Перевіряємо, чи обробник файлу правильно встановлено
+    importFile.addEventListener('change', (e) => {
+      console.log('Файл вибрано:', e.target.files[0]?.name);
+      
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      // Читаємо файл
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target.result;
+        console.log('Файл прочитано, визначаємо формат');
+        
+        // Визначаємо формат файлу
+        let format = 'txt';
+        if (file.name.endsWith('.json')) {
+          format = 'json';
+        } else if (file.name.endsWith('.csv')) {
+          format = 'csv';
+        }
+        
+        // Викликаємо відповідну функцію імпорту
+        console.log('Формат файлу:', format);
+        
+        try {
+          if (format === 'json') {
+            importJson(content);
+          } else if (format === 'csv') {
+            importCsv(content);
+          } else {
+            importTxt(content);
+          }
+          console.log('Імпорт успішно завершено');
+        } catch (error) {
+          console.error('Помилка під час імпорту:', error);
+        }
+      };
+      
+      reader.onerror = (error) => {
+        console.error('Помилка читання файлу:', error);
+      };
+      
+      // Читаємо файл як текст
+      reader.readAsText(file);
     });
   }
   
@@ -43,6 +90,8 @@ export function initImportExportButtons() {
     });
   }
 }
+
+// Додаємо в файл `src/database/database-import-export.js`
 
 /**
  * Імпортувати дані з JSON
@@ -65,6 +114,39 @@ export function importJson(content) {
         // Повідомляємо про успіх
         const entriesCount = data.entries ? data.entries.length : data.database.length;
         showNotification(`Імпортовано ${entriesCount} записів з JSON`, 'success');
+        
+        // Перевіряємо, чи є відображені імена
+        import('../main.js').then(module => {
+          if (module.displayedNames && module.displayedNames.length > 0) {
+            console.log('Виявлено відображені імена, повторне порівняння з базою');
+            
+            // Повторно порівнюємо імена з базою
+            import('../name-processing/name-database.js').then(dbModule => {
+              const { compareNames, getMatchedNames } = dbModule;
+              import('../parser/parser.js').then(parserModule => {
+                const { getRealNameMap } = parserModule;
+                
+                compareNames(module.displayedNames, getRealNameMap());
+                
+                // Оновлюємо відображення
+                import('../ui/renderer.js').then(rendererModule => {
+                  const { updateNamesList } = rendererModule;
+                  
+                  updateNamesList(
+                    module.displayedNames,
+                    getRealNameMap(),
+                    true,
+                    getMatchedNames()
+                  );
+                  
+                  console.log('Список учасників оновлено з новою базою даних');
+                });
+              });
+            });
+          }
+        }).catch(err => {
+          console.error('Помилка при імпорті модулів:', err);
+        });
       } else {
         showNotification('Помилка імпорту JSON', 'error');
       }

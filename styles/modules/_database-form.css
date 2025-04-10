@@ -85,21 +85,14 @@
     background: #2c8ad7;
   }
   
-  /* Стилі для пошуку в базі */
-  .search-container {
-    display: flex;
-    gap: 0.5rem;
-    margin-left: auto;
-  }
-  
   #dbSearchInput {
-    padding: 0.5rem;
-    background: #252525;
-    color: #f0f0f0;
-    border: 1px solid #555;
+    padding: 8px 8px 8px 32px;
+    width: 100%;
     border-radius: 4px;
-    font-size: 0.9rem;
-    width: 200px;
+    border: 1px solid #444;
+    background: #252525;
+    color: #fff;
+    font-size: 14px;
   }
   
   #dbSearchBtn {

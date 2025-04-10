@@ -22,12 +22,11 @@
   /* Адаптивний дизайн для малих екранів */
   @media (max-width: 576px) {
     .parser-footer {
-      flex-direction: column;
       gap: 0.5rem;
     }
     
     .parser-footer .db-status {
-      width: 100%;
+
       text-align: center;
     }
   }

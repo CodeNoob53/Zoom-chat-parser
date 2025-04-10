@@ -14,12 +14,7 @@
       sizes="180x180"
       href="assets/favico/apple-touch-icon.png"
     />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="assets/favico/favicon-192x192.png"
-    />
+
     <link
       rel="icon"
       type="image/png"
@@ -32,8 +27,6 @@
       sizes="16x16"
       href="assets/favico/favicon-16x16.png"
     />
-    <link rel="manifest" href="assets/favico/site.webmanifest" />
-
     <!-- Google tag (gtag.js) -->
     <script
       async
@@ -259,18 +252,33 @@
           </div>
 
           <!-- Вкладка "База" -->
+          <!-- Змінена вкладка "База" -->
           <div class="tab-content" id="database-tab">
             <div class="database-header">
-              <div class="search-container">
-                <input
-                  type="text"
-                  id="dbSearchInput"
-                  placeholder="Пошук у базі..."
-                  aria-label="Пошук у базі імен"
-                />
-                <button id="dbSearchBtn" aria-label="Шукати">
-                  <span class="material-icons">search</span>
+              <div class="database-actions-header">
+                <button
+                  id="dbAddBtn"
+                  type="button"
+                  class="primary-button"
+                  aria-label="Додати новий запис"
+                >
+                  <span class="material-icons" aria-hidden="true"
+                    >person_add</span
+                  >
+                  Додати запис
                 </button>
+
+                <div class="search-container">
+                  <div class="search-input-wrapper">
+                    <span class="material-icons search-icon">search</span>
+                    <input
+                      type="text"
+                      id="dbSearchInput"
+                      placeholder="Пошук у базі..."
+                      aria-label="Пошук у базі імен"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -297,17 +305,7 @@
 
             <div class="aero-footer">
               <div class="database-actions">
-                <button
-                  id="dbAddBtn"
-                  type="button"
-                  class="primary-button"
-                  aria-label="Додати новий запис"
-                >
-                  <span class="material-icons" aria-hidden="true">add</span>
-                  Додати запис
-                </button>
-
-                <div class="import-export-buttons">
+                <div class="import-buttons">
                   <button
                     id="dbImportBtn"
                     type="button"
@@ -318,6 +316,15 @@
                     >
                     Імпорт
                   </button>
+                  <input
+                    type="file"
+                    id="dbImportFile"
+                    accept=".csv,.json,.txt"
+                    style="display: none"
+                  />
+                </div>
+
+                <div class="export-buttons">
                   <button
                     id="dbExportCsvBtn"
                     type="button"
@@ -338,12 +345,6 @@
                     >
                     JSON
                   </button>
-                  <input
-                    type="file"
-                    id="dbImportFile"
-                    accept=".csv,.json,.txt"
-                    style="display: none"
-                  />
                 </div>
               </div>
             </div>

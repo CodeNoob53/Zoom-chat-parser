@@ -10,14 +10,8 @@ import { renderDatabaseTable } from './database-table.js';
  */
 export function initDatabaseSearch() {
   const searchInput = document.getElementById('dbSearchInput');
-  const searchBtn = document.getElementById('dbSearchBtn');
   
-  if (!searchInput || !searchBtn) return;
-  
-  // Обробник кнопки пошуку
-  searchBtn.addEventListener('click', () => {
-    performSearch(searchInput.value);
-  });
+  if (!searchInput) return;
   
   // Обробник натискання Enter у полі пошуку
   searchInput.addEventListener('keypress', (e) => {
@@ -27,21 +21,132 @@ export function initDatabaseSearch() {
     }
   });
   
-  // Обробник зміни тексту в полі пошуку
+  // Спрощений обробник зміни тексту
   searchInput.addEventListener('input', () => {
-    // Для реалізації "живого пошуку" додамо debounce
     clearTimeout(searchInput.debounceTimer);
     
-    // Якщо поле порожнє, показуємо всі записи
-    if (!searchInput.value.trim()) {
-      renderDatabaseTable();
-      return;
+    searchInput.debounceTimer = setTimeout(() => {
+      const searchText = searchInput.value.trim();
+      
+      try {
+        // Простіший підхід до оновлення таблиці
+        const databaseList = document.getElementById('databaseList');
+        if (!databaseList) return;
+        
+        if (searchText === '') {
+          // Показати всі записи
+          import('../database/database-service.js').then(module => {
+            const entries = module.getAllEntries();
+            renderEntriesToTable(entries, databaseList);
+          });
+        } else {
+          // Шукати за текстом
+          import('../database/database-service.js').then(module => {
+            const entries = module.searchEntries(searchText);
+            renderEntriesToTable(entries, databaseList);
+          });
+        }
+      } catch (error) {
+        console.error('Помилка при пошуку:', error);
+      }
+    }, 300);
+  });
+}
+
+/**
+ * Відображає записи в таблиці більш простим способом
+ * @param {Array} entries - Записи для відображення
+ * @param {HTMLElement} tableBody - Тіло таблиці
+ */
+function renderEntriesToTable(entries, tableBody) {
+  // Очищаємо таблицю
+  tableBody.innerHTML = '';
+  
+  if (entries.length === 0) {
+    // Показуємо повідомлення про відсутність результатів
+    const emptyRow = document.createElement('tr');
+    const emptyCell = document.createElement('td');
+    emptyCell.colSpan = 5;
+    emptyCell.style.textAlign = 'center';
+    emptyCell.style.padding = '20px';
+    emptyCell.textContent = 'Немає результатів для відображення';
+    emptyRow.appendChild(emptyCell);
+    tableBody.appendChild(emptyRow);
+    return;
+  }
+  
+  // Додаємо рядки для записів
+  entries.forEach(entry => {
+    const row = document.createElement('tr');
+    row.dataset.id = entry.id;
+    
+    // ID
+    const idCell = document.createElement('td');
+    idCell.textContent = entry.id;
+    row.appendChild(idCell);
+    
+    // Прізвище
+    const surnameCell = document.createElement('td');
+    surnameCell.textContent = entry.surname;
+    row.appendChild(surnameCell);
+    
+    // Ім'я
+    const firstnameCell = document.createElement('td');
+    firstnameCell.textContent = entry.firstname;
+    row.appendChild(firstnameCell);
+    
+    // Нікнейми
+    const nicknamesCell = document.createElement('td');
+    const nicknamesPills = document.createElement('div');
+    nicknamesPills.className = 'nickname-pills';
+    
+    if (entry.nicknames && entry.nicknames.length > 0) {
+      entry.nicknames.forEach(nickname => {
+        if (nickname) {
+          const pill = document.createElement('span');
+          pill.className = 'nickname-pill';
+          pill.textContent = nickname;
+          nicknamesPills.appendChild(pill);
+        }
+      });
     }
     
-    // Затримка для зменшення навантаження при швидкому введенні
-    searchInput.debounceTimer = setTimeout(() => {
-      performSearch(searchInput.value, true);
-    }, 300);
+    nicknamesCell.appendChild(nicknamesPills);
+    row.appendChild(nicknamesCell);
+    
+    // Дії
+    const actionsCell = document.createElement('td');
+    const actions = document.createElement('div');
+    actions.className = 'row-actions';
+    
+    // Кнопка редагування
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn';
+    editBtn.title = 'Редагувати';
+    editBtn.onclick = () => editDatabaseEntry(entry.id);
+    
+    const editIcon = document.createElement('span');
+    editIcon.className = 'material-icons';
+    editIcon.textContent = 'edit';
+    editBtn.appendChild(editIcon);
+    
+    // Кнопка видалення
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.title = 'Видалити';
+    deleteBtn.onclick = () => deleteEntryWithConfirmation(entry.id);
+    
+    const deleteIcon = document.createElement('span');
+    deleteIcon.className = 'material-icons';
+    deleteIcon.textContent = 'delete';
+    deleteBtn.appendChild(deleteIcon);
+    
+    actions.appendChild(editBtn);
+    actions.appendChild(deleteBtn);
+    actionsCell.appendChild(actions);
+    row.appendChild(actionsCell);
+    
+    tableBody.appendChild(row);
   });
 }
 

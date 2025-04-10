@@ -52,7 +52,7 @@
   
   /* Стилі для кнопок імпорту/експорту бази */
   .db-buttons button {
-    padding: 0.5rem 1rem;
+    
     background: rgba(70, 70, 70, 0.8);
     border: 1px solid #444;
     border-radius: 4px;
@@ -80,6 +80,16 @@
   
   #dbImportBtn {
     background: rgba(70, 70, 70, 0.8);
+    border: 1px solid #797979;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s, transform 0.1s;
   }
   
   #dbExportCsvBtn {
@@ -97,27 +107,3 @@
     background: rgba(77, 166, 250, 0.6);
   }
   
-  #dbImportBtn:hover {
-    background: rgba(85, 85, 85, 0.8);
-  }
-  
-  #dbExportCsvBtn:hover {
-    background: rgba(40, 167, 69, 0.6);
-  }
-  
-  #dbExportJsonBtn:hover {
-    background: rgba(255, 193, 7, 0.6);
-  }
-  
-  /* Світла тема */
-  body.light-theme .export-buttons button,
-  body.light-theme .db-buttons button {
-    background: rgba(240, 240, 240, 0.8);
-    color: #333;
-    border-color: #ccc;
-  }
-  
-  body.light-theme .export-buttons button:hover,
-  body.light-theme .db-buttons button:hover {
-    background: rgba(220, 220, 220, 0.8);
-  }

@@ -44,11 +44,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #4da6fa;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
+  border: solid 1px #007bff;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
@@ -71,24 +67,6 @@
   font-size: 1.2rem;
 }
 
-.import-export-buttons button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background-color: #555;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
-}
-
-.import-export-buttons button:hover {
-  background-color: #666;
-}
-
 .import-export-buttons button:active {
   transform: translateY(1px);
 }
@@ -97,37 +75,20 @@
   font-size: 1rem;
 }
 
-#dbExportCsvBtn {
-  background-color: #28a745;
-  color: white;
-}
-
-#dbExportJsonBtn {
-  background-color: #ffc107;
-  color: #333;
-}
-
-#dbImportBtn {
-  background-color: #6c757d;
-}
-
 #dbExportCsvBtn:hover {
-  background-color: #218838;
+  background-color: #069e27;
 }
 
 #dbExportJsonBtn:hover {
-  background-color: #e0a800;
+  background-color: #ffbf00;
 }
 
 #dbImportBtn:hover {
-  background-color: #5a6268;
+  background-color: #7e7e7e;
 }
 
 /* Адаптивність для мобільних пристроїв */
 @media (max-width: 576px) {
-  .database-actions {
-    flex-direction: column;
-  }
 
   .import-export-buttons {
     width: 100%;
@@ -170,10 +131,7 @@ body.light-theme #dbExportJsonBtn {
   color: #333;
 }
 
-body.light-theme #dbImportBtn {
-  background-color: #6c757d;
-  color: white;
-}
+
 
 /* Світла тема */
 body.light-theme #dbSearchInput {

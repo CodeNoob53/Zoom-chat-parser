@@ -335,6 +335,17 @@ export function getParticipantInfo (name, realNameMap) {
 }
 
 /**
+ * Очистити кеш співпадінь імен
+ * Необхідно викликати при зміні бази даних
+ */
+export function clearMatchedNamesCache() {
+  matchedNames = {}; // Очищаємо результати співпадінь
+  unrecognizedNames.clear(); // Очищаємо множину нерозпізнаних імен
+  
+  console.log('Кеш співпадінь імен очищено');
+}
+
+/**
  * Вручну встановити співпадіння імені з бази
  * @param {string} name - Ім'я учасника з чату
  * @param {string} dbNameOrId - Ім'я з бази або ID запису

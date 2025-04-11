@@ -1,13 +1,14 @@
-/**
- * Модуль для роботи з таблицею бази даних
- * З оптимізаціями рендерингу DOM
- */
+// src/database/database-table.js
 import { showNotification } from '../core/notification.js';
 import { 
   getAllEntries, 
   deleteEntry
 } from './database-service.js';
 import { editDatabaseEntry } from './database-form-manager.js';
+import { 
+  sortDatabaseEntries, 
+  getCurrentDbSortState 
+} from '../ui/sorting.js';
 import { 
   createFragment, 
   createElement, 
@@ -28,60 +29,76 @@ export function renderDatabaseTable(filteredEntries) {
   // Визначаємо, які записи відображати
   const entries = filteredEntries || getAllEntries();
   
-  // Якщо дані не змінилися, пропускаємо рендеринг
-  if (areEntriesEqual(entries, lastRenderedEntries)) {
-    return;
-  }
+  // Отримуємо поточний стан сортування
+  const sortState = getCurrentDbSortState();
   
-  // Оновлюємо кеш
-  lastRenderedEntries = [...entries];
+  // Встановлюємо візуальні індикатори сортування
+  updateSortIndicators(sortState);
+  
+  // Сортуємо записи
+  const sortedEntries = sortDatabaseEntries(entries, sortState.column, sortState.direction);
   
   // Якщо таблиця порожня, показуємо повідомлення
-  if (entries.length === 0) {
+  if (sortedEntries.length === 0) {
     renderEmptyTableMessage(tableBody);
     return;
   }
   
-  // Використовуємо оптимізоване оновлення таблиці
-  updateTable(tableBody, entries, renderTableRow, 'id');
+  // Очищаємо таблицю і додаємо нові рядки
+  tableBody.innerHTML = '';
+  
+  // Додаємо відсортовані записи
+  sortedEntries.forEach(entry => {
+    const row = renderTableRow(entry);
+    tableBody.appendChild(row);
+  });
+  
+  // Оновлюємо кеш
+  lastRenderedEntries = [...sortedEntries];
+  
+  console.log(`Таблиця бази даних відсортована за ${sortState.column} (${sortState.direction})`);
 }
 
 /**
- * Перевірка, чи змінилися записи
- * @param {Array} entries1 - Перший набір записів
- * @param {Array} entries2 - Другий набір записів
- * @returns {boolean} true, якщо набори рівні
+ * Оновлення візуальних індикаторів сортування
+ * @param {Object} sortState - Поточний стан сортування {column, direction}
  */
-function areEntriesEqual(entries1, entries2) {
-  if (entries1.length !== entries2.length) return false;
+function updateSortIndicators(sortState) {
+  // Отримуємо елементи заголовків
+  const sortById = document.getElementById('sortDbById');
+  const sortBySurname = document.getElementById('sortDbBySurname');
+  const sortByFirstname = document.getElementById('sortDbByFirstname');
+  const sortByNicknames = document.getElementById('sortDbByNicknames');
   
-  // Перевіряємо кожен запис за ID
-  const entriesMap = new Map();
-  entries2.forEach(entry => entriesMap.set(entry.id, entry));
+  // Видаляємо класи сортування з усіх заголовків
+  [sortById, sortBySurname, sortByFirstname, sortByNicknames].forEach(th => {
+    if (th) {
+      th.classList.remove('sorted', 'asc', 'desc');
+    }
+  });
   
-  for (const entry of entries1) {
-    if (!entriesMap.has(entry.id)) return false;
-    
-    const cachedEntry = entriesMap.get(entry.id);
-    
-    // Порівнюємо основні поля
-    if (entry.surname !== cachedEntry.surname || 
-        entry.firstname !== cachedEntry.firstname) {
-      return false;
-    }
-    
-    // Порівнюємо нікнейми
-    const entryNicks = entry.nicknames || [];
-    const cachedNicks = cachedEntry.nicknames || [];
-    
-    if (entryNicks.length !== cachedNicks.length) return false;
-    
-    for (let i = 0; i < entryNicks.length; i++) {
-      if (entryNicks[i] !== cachedNicks[i]) return false;
-    }
+  // Визначаємо поточний заголовок для сортування
+  let currentTh = null;
+  switch(sortState.column) {
+    case 'id':
+      currentTh = sortById;
+      break;
+    case 'surname':
+      currentTh = sortBySurname;
+      break;
+    case 'firstname':
+      currentTh = sortByFirstname;
+      break;
+    case 'nicknames':
+      currentTh = sortByNicknames;
+      break;
   }
   
-  return true;
+  // Додаємо класи до поточного заголовка
+  if (currentTh) {
+    currentTh.classList.add('sorted');
+    currentTh.classList.add(sortState.direction);
+  }
 }
 
 /**

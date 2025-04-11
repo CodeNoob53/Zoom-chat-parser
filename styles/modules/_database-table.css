@@ -25,9 +25,10 @@
 .database-table th::after {
   font-family: 'Material Icons';
   content: "swap_vert";
-  opacity: 0.8;
+  opacity: 0.5;
   font-size: 14px;
   padding-left: 5px;
+  vertical-align: middle;
 }
 
 .database-table th.sorted.asc::after {
@@ -40,6 +41,11 @@
   content: "south";
   opacity: 1;
   color: var(--color-table-sort-icon, #fa754d);
+}
+
+/* Прибираємо індикатор сортування для стовпця дій */
+.database-table th:last-child::after {
+  content: none;
 }
 
 .database-table td {

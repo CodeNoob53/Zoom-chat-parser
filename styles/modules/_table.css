@@ -17,7 +17,8 @@
   border-spacing: 0;
 }
 
-.participants-table th {
+.participants-table th,
+.database-table th {
   position: sticky;
   top: 0;
   z-index: 10;
@@ -29,6 +30,16 @@
   font-size: 0.95rem;
   color: var(--color-text-primary);
   text-align: left;
+  cursor: pointer;
+}
+
+/* Особливий стиль для стовпця дій (не сортується) */
+.participants-table th.actions-header {
+  cursor: default;
+}
+
+.participants-table th.actions-header::after {
+  content: none !important;
 }
 
 .participants-table td {
@@ -67,4 +78,44 @@
   content: "south";
   opacity: 1;
   color: var(--color-accent-secondary);
+}
+
+/* стилі для кнопки прив'язки нікнейму */
+.attach-nickname-btn {
+  background-color: var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.2));
+  color: var(--color-accent-primary);
+  border: none;
+  border-radius: var(--border-radius-default);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.attach-nickname-btn:hover {
+  background-color: var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.3));
+  transform: translateY(-1px);
+}
+
+.attach-nickname-btn:active {
+  transform: translateY(1px);
+}
+
+.attach-nickname-btn .material-icons {
+  font-size: 18px;
+}
+
+/* стиль для комірки з діями */
+.actions-cell {
+  width: 50px;
+  text-align: center;
+}
+
+/* Стиль для успішно доданого нікнейму */
+.nickname-attached {
+  color: var(--color-accent-secondary);
+  font-weight: bold;
 }

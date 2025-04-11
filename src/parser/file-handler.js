@@ -13,6 +13,7 @@ import {
   readTextFile,
   detectFileFormat
 } from '../utils/file-utils.js';
+import { visualizeChat } from '../ui/chat-view.js';
 
 /**
  * Ініціалізує обробники подій для файлів з покращеною безпекою та асинхронністю
@@ -54,6 +55,9 @@ export function initFileHandlers() {
         
         // Встановлюємо вміст чату
         chatInput.value = result.content;
+
+        // Викликаємо візуалізацію чату
+        visualizeChat(chatInput); // Додаємо виклик visualizeChat
         
         // Скидаємо значення input файлу після завантаження
         fileInput.value = "";

@@ -1,4 +1,4 @@
-textarea,
+
 input[type="file"],
 #searchDbInput {
   width: 100%;
@@ -11,14 +11,7 @@ input[type="file"],
   transition: border-color 0.2s;
 }
 
-textarea {
-  flex: 1;
-  min-height: 100px;
-  margin-bottom: 0.75rem;
-  resize: none;
-  overflow: auto;
-  scrollbar-gutter: stable;
-}
+
 
 .keyword-block label,
 .database-block label {

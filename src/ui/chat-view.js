@@ -62,6 +62,14 @@ export function visualizeChat(textarea) {
     const messages = parseChatForVisualization(originalText);
     chatViewState.messages = messages;
 
+    // Перевіряємо, чи є повідомлення для відображення
+    if (messages.length === 0) {
+      // Якщо повідомлень немає, залишаємо textarea видимою і не додаємо кнопку "Показати чат"
+      textarea.style.display = 'block';
+      showNotification('Немає повідомлень для відображення', 'info');
+      return;
+    }
+
     const chatContainer = renderChatView(messages);
     
     const editButton = document.createElement('button');
@@ -85,6 +93,7 @@ export function visualizeChat(textarea) {
   } catch (error) {
     console.error('Помилка візуалізації чату:', error);
     showNotification('Помилка візуалізації чату', 'error');
+    textarea.style.display = 'block'; // У разі помилки повертаємо textarea
   }
 }
 
@@ -107,15 +116,19 @@ export function removeChatVisualization() {
 
   chatInput.style.display = 'block';
 
-  const showChatButton = document.createElement('button');
-  showChatButton.className = 'show-chat-button';
-  showChatButton.textContent = 'Показати чат';
-  showChatButton.onclick = () => {
-    visualizeChat(chatInput);
-  };
+  // Додаємо кнопку "Показати чат" лише якщо є повідомлення для відображення
+  if (chatViewState.messages.length > 0) {
+    const showChatButton = document.createElement('button');
+    showChatButton.className = 'show-chat-button';
+    showChatButton.textContent = 'Показати чат';
+    showChatButton.onclick = () => {
+      visualizeChat(chatInput);
+    };
 
-  chatViewState.textareaWrapper.appendChild(showChatButton);
-  chatViewState.showChatButton = showChatButton;
+    chatViewState.textareaWrapper.appendChild(showChatButton);
+    chatViewState.showChatButton = showChatButton;
+  }
+
   chatViewState.isVisualized = false;
 }
 
@@ -194,26 +207,23 @@ function parseChatForVisualization(text) {
  * Генерує нейтральний колір на основі імені користувача
  */
 function generateUserColor(username) {
-  // Масив нейтральних кольорів
   const neutralColors = [
-    '#6B7280', // Сірий
-    '#9CA3AF', // Світло-сірий
-    '#4B5563', // Темно-сірий
-    '#A7F3D0', // Світло-зелений
-    '#6EE7B7', // Зелений
-    '#A5B4FC', // Світло-синій
-    '#60A5FA', // Синій
-    '#FBBF24', // Світло-жовтий
-    '#FCA5A5', // Світло-червоний
+    '#6B7280',
+    '#9CA3AF',
+    '#4B5563',
+    '#A7F3D0',
+    '#6EE7B7',
+    '#A5B4FC',
+    '#60A5FA',
+    '#FBBF24',
+    '#FCA5A5',
   ];
 
-  // Обчислюємо хеш імені користувача
   let hash = 0;
   for (let i = 0; i < username.length; i++) {
     hash = username.charCodeAt(i) + ((hash << 5) - hash);
   }
 
-  // Вибираємо колір із масиву на основі хешу
   const index = Math.abs(hash) % neutralColors.length;
   return neutralColors[index];
 }

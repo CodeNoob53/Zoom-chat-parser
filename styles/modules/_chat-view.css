@@ -1,4 +1,4 @@
-/* Оновлені стилі для .textarea-wrapper */
+/* ===== ОСНОВНА СТРУКТУРА ===== */
 .parser-tab {
     display: flex;
     flex-direction: column;
@@ -44,14 +44,13 @@
     border: 1px solid rgba(80, 80, 80, 0.2);
   }
   
-  /* Стилі для групи повідомлень */
+  /* ===== ГРУПА ПОВІДОМЛЕНЬ ===== */
   .message-group {
     display: flex;
     flex-direction: column;
     margin-bottom: 8px;
   }
   
-  /* Стилі для заголовка з іконкою та нікнеймом */
   .sender-header {
     display: flex;
     align-items: center;
@@ -59,9 +58,8 @@
     margin-bottom: 4px;
   }
   
-  /* Оновлені стилі для іконки користувача */
   .user-icon {
-    border-radius: 8px; /* Скруглені краї */
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -70,34 +68,31 @@
     padding: 2px;
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
-
+  
   .user-icon .material-icons {
-    font-size: 30px !important; /* Розмір іконки */
+    font-size: 30px !important;
   }
   
-  /* Стилі для нікнейму */
   .sender-name {
     font-weight: bold;
     font-size: 0.9em;
     color: #ffffff;
   }
   
-  /* Оновлені стилі для повідомлення */
   .message-bubble {
     position: relative;
-    background: linear-gradient(45deg, rgba(50,50,50,0.7) 0%, rgba(70,70,70,0.7) 100%);
+    background: linear-gradient(45deg, rgba(50, 50, 50, 0.7), rgba(70, 70, 70, 0.7));
     border-radius: 12px;
-    padding: 10px 14px;
+    padding: 10px 14px 24px;
     display: inline-block;
-    max-width: calc(70% - 44px); /* Враховуємо ширину іконки та відступ */
+    max-width: calc(70% - 44px);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(80, 80, 80, 0.1);
     width: fit-content;
     min-width: 150px;
-    padding-bottom: 24px;
-    margin-left: 44px; /* Зміщуємо вліво, щоб вирівняти за іконкою */
+    margin-left: 44px;
   }
   
   .content-wrapper {
@@ -117,10 +112,22 @@
     font-size: 0.95em;
   }
   
+  .reply-quote::before {
+    content: '"';
+  }
+  .reply-quote::after {
+    content: '"';
+  }
+  
   .message-content {
     word-break: break-word;
     white-space: pre-wrap;
     margin: 5px;
+  }
+  
+  .message-content:has(.emoji),
+  .message-content .emoji {
+    font-size: 1.4rem;
   }
   
   .message-time {
@@ -136,21 +143,64 @@
     font-weight: bold;
   }
   
+  /* ===== РЕАКЦІЇ ===== */
   .message-reactions {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 4px;
     margin-top: 8px;
     margin-bottom: 8px;
   }
   
-  .reaction {
-    background: rgba(70, 70, 70, 0.5);
-    padding: 2px 6px;
-    border-radius: 12px;
-    font-size: 0.9em;
+  .reaction-container {
+    position: relative;
     display: inline-flex;
-    align-items: center;
+    margin-right: 6px;
+  }
+  
+  .reaction-emoji {
+    font-size: 1.0rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .reaction-emoji:hover {
+    transform: scale(1.15);
+  }
+  
+  .reaction-info {
+    position: absolute;
+    left: 100%;
+    bottom: -30px;
+    transform: translateX(8px);
+    z-index: 99;
+    max-width: 200px;
+    min-width: 150px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    word-break: normal;
+    overflow-wrap: normal;
+    font-size: 0.85rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  .reaction-info.shown {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(8px) translateY(-5px);
+  }
+  
+  .reaction-info::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: -6px;
+    border: 6px solid transparent;
+    border-right-color: rgba(0, 0, 0, 0.85);
   }
   
   .reaction-user {
@@ -159,6 +209,7 @@
     margin-right: 2px;
   }
   
+  /* ===== КНОПКИ ===== */
   .edit-chat-button,
   .show-chat-button {
     position: absolute;
@@ -199,7 +250,7 @@
     vertical-align: middle;
   }
   
-  /* Адаптація для світлої теми */
+  /* ===== СВІТЛА ТЕМА ===== */
   body.light-theme .chat-view {
     background: rgba(240, 240, 240, 0.7);
     border: 1px solid rgba(200, 200, 200, 0.3);
@@ -249,3 +300,77 @@
   body.light-theme .show-chat-button:hover {
     background: rgba(220, 220, 220, 0.9);
   }
+  
+  /* ===== АДАПТИВНІСТЬ ===== */
+  @media (max-width: 768px) {
+    .chat-view {
+      padding: 8px;
+      gap: 10px;
+    }
+  
+    .user-icon .material-icons {
+      font-size: 24px !important;
+    }
+  
+    .sender-name {
+      font-size: 0.85em;
+    }
+  
+    .message-bubble {
+      max-width: 90%;
+      font-size: 0.95em;
+      padding: 8px 10px 20px;
+      margin-left: 36px;
+      min-width: 120px;
+    }
+  
+    .message-time {
+      font-size: 0.75em;
+    }
+  
+    .reply-quote {
+      font-size: 0.85em;
+      padding: 4px 6px;
+    }
+  
+    .reaction-emoji {
+      font-size: 1rem;
+    }
+  
+    .reaction-info {
+      font-size: 0.8rem;
+      min-width: 100px;
+    }
+  
+    .edit-chat-button,
+    .show-chat-button {
+      font-size: 0.8em;
+      padding: 5px 10px;
+      right: 18px;
+      bottom: 8px;
+    }
+  
+    .edit-chat-button:before,
+    .show-chat-button:before {
+      font-size: 14px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .chat-view {
+      padding: 6px;
+    }
+  
+    .message-bubble {
+      font-size: 0.85em;
+      padding: 6px 8px 18px;
+      margin-left: 32px;
+      min-width: 100px;
+    }
+  
+    .reaction-info {
+      font-size: 0.75rem;
+      min-width: 80px;
+    }
+  }
+  

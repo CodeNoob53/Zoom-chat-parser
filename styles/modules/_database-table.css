@@ -1,145 +1,123 @@
 /* Стилі для таблиці бази даних */
 .database-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  
-  .database-table th {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    padding: 10px 8px;
-    border-bottom: 1px solid #6e6e6e;
-    background-color: rgba(54, 54, 54, 0.692);
-    backdrop-filter: blur(5px);
-    font-weight: bold;
-    font-size: 0.95rem;
-    color: #eee;
-    text-align: left;
-    cursor: pointer;
-  }
-  
-  .database-table th::after {
-    font-family: 'Material Icons';
-    content: "swap_vert";
-    opacity: 0.8;
-    font-size: 14px;
-    padding-left: 5px;
-  }
-  
-  .database-table th.sorted.asc::after {
-    content: "north";
-    opacity: 1;
-    color: #fa754d;
-  }
-  
-  .database-table th.sorted.desc::after {
-    content: "south";
-    opacity: 1;
-    color: #fa754d;
-  }
-  
-  .database-table td {
-    padding: 8px;
-    border-bottom: 1px solid rgba(80, 80, 80, 0.87);
-    vertical-align: middle;
-  }
-  
-  .database-table tr:hover {
-    background-color: rgba(77, 166, 250, 0.1);
-  }
-  
-  /* Стилі для нікнеймів */
-  .nickname-pills {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-  }
-  
-  .nickname-pill {
-    background: rgba(77, 166, 250, 0.2);
-    color: #e0e0e0;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    display: inline-block;
-    border: 1px solid rgba(77, 166, 250, 0.5);
-  }
-  
-  /* Стилі для кнопок дій */
-  .row-actions {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .edit-btn,
-  .delete-btn {
-    border: none;
-    padding: 5px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-  
-  .edit-btn {
-    background: rgba(77, 166, 250, 0.2);
-    color: #4da6fa;
-  }
-  
-  .delete-btn {
-    background: rgba(220, 53, 69, 0.2);
-    color: #dc3545;
-  }
-  
-  .edit-btn:hover {
-    background: rgba(77, 166, 250, 0.3);
-  }
-  
-  .delete-btn:hover {
-    background: rgba(220, 53, 69, 0.3);
-  }
-  
-  /* Світла тема */
-  body.light-theme .database-table th {
-    background-color: rgba(240, 240, 240, 0.95);
-    color: #333;
-    border-bottom-color: #ccc;
-  }
-  
-  body.light-theme .database-table td {
-    border-bottom-color: rgba(200, 200, 200, 0.5);
-  }
-  
-  body.light-theme .database-table tr:hover {
-    background-color: rgba(0, 123, 255, 0.05);
-  }
-  
-  body.light-theme .nickname-pill {
-    background: rgba(0, 123, 255, 0.1);
-    color: #0056b3;
-    border-color: rgba(0, 123, 255, 0.3);
-  }
-  
-  body.light-theme .edit-btn {
-    background: rgba(0, 123, 255, 0.1);
-    color: #0056b3;
-  }
-  
-  body.light-theme .delete-btn {
-    background: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
-  }
-  
-  body.light-theme .edit-btn:hover {
-    background: rgba(0, 123, 255, 0.2);
-  }
-  
-  body.light-theme .delete-btn:hover {
-    background: rgba(220, 53, 69, 0.2);
-  }
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--border-radius-default);
+  overflow: hidden;
+}
+
+.database-table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--color-border-default);
+  background-color: var(--color-table-header-bg, rgba(54, 54, 54, 0.692));
+  backdrop-filter: blur(5px);
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.database-table th::after {
+  font-family: 'Material Icons';
+  content: "swap_vert";
+  opacity: 0.8;
+  font-size: 14px;
+  padding-left: 5px;
+}
+
+.database-table th.sorted.asc::after {
+  content: "north";
+  opacity: 1;
+  color: var(--color-table-sort-icon, #fa754d);
+}
+
+.database-table th.sorted.desc::after {
+  content: "south";
+  opacity: 1;
+  color: var(--color-table-sort-icon, #fa754d);
+}
+
+.database-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--color-table-border, rgba(80, 80, 80, 0.87));
+  vertical-align: middle;
+  color: var(--color-text-primary);
+}
+
+.database-table tr:hover {
+  background-color: var(--color-table-row-hover, rgba(77, 166, 250, 0.1));
+}
+
+/* Стилі для нікнеймів */
+.nickname-pills {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.nickname-pill {
+  background: var(--color-nickname-pill-bg, rgba(77, 166, 250, 0.2));
+  color: var(--color-nickname-pill-text, #e0e0e0);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  display: inline-block;
+  border: 1px solid var(--color-nickname-pill-border, rgba(77, 166, 250, 0.5));
+}
+
+/* Стилі для кнопок дій */
+.row-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 5px;
+  border-radius: var(--border-radius-default);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  color: var(--color-text-primary);
+}
+
+.edit-btn {
+  background: var(--color-edit-btn-bg, rgba(77, 166, 250, 0.2));
+  color: var(--color-accent-primary);
+}
+
+.delete-btn {
+  background: var(--color-delete-btn-bg, rgba(220, 53, 69, 0.2));
+  color: var(--color-danger);
+}
+
+.edit-btn:hover {
+  background: var(--color-edit-btn-hover, rgba(77, 166, 250, 0.3));
+}
+
+.delete-btn:hover {
+  background: var(--color-delete-btn-hover, rgba(220, 53, 69, 0.3));
+}
+
+/* Стилі для світлої теми */
+body.light-theme {
+  --color-table-header-bg: rgba(240, 240, 240, 0.95);
+  --color-table-border: rgba(200, 200, 200, 0.5);
+  --color-table-row-hover: rgba(0, 123, 255, 0.05);
+  --color-table-sort-icon: #007bff;
+  --color-nickname-pill-bg: rgba(0, 123, 255, 0.1);
+  --color-nickname-pill-text: #0056b3;
+  --color-nickname-pill-border: rgba(0, 123, 255, 0.3);
+  --color-edit-btn-bg: rgba(0, 123, 255, 0.1);
+  --color-edit-btn-hover: rgba(0, 123, 255, 0.2);
+  --color-delete-btn-bg: rgba(220, 53, 69, 0.1);
+  --color-delete-btn-hover: rgba(220, 53, 69, 0.2);
+}

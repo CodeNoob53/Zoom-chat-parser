@@ -5,10 +5,10 @@
   gap: 0.8rem;
   margin: 0.75rem 0;
   padding: 1rem;
-  background: rgba(50, 50, 50, 0.3);
-  border-radius: 6px;
-  border: 1px solid rgba(100, 100, 100, 0.3);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: var(--color-legend-bg, rgba(50, 50, 50, 0.3));
+  border-radius: var(--border-radius-default);
+  border: 1px solid var(--color-legend-border, rgba(100, 100, 100, 0.3));
+  box-shadow: 0 2px 4px var(--color-shadow, rgba(0, 0, 0, 0.2));
 }
 
 .legend div {
@@ -18,8 +18,9 @@
   white-space: nowrap;
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
-  background: rgba(40, 40, 40, 0.4);
-  border: 1px solid rgba(80, 80, 80, 0.4);
+  background: var(--color-legend-item-bg, rgba(40, 40, 40, 0.4));
+  border: 1px solid var(--color-legend-item-border, rgba(80, 80, 80, 0.4));
+  color: var(--color-text-primary);
 }
 
 .legend-dot {
@@ -27,8 +28,8 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-legend-dot-border, rgba(255, 255, 255, 0.2));
+  box-shadow: 0 1px 2px var(--color-shadow, rgba(0, 0, 0, 0.2));
 }
 
 /* Стилі для легенди-індикаторів */
@@ -44,8 +45,8 @@
   border-radius: 4px;
   color: white;
   margin-right: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 3px var(--color-shadow, rgba(0, 0, 0, 0.3));
+  border: 1px solid var(--color-legend-indicator-border, rgba(255, 255, 255, 0.2));
 }
 
 .legend-indicator.reversed {
@@ -53,41 +54,40 @@
   font-size: 16px;
 }
 
+/* Використовуємо ті самі змінні кольорів, що і для індикаторів */
 .legend-indicator.auto-match {
-  background-color: #ff3366;
+  background-color: var(--color-indicator-auto, #ff3366);
 }
 
 .legend-indicator.variant {
-  background-color: #00b400;
+  background-color: var(--color-indicator-variant, #00b400);
 }
 
 .legend-indicator.translit {
-  background-color: #9400d3;
+  background-color: var(--color-indicator-translit, #9400d3);
 }
 
 .legend-indicator.reversed {
-  background-color: #ff9900;
+  background-color: var(--color-indicator-reversed, #ff9900);
 }
 
 .legend-indicator.split-name {
-  background-color: #ff6600;
+  background-color: var(--color-indicator-split, #ff6600);
 }
 
 .legend-dot.found {
-  background-color: #4da6fa;
+  background-color: var(--color-accent-primary, #4da6fa);
 }
 .legend-dot.not-found {
-  background-color: #666;
+  background-color: var(--color-muted, #666);
 }
 
-/* Адаптація легенди під світлу тему */
-body.light-theme .legend {
-  background: rgba(230, 230, 230, 0.5);
-  color: #333;
-  border: 1px solid rgba(200, 200, 200, 0.6);
-}
-
-body.light-theme .legend div {
-  background: rgba(240, 240, 240, 0.6);
-  border: 1px solid rgba(200, 200, 200, 0.6);
+/* Змінні для світлої теми */
+body.light-theme {
+  --color-legend-bg: rgba(230, 230, 230, 0.5);
+  --color-legend-border: rgba(200, 200, 200, 0.6);
+  --color-legend-item-bg: rgba(240, 240, 240, 0.6);
+  --color-legend-item-border: rgba(200, 200, 200, 0.6);
+  --color-legend-dot-border: rgba(0, 0, 0, 0.1);
+  --color-legend-indicator-border: rgba(0, 0, 0, 0.1);
 }

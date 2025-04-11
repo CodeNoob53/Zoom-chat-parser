@@ -1,15 +1,60 @@
 header {
-    display: flex;
-    justify-content: center;
-    background: rgba(61, 61, 61, 0.6);
-    padding: 0.5rem;
-    text-align: center;
-    border-bottom: 1px solid #444;
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(2px);
-  }
-  
-  header h1 {
-    font-size: clamp(1.2rem, 3vw, 1.5rem);
-    color: #fff;
-  }
+  display: flex;
+  justify-content: center;
+  background: var(--aero-panel-background);
+  padding: 0.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border-default);
+  box-shadow: 0 0 4px var(--color-shadow, rgba(255, 255, 255, 0.2));
+  backdrop-filter: blur(2px);
+}
+
+header h1 {
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  color: var(--color-text-primary);
+}
+
+header strong {
+  color: var(--color-accent-primary);
+}
+
+/* Навігація вкладок в aero-header */
+.tab-navigation {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+/* Кнопки вкладок */
+.tab-button {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Іконки у вкладках */
+.tab-button .material-icons {
+  font-size: 1.2rem;
+}
+
+/* Стилі для активної вкладки */
+.tab-button.active {
+  background: var(--color-background-secondary);
+  color: var(--color-accent-primary);
+  border-bottom: 3px solid var(--color-accent-primary);
+}
+
+/* Стилі при наведенні */
+.tab-button:hover:not(.active) {
+  background: var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.1));
+  color: var(--color-text-primary-bright, #fff);
+}

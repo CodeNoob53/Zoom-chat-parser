@@ -2,27 +2,40 @@ footer {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  background: rgba(61, 61, 61, 0.6);
+  background: var(--aero-panel-background);
   padding: 15px;
   text-align: center;
-  border-top: 1px solid #444;
-  box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+  border-top: 1px solid var(--color-border-default);
+  box-shadow: 0 0 4px var(--color-shadow, rgba(255, 255, 255, 0.2));
   backdrop-filter: blur(2px);
   margin-top: auto;
   width: 100%;
 }
-  
-  footer p {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+
+footer p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-primary);
+}
+
+footer a {
+  color: var(--color-link, goldenrod);
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: var(--color-link-hover, #ffd700);
+}
+
+footer strong {
+  color: var(--color-accent-primary);
+}
+
+/* Адаптивність для малих екранів */
+@media (max-width: 576px) {
+  footer {
+    flex-direction: column;
+    gap: 10px;
   }
-  
-  footer a {
-    color: goldenrod;
-    transition: color 0.3s ease;
-  }
-  
-  footer a:hover {
-    color: #ffd700;
-  }
+}

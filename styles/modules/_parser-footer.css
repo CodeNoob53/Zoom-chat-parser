@@ -1,44 +1,58 @@
 /* Стилі для підвалу панелі парсера */
 .parser-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border-default);
+}
+
+.parser-footer .db-status {
+  width: auto;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.6rem;
+  margin: 0;
+  background: var(--color-db-status-bg, rgba(50, 50, 50, 0.5));
+  border-radius: var(--border-radius-default);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+}
+
+.parser-footer .db-status.loaded {
+  background: var(--color-db-status-loaded-bg, rgba(77, 166, 250, 0.2));
+  border: 1px solid var(--color-db-status-loaded-border, rgba(77, 166, 250, 0.5));
+  color: var(--color-accent-primary);
+}
+
+.parser-footer .db-status.loaded::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-accent-primary);
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* Адаптивний дизайн для малих екранів */
+@media (max-width: 576px) {
+  .parser-footer {
+    flex-direction: column-reverse;
+    gap: 10px;
   }
   
   .parser-footer .db-status {
-    width: auto;
-    font-size: 0.9rem;
-    padding: 0.3rem 0.6rem;
-    margin: 0;
-    background: rgba(50, 50, 50, 0.5);
-    border-radius: 4px;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
   }
-  
-  .parser-footer .db-status.loaded {
-    background: rgba(77, 166, 250, 0.2);
-    border: 1px solid rgba(77, 166, 250, 0.5);
-  }
-  
-  /* Адаптивний дизайн для малих екранів */
-  @media (max-width: 576px) {
-    .parser-footer {
-      gap: 0.5rem;
-    }
-    
-    .parser-footer .db-status {
+}
 
-      text-align: center;
-    }
-  }
-  
-  /* Світла тема */
-  body.light-theme .parser-footer .db-status {
-    background: rgba(220, 220, 220, 0.5);
-    color: #333;
-  }
-  
-  body.light-theme .parser-footer .db-status.loaded {
-    background: rgba(0, 123, 255, 0.1);
-    border: 1px solid rgba(0, 123, 255, 0.3);
-    color: #0056b3;
-  }
+/* Стилі для світлої теми */
+body.light-theme {
+  --color-db-status-bg: rgba(220, 220, 220, 0.5);
+  --color-db-status-loaded-bg: rgba(0, 123, 255, 0.1);
+  --color-db-status-loaded-border: rgba(0, 123, 255, 0.3);
+}

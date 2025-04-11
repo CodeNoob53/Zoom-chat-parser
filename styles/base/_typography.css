@@ -8,11 +8,30 @@ body {
 h1 {
   font-size: clamp(1.2rem, 3vw, 1.5rem);
   color: var(--color-text-primary);
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-size: clamp(1.1rem, 2.8vw, 1.4rem);
+  color: var(--color-text-primary);
+  margin-bottom: 0.8rem;
 }
 
 h3 {
   font-size: clamp(1rem, 2.5vw, 1.25rem);
-  margin-bottom: 20px;
+  color: var(--color-text-primary);
+  margin-bottom: 0.6rem;
+}
+
+h4 {
+  font-size: clamp(0.9rem, 2.2vw, 1.1rem);
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
 }
 
 strong {
@@ -21,4 +40,44 @@ strong {
 
 em {
   font-style: italic;
+}
+
+a {
+  color: var(--color-accent-primary);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--color-accent-primary-hover, #3b90e0);
+  text-decoration: underline;
+}
+
+code {
+  font-family: Consolas, Monaco, 'Andale Mono', monospace;
+  background-color: var(--color-code-bg, rgba(50, 50, 50, 0.3));
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  color: var(--color-code-text, #e0e0e0);
+}
+
+pre {
+  background-color: var(--color-pre-bg, rgba(40, 40, 40, 0.5));
+  border-radius: var(--border-radius-default);
+  padding: 1em;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Стилі для світлої теми */
+body.light-theme {
+  --color-code-bg: rgba(240, 240, 240, 0.8);
+  --color-code-text: #333;
+  --color-pre-bg: rgba(245, 245, 245, 0.9);
 }

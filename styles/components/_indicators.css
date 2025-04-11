@@ -26,28 +26,37 @@
   height: 20px;
   border-radius: 3px;
   color: white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 2px var(--color-shadow, rgba(0, 0, 0, 0.2));
+  border: 1px solid var(--color-indicator-border, rgba(255, 255, 255, 0.2));
 }
 
 .match-indicator.translit-indicator {
-  background-color: #9400d3;
+  background-color: var(--color-indicator-translit, #9400d3);
 }
 
 .match-indicator.reversed-indicator {
-  background-color: #ff9900;
+  background-color: var(--color-indicator-reversed, #ff9900);
   font-family: 'Material Icons';
   font-size: 14px;
 }
 
 .match-indicator.variant-indicator {
-  background-color: #00b400;
+  background-color: var(--color-indicator-variant, #00b400);
 }
 
 .match-indicator.auto-indicator {
-  background-color: #ff3366;
+  background-color: var(--color-indicator-auto, #ff3366);
 }
 
 .match-indicator.split-name-indicator {
-  background-color: #ff6600;
+  background-color: var(--color-indicator-split, #ff6600);
+}
+
+/* Додаємо змінні в root для індикаторів */
+:root {
+  --color-indicator-translit: #9400d3;
+  --color-indicator-reversed: #ff9900;
+  --color-indicator-variant: #00b400;
+  --color-indicator-auto: #ff3366;
+  --color-indicator-split: #ff6600;
 }

@@ -12,12 +12,21 @@ export function showNotification(message, type) {
   notification.className = type;
   notification.style.display = "block";
   notification.style.opacity = "1";
+  
+  // Додаємо клас для анімації
+  notification.classList.add('animate-notification-in');
 
   // Автоматично приховуємо повідомлення через 3 секунди
   setTimeout(() => {
-    notification.style.opacity = "0";
+    // Замінюємо клас анімації
+    notification.classList.remove('animate-notification-in');
+    notification.classList.add('animate-notification-out');
+    
+    // Ховаємо після завершення анімації
     setTimeout(() => {
       notification.style.display = "none";
-    }, 500);
+      // Видаляємо клас анімації для наступного показу
+      notification.classList.remove('animate-notification-out');
+    }, 300);
   }, 3000);
 }

@@ -28,7 +28,7 @@
 .search-icon {
   position: absolute;
   left: 8px;
-  color: #666;
+  color: var(--color-text-secondary);
   font-size: 18px;
   pointer-events: none;
 }
@@ -44,7 +44,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  border: solid 1px #007bff;
+  background-color: var(--color-accent-primary);
+  border: 1px solid var(--color-accent-primary-dark, #007bff);
+  border-radius: var(--border-radius-default);
+  color: var(--color-button-text, #fff);
+  padding: 8px 16px;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
@@ -56,7 +60,7 @@
 }
 
 #dbAddBtn:hover {
-  background-color: #3b8adc;
+  background-color: var(--color-accent-primary-hover, #3b8adc);
 }
 
 #dbAddBtn:active {
@@ -75,20 +79,70 @@
   font-size: 1rem;
 }
 
-#dbExportCsvBtn:hover {
-  background-color: #069e27;
+#dbImportBtn {
+  background: var(--color-button-import-bg, rgba(70, 70, 70, 0.8));
+  border: 1px solid var(--color-button-import-border, #797979);
+  border-radius: var(--border-radius-default);
+  padding: 0.5rem 1rem;
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s, transform 0.1s;
 }
 
-#dbExportJsonBtn:hover {
-  background-color: #ffbf00;
+#dbExportCsvBtn {
+  background: var(--color-button-csv-bg, rgba(40, 167, 69, 0.5));
+  border: 1px solid var(--color-button-csv-border, rgba(40, 167, 69, 0.6));
+  color: var(--color-button-csv-text, #fff);
+}
+
+#dbExportJsonBtn {
+  background: var(--color-button-json-bg, rgba(255, 193, 7, 0.5));
+  border: 1px solid var(--color-button-json-border, rgba(255, 193, 7, 0.6));
+  color: var(--color-button-json-text, #212529);
 }
 
 #dbImportBtn:hover {
-  background-color: #7e7e7e;
+  background: var(--color-button-import-hover, #7e7e7e);
+}
+
+#dbExportCsvBtn:hover {
+  background: var(--color-button-csv-hover, rgba(40, 167, 69, 0.6));
+}
+
+#dbExportJsonBtn:hover {
+  background: var(--color-button-json-hover, rgba(255, 193, 7, 0.6));
+}
+
+/* Стилі для світлої теми */
+body.light-theme {
+  --color-accent-primary-dark: #0062cc;
+  --color-button-import-bg: #f0f0f0;
+  --color-button-import-border: #ccc;
+  --color-button-import-hover: #e0e0e0;
+  --color-button-csv-bg: rgba(40, 167, 69, 0.8);
+  --color-button-csv-border: rgba(40, 167, 69, 0.9);
+  --color-button-csv-hover: rgba(40, 167, 69, 0.9);
+  --color-button-csv-text: #fff;
+  --color-button-json-bg: rgba(255, 193, 7, 0.7);
+  --color-button-json-border: rgba(255, 193, 7, 0.8);
+  --color-button-json-hover: rgba(255, 193, 7, 0.8);
+  --color-button-json-text: #212529;
 }
 
 /* Адаптивність для мобільних пристроїв */
 @media (max-width: 576px) {
+  .database-actions-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-container {
+    max-width: 100%;
+  }
 
   .import-export-buttons {
     width: 100%;
@@ -101,45 +155,4 @@
     justify-content: center;
     padding: 10px;
   }
-}
-
-/* Стилі для світлої теми */
-body.light-theme #dbAddBtn {
-  background-color: #007bff;
-}
-
-body.light-theme #dbAddBtn:hover {
-  background-color: #0069d9;
-}
-
-body.light-theme .import-export-buttons button {
-  background-color: #e2e2e2;
-  color: #333;
-}
-
-body.light-theme .import-export-buttons button:hover {
-  background-color: #d0d0d0;
-}
-
-body.light-theme #dbExportCsvBtn {
-  background-color: #28a745;
-  color: white;
-}
-
-body.light-theme #dbExportJsonBtn {
-  background-color: #ffc107;
-  color: #333;
-}
-
-
-
-/* Світла тема */
-body.light-theme #dbSearchInput {
-  background: #fff;
-  color: #333;
-  border-color: #ddd;
-}
-
-body.light-theme .search-icon {
-  color: #999;
 }

@@ -1,215 +1,333 @@
+/* Основна структура вкладок */
+.tab-navigation {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  border-bottom: 1px solid var(--color-border-default);
+  width: 100%;
+  background-color: var(--color-background-secondary);
+}
+
+/* Кнопки вкладок */
+.tab-button {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+/* Іконки у вкладках */
+.tab-button .material-icons {
+  font-size: 1.2rem;
+}
+
+/* Стилі для активної вкладки */
+.tab-button.active {
+  background: var(--color-background-secondary);
+  color: var(--color-accent-primary);
+  border-bottom: 3px solid var(--color-accent-primary);
+}
+
+/* Стилі при наведенні */
+.tab-button:hover:not(.active) {
+  background: var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.1));
+  color: var(--color-text-primary-bright, #fff);
+}
+
+/* Контейнер для вмісту вкладок */
+.tab-content-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Вміст вкладок */
+.tab-content {
+  display: none;
+  height: 100%;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Активний вміст вкладки */
+.tab-content.active {
+  display: flex;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Специфічно для вкладки парсера */
+#parser-tab {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 15px;
+}
+
+/* Контейнер для текстового поля */
+.textarea-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+  min-height: 180px;
+  margin-bottom: 15px;
+}
+
+/* Текстове поле для чату */
 textarea#chatInput {
   display: flex;
   flex: 1;
   width: 100%;
-  min-height: 150px;
-  background: rgba(35, 35, 35, 0.6);
-  color: #f0f0f0;
-  border: 1px solid #444;
-  border-radius: 6px;
+  min-height: 180px;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-default);
   padding: 12px;
   font-size: 14px;
   line-height: 1.5;
   resize: none;
   transition: border-color 0.3s, box-shadow 0.3s;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-  box-sizing: border-box; /* Додаємо, щоб padding не впливав на розмір */
+  box-sizing: border-box;
 }
-  
-  textarea#chatInput:focus {
-    border-color: #4da6fa;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(77, 166, 250, 0.25), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+
+textarea#chatInput:focus {
+  border-color: var(--color-accent-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.25));
+}
+
+/* Стилізація завантаження файлу */
+.file-upload {
+  width: 100%;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.file-upload-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  background: var(--color-upload-bg, rgba(50, 50, 50, 0.7));
+  color: var(--color-text-primary);
+  border: 1px dashed var(--color-upload-border, #666);
+  border-radius: var(--border-radius-default);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.file-upload-label:hover {
+  background: var(--color-upload-hover, rgba(60, 60, 60, 0.7));
+  border-color: var(--color-accent-primary);
+}
+
+.file-upload-label .material-icons {
+  font-size: 20px;
+}
+
+.file-upload input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* Стиль для активного стану завантаження */
+.file-upload-label.file-selected {
+  background: var(--color-upload-selected, rgba(77, 166, 250, 0.15));
+  border-color: var(--color-accent-primary);
+  border-style: solid;
+}
+
+/* Покращений блок для ключового слова */
+.keyword-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: 55px;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--color-keyword-bg, rgba(40, 40, 40, 0.4));
+  border-radius: var(--border-radius-default);
+  border: 1px solid var(--color-border-default);
+}
+
+.keyword-block label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--color-text-primary);
+}
+
+.keyword-block input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-accent-primary);
+}
+
+.keyword-block input[type="text"] {
+  flex: 1;
+  min-width: 200px;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-default);
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.keyword-block input[type="text"]:focus {
+  border-color: var(--color-accent-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.25));
+}
+
+/* Індикатор завантаження для текстового поля */
+textarea#chatInput.loading {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-loading-stripe1, rgba(35, 35, 35, 0.6)) 25%,
+    var(--color-loading-stripe2, rgba(45, 45, 45, 0.6)) 25%,
+    var(--color-loading-stripe2, rgba(45, 45, 45, 0.6)) 50%,
+    var(--color-loading-stripe1, rgba(35, 35, 35, 0.6)) 50%,
+    var(--color-loading-stripe1, rgba(35, 35, 35, 0.6)) 75%,
+    var(--color-loading-stripe2, rgba(45, 45, 45, 0.6)) 75%,
+    var(--color-loading-stripe2, rgba(45, 45, 45, 0.6))
+  );
+  background-size: 40px 40px;
+  animation: loading-animation 2s linear infinite;
+}
+
+/* Стиль для поля з даними */
+textarea#chatInput.has-content {
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 0 0 1px var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.25));
+}
+
+/* Кнопка парсингу */
+#parseBtn {
+  padding: 10px 18px;
+  background: var(--color-accent-primary);
+  color: var(--color-button-text, white);
+  border: none;
+  border-radius: var(--border-radius-default);
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 2px 4px var(--color-shadow, rgba(0, 0, 0, 0.2));
+}
+
+#parseBtn:hover {
+  background: var(--color-accent-primary-hover, #3b8adc);
+  box-shadow: 0 4px 8px var(--color-shadow, rgba(0, 0, 0, 0.3));
+}
+
+#parseBtn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px var(--color-shadow, rgba(0, 0, 0, 0.2));
+}
+
+#parseBtn.parsing {
+  background: var(--color-button-processing, #666);
+  cursor: not-allowed;
+}
+
+/* Анімація для кнопки під час обробки */
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+#parseBtn.parsing .material-icons {
+  animation: rotate 2s linear infinite;
+}
+
+/* Стилі для світлої теми */
+body.light-theme {
+  --color-upload-bg: rgba(240, 240, 240, 0.8);
+  --color-upload-border: #ccc;
+  --color-upload-hover: rgba(230, 230, 230, 0.8);
+  --color-upload-selected: rgba(0, 123, 255, 0.1);
+  --color-keyword-bg: rgba(240, 240, 240, 0.5);
+  --color-loading-stripe1: rgba(245, 245, 245, 0.8);
+  --color-loading-stripe2: rgba(235, 235, 235, 0.8);
+  --color-button-processing: #aaa;
+}
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 576px) {
+  .tab-button {
+    padding: 10px 12px;
+    font-size: 0.9rem;
   }
   
-  /* Стилізація завантаження файлу */
-  .file-upload {
-    width: 100%;
-    margin-bottom: 15px;
-    position: relative;
+  .tab-button .material-icons {
+    font-size: 1rem;
+  }
+  
+  .tab-content-container {
+    padding: 10px;
+  }
+  
+  .textarea-wrapper {
+    min-height: 150px;
+  }
+  
+  textarea#chatInput {
+    min-height: 150px;
+    font-size: 13px;
   }
   
   .file-upload-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 10px;
-    background: rgba(50, 50, 50, 0.7);
-    color: #e0e0e0;
-    border: 1px dashed #666;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s;
+    padding: 8px;
+    font-size: 0.9rem;
   }
   
-  .file-upload-label:hover {
-    background: rgba(60, 60, 60, 0.7);
-    border-color: #4da6fa;
-  }
-  
-  .file-upload-label .material-icons {
-    font-size: 20px;
-  }
-  
-  .file-upload input[type="file"] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-  }
-  
-  /* Покращений блок для ключового слова */
   .keyword-block {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    height: 73px;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: rgba(40, 40, 40, 0.4);
-    border-radius: 6px;
-    border: 1px solid #444;
-  }
-  
-  .keyword-block label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-  
-  .keyword-block input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: #4da6fa;
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
   }
   
   .keyword-block input[type="text"] {
-    flex: 1;
-    min-width: 200px;
-    background: rgba(35, 35, 35, 0.6);
-    color: #f0f0f0;
-    border: 1px solid #555;
-    border-radius: 4px;
-    padding: 8px 12px;
-    font-size: 14px;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    width: 100%;
   }
   
-  .keyword-block input[type="text"]:focus {
-    border-color: #4da6fa;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(77, 166, 250, 0.25);
+  #parseBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
   }
-  
-  /* Покращений футер парсера */
-  .parser-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-  }
-  
-  .parser-footer .db-status {
-    width: auto;
-    font-size: 0.9rem;
-    padding: 0.3rem 0.6rem;
-    margin: 0;
-    background: rgba(50, 50, 50, 0.5);
-    border-radius: 4px;
-  }
-  
-  #parseBtn:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  }
-
-  
-  /* Статус бази даних */
-  .db-status {
-    padding: 8px 12px;
-    background: rgba(50, 50, 50, 0.7);
-    color: #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  
-  .db-status.loaded {
-    background: rgba(77, 166, 250, 0.15);
-    color: #4da6fa;
-    border: 1px solid rgba(77, 166, 250, 0.3);
-  }
-  
-  .db-status.loaded::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background-color: #4da6fa;
-    border-radius: 50%;
-    margin-right: 6px;
-  }
-  
-  /* Адаптація для світлої теми */
-  body.light-theme textarea#chatInput {
-    background: rgba(245, 245, 245, 0.8);
-    color: #333;
-    border-color: #ccc;
-  }
-  
-  body.light-theme .file-upload-label {
-    background: rgba(240, 240, 240, 0.8);
-    color: #333;
-    border-color: #ccc;
-  }
-  
-  body.light-theme .file-upload-label:hover {
-    background: rgba(230, 230, 230, 0.8);
-    border-color: #007bff;
-  }
-  
-  body.light-theme .keyword-block {
-    background: rgba(240, 240, 240, 0.5);
-    border-color: #ddd;
-  }
-  
-  body.light-theme .keyword-block input[type="text"] {
-    background: white;
-    color: #333;
-    border-color: #ccc;
-  }
-  
-  body.light-theme #parseBtn {
-    background: #007bff;
-  }
-  
-  body.light-theme #parseBtn:hover {
-    background: #0069d9;
-  }
-  
-  body.light-theme .db-status {
-    background: rgba(240, 240, 240, 0.8);
-    color: #666;
-  }
-  
-  body.light-theme .db-status.loaded {
-    background: rgba(0, 123, 255, 0.1);
-    color: #007bff;
-    border-color: rgba(0, 123, 255, 0.3);
-  }
-  
-  body.light-theme .db-status.loaded::before {
-    background-color: #007bff;
-  }
+}

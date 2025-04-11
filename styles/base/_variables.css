@@ -1,8 +1,9 @@
 :root {
-  /* Кольори */
+  /* Кольори для темної теми (за замовчуванням) */
   --color-background-primary: #282828;
   --color-background-secondary: #3d3d3d;
   --color-text-primary: #e0e0e0;
+  --color-text-secondary: #cccccc;
   --color-accent-primary: #4da6fa;
   --color-accent-secondary: #00b400;
   --color-warning: #ff9900;
@@ -13,12 +14,19 @@
   --color-overlay: rgba(0, 0, 0, 0.7);
   --color-modal-bg: #373737;
 
- /* Scrollbar enhanced */
+  /* Загальні змінні для обох тем */
+  --aero-panel-background: rgba(61, 61, 61, 0.6);
+  --table-border-color: rgba(80, 80, 80, 0.87);
+  --table-header-bg: rgba(54, 54, 54, 0.692);
+  --table-found-bg: rgba(40, 40, 45, 0.4);
+  --table-not-found-bg: rgba(83, 83, 83, 0.24);
+  --table-hover-bg: rgba(60, 60, 65, 0.4);
+
+  /* Scrollbar */
   --scrollbar-track: #22222228;
   --scrollbar-thumb: #d8d8d8;
   --scrollbar-thumb-hover: #62cbeb;
   --scrollbar-border: #525252;
-
 
   /* Шрифти */
   --font-primary: "Segoe UI", Arial, sans-serif;
@@ -30,13 +38,26 @@
 
   /* Тіні */
   --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+  /* Додаємо нові змінні для вкладки парсера */
+  --color-upload-bg: rgba(50, 50, 50, 0.7);
+  --color-upload-border: #666;
+  --color-upload-hover: rgba(60, 60, 60, 0.7);
+  --color-upload-selected: rgba(77, 166, 250, 0.15);
+  --color-keyword-bg: rgba(40, 40, 40, 0.4);
+  --color-loading-stripe1: rgba(35, 35, 35, 0.6);
+  --color-loading-stripe2: rgba(45, 45, 45, 0.6);
+  --color-button-processing: #666;
+  --color-button-text: white;
 }
 
 /* Світла тема */
-.light-theme {
+body.light-theme {
+  /* Кольори для світлої теми */
   --color-background-primary: #f4f4f4;
   --color-background-secondary: #ffffff;
-  --color-text-primary: #333;
+  --color-text-primary: #333333;
+  --color-text-secondary: #555555;
   --color-accent-primary: #007bff;
   --color-accent-secondary: #28a745;
   --color-warning: #ff9900;
@@ -47,8 +68,28 @@
   --color-overlay: rgba(0, 0, 0, 0.2);
   --color-modal-bg: #f5f5f5;
 
-  /* Scrollbar enhanced */
+  /* Заміни специфічні для світлої теми */
+  --aero-panel-background: rgba(206, 206, 206, 0.6);
+  --table-border-color: rgba(180, 180, 180, 0.3);
+  --table-header-bg: #e0e0e0;
+  --table-found-bg: rgba(230, 240, 255, 0.4);
+  --table-not-found-bg: rgba(245, 235, 235, 0.4);
+  --table-hover-bg: rgba(220, 230, 245, 0.4);
+
+  /* Scrollbar для світлої теми */
   --scrollbar-track: #eee;
   --scrollbar-thumb: #ccc;
+  --scrollbar-thumb-hover: #aaa;
+  --scrollbar-border: #ddd;
 
+  /* Додаємо змінні для світлої теми */
+  --color-upload-bg: rgba(240, 240, 240, 0.8);
+  --color-upload-border: #ccc;
+  --color-upload-hover: rgba(230, 230, 230, 0.8);
+  --color-upload-selected: rgba(0, 123, 255, 0.1);
+  --color-keyword-bg: rgba(240, 240, 240, 0.5);
+  --color-loading-stripe1: rgba(245, 245, 245, 0.8);
+  --color-loading-stripe2: rgba(235, 235, 235, 0.8);
+  --color-button-processing: #aaa;
+  --color-button-text: white;
 }

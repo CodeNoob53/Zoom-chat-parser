@@ -2,6 +2,9 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-primary);
 }
 
 main {
@@ -12,22 +15,47 @@ main {
   width: 100%;
   display: flex;
   justify-content: center;
-  min-height: calc(
-    100vh - 120px
-  ); /* Враховуємо приблизну висоту header та footer */
+  min-height: calc(100vh - 120px);
 }
 
-/* Оновлені стилі для .aero-panel */
+/* Стилі для .aero-panel */
 .aero-panel {
   background: var(--aero-panel-background);
-  border: 1px solid #666;
-  border-radius: 8px;
-  box-shadow: 3px 3px 10px #000000d3, -3px -3px 10px #4b4b4b, 0 0 4px #ffffff33;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-default);
   width: 100%;
   max-width: 900px;
   min-height: 600px;
   backdrop-filter: blur(2px);
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Відключаємо переповнення на основному контейнері */
+  overflow: hidden;
+}
+
+.aero-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.aero-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--color-border-default);
+  padding-top: 0.5rem;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+  main {
+    padding: 0.5rem;
+  }
+  
+  .aero-panel {
+    border-radius: var(--border-radius-lg);
+  }
 }

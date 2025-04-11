@@ -3,6 +3,7 @@
 @import 'base/_variables.css';
 @import 'base/_typography.css';
 @import 'base/_scrollbar.css';
+@import 'base/_animations.css'; 
 
 /* Layout */
 @import 'layout/_header.css';
@@ -33,8 +34,3 @@
 @import 'modules/_parser-footer.css';
 @import 'modules/_database-actions.css';
 @import 'modules/_chat-view.css';
-
-
-/* Themes */
-@import 'themes/_dark.css';
-@import 'themes/_light.css';

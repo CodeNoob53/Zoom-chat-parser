@@ -2,9 +2,9 @@
 .alt-matches {
   margin-top: 10px;
   padding: 8px;
-  background-color: rgba(77, 166, 250, 0.1);
-  border-radius: 4px;
-  border: 1px solid rgba(77, 166, 250, 0.3);
+  background-color: var(--color-recommendations-bg, rgba(77, 166, 250, 0.1));
+  border-radius: var(--border-radius-default);
+  border: 1px solid var(--color-recommendations-border, rgba(77, 166, 250, 0.3));
   font-size: 13px;
   display: none;
 }
@@ -18,7 +18,7 @@ tr.expanded .alt-matches {
 .alt-matches-title {
   font-weight: bold;
   margin-bottom: 5px;
-  color: #ccc;
+  color: var(--color-text-secondary);
 }
 
 .recommendation-item,
@@ -32,17 +32,26 @@ tr.expanded .alt-matches {
 
 .similarity,
 .match-quality {
-  color: #4da6fa;
+  color: var(--color-accent-primary);
   font-weight: bold;
   min-width: 40px;
 }
 
-.match-quality.quality-9 { color: #00cc00; }
-.match-quality.quality-8 { color: #66cc33; }
-.match-quality.quality-7 { color: #99cc33; }
-.match-quality.quality-6 { color: #cccc33; }
-.match-quality.quality-5 { color: #ffcc00; }
-.match-quality.quality-4 { color: #ff9900; }
-.match-quality.quality-3 { color: #ff6600; }
-.match-quality.quality-2 { color: #ff3300; }
-.match-quality.quality-1 { color: #ff0000; }
+/* Кольори для градації якості співпадіння */
+.match-quality.quality-9 { color: var(--color-quality-9, #00cc00); }
+.match-quality.quality-8 { color: var(--color-quality-8, #66cc33); }
+.match-quality.quality-7 { color: var(--color-quality-7, #99cc33); }
+.match-quality.quality-6 { color: var(--color-quality-6, #cccc33); }
+.match-quality.quality-5 { color: var(--color-quality-5, #ffcc00); }
+.match-quality.quality-4 { color: var(--color-quality-4, #ff9900); }
+.match-quality.quality-3 { color: var(--color-quality-3, #ff6600); }
+.match-quality.quality-2 { color: var(--color-quality-2, #ff3300); }
+.match-quality.quality-1 { color: var(--color-quality-1, #ff0000); }
+
+/* Стилі для світлої теми */
+body.light-theme {
+  --color-recommendations-bg: rgba(0, 123, 255, 0.05);
+  --color-recommendations-border: rgba(0, 123, 255, 0.15);
+  
+  /* Градації якості залишаємо ті самі, оскільки вони добре працюють в обох темах */
+}

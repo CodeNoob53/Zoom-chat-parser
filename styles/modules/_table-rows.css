@@ -1,18 +1,22 @@
 /* Стилі для типів співпадіння в таблиці */
 .match-by-translit {
-  border-left: 2px solid #9400d3;
+  border-left: 2px solid var(--color-indicator-translit, #9400d3);
 }
 
 .reversed-match {
-  border-left: 2px solid #ff9900;
+  border-left: 2px solid var(--color-indicator-reversed, #ff9900);
 }
 
 .variant-match {
-  border-left: 2px solid #00b400;
+  border-left: 2px solid var(--color-indicator-variant, #00b400);
 }
 
 .auto-match {
-  border-left: 2px solid #ff0000;
+  border-left: 2px solid var(--color-indicator-auto, #ff0000);
+}
+
+.split-name-match {
+  border-left: 2px solid var(--color-indicator-split, #ff6600);
 }
 
 /* Стилі для рядків з альтернативами */
@@ -22,14 +26,15 @@ tr.has-alternatives {
 }
 
 tr.has-alternatives:hover {
-  background-color: rgba(250, 77, 77, 0.1) !important;
+  background-color: var(--color-table-alternative-hover, rgba(250, 77, 77, 0.1)) !important;
 }
+
 .row-expander {
   position: absolute;
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  color: #666;
+  color: var(--color-text-secondary);
   font-size: 10px;
   cursor: pointer;
   transition: transform 0.2s;
@@ -41,22 +46,22 @@ tr.expanded .row-expander {
 
 /* Стилі для розширених рядків */
 tr.expanded {
-  background-color: rgba(77, 166, 250, 0.05) !important;
+  background-color: var(--color-table-expanded-bg, rgba(77, 166, 250, 0.05)) !important;
 }
 
 /* Стилі для статусів співпадіння */
 tr.auto-match td {
-  color: #ff702d;
+  color: var(--color-auto-match-text, #ff702d);
 }
 
 tr.real-name-tag td.surname-cell,
 tr.real-name-tag td.firstname-cell {
-  color: #00b400;
+  color: var(--color-real-name-text, #00b400);
 }
 
 tr.multiple-matches td.nickname-cell,
 tr.ambiguous-name td.nickname-cell {
-  color: #ff9900;
+  color: var(--color-ambiguous-text, #ff9900);
 }
 
 /* Контейнери для нікнеймів та дій */
@@ -76,173 +81,34 @@ tr.ambiguous-name td.nickname-cell {
 .id-cell {
   min-width: 35px;
   text-align: center;
-  border-right: 1px solid rgba(124, 124, 124, 0.3);
-  border-left: 1px solid rgba(124, 124, 124, 0.3);
+  border-right: 1px solid var(--color-table-cell-border, rgba(124, 124, 124, 0.3));
+  border-left: 1px solid var(--color-table-cell-border, rgba(124, 124, 124, 0.3));
 }
 
 .surname-cell {
   min-width: 70px;
-  border-right: 1px solid rgba(124, 124, 124, 0.3);
+  border-right: 1px solid var(--color-table-cell-border, rgba(124, 124, 124, 0.3));
 }
 
 .firstname-cell {
   min-width: 100px;
-  border-right: 1px solid rgba(124, 124, 124, 0.3);
+  border-right: 1px solid var(--color-table-cell-border, rgba(124, 124, 124, 0.3));
 }
 
 .zoom-nickname-cell {
   width: 45%;
   min-width: 150px;
-  border-right: 1px solid rgba(124, 124, 124, 0.3);
-}
-
-/* Переконаємось, що остання колонка не має зайвого простору справа */
-.zoom-nickname-cell {
+  border-right: 1px solid var(--color-table-cell-border, rgba(124, 124, 124, 0.3));
   position: relative;
   padding-right: 20px; /* Місце для іконки розгортання */
 }
 
-/* Стилі для іконки розгортання */
-.expand-icon {
-  display: inline-block;
-  margin-left: 6px;
-  font-size: 12px;
-  color: #4da6fa;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  user-select: none;
+/* Змінні для світлої теми */
+body.light-theme {
+  --color-auto-match-text: #d35001;
+  --color-real-name-text: #007800;
+  --color-ambiguous-text: #d17600;
+  --color-table-cell-border: rgba(180, 180, 180, 0.3);
+  --color-table-alternative-hover: rgba(255, 150, 150, 0.1);
+  --color-table-expanded-bg: rgba(0, 123, 255, 0.05);
 }
-
-/* Стилі для контейнера нікнейму з іконкою розгортання */
-tr.has-alternatives .nickname-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Стилі для іконки при наведенні */
-tr.has-alternatives .expand-icon {
-  opacity: 0.7;
-}
-
-tr.has-alternatives:hover .expand-icon {
-  opacity: 1;
-}
-
-/* Стилі для іконки при розгорнутому стані */
-tr.expanded .expand-icon {
-  color: #fff;
-}
-
-/* Стилі для контейнера альтернатив */
-.alternatives-container {
-  display: none;
-  box-sizing: content-box;
-  margin-top: 8px;
-  padding: 10px;
-  background-color: rgba(50, 50, 50, 0.9);
-  border-radius: 2px;
-  border: 1px solid rgba(77, 166, 250, 0.3);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Показуємо контейнер при розгорнутому стані */
-tr.expanded .alternatives-container {
-  display: block;
-}
-
-/* Стилі для заголовка альтернатив */
-.alternatives-title {
-  font-weight: bold;
-  margin: 0;
-  margin-bottom: 8px;
-  color: #ccc;
-  font-size: 13px;
-  padding: 5px;
-  border-bottom: 1px solid rgba(77, 166, 250, 0.3);
-}
-
-/* Стилі для елементу альтернативи */
-.alternative-item {
-  display: flex;
-  align-items: center;
-  margin: 5px 0;
-  padding: 5px;
-  gap: 8px;
-  border-radius: 3px;
-  transition: background-color 0.2s;
-}
-
-.alternative-item:hover {
-  background-color: rgba(77, 166, 250, 0.1);
-}
-
-/* Стилі для відображення якості співпадіння */
-.match-quality {
-  min-width: 40px;
-  text-align: right;
-  font-weight: bold;
-}
-
-/* Кольори для різних рівнів якості */
-.match-quality.quality-9 {
-  color: #00cc00;
-}
-.match-quality.quality-8 {
-  color: #66cc33;
-}
-.match-quality.quality-7 {
-  color: #99cc33;
-}
-.match-quality.quality-6 {
-  color: #cccc33;
-}
-.match-quality.quality-5 {
-  color: #ffcc00;
-}
-.match-quality.quality-4 {
-  color: #ff9900;
-}
-.match-quality.quality-3 {
-  color: #ff6600;
-}
-.match-quality.quality-2 {
-  color: #ff3300;
-}
-.match-quality.quality-1 {
-  color: #ff0000;
-}
-.match-quality.quality-0 {
-  color: #cc0000;
-}
-
-/* Стилі для імені з бази */
-.db-name {
-  flex-grow: 1;
-}
-
-/* Стилі для кнопки вибору альтернативи */
-.select-alternative {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  background-color: #4da6fa;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.select-alternative:hover {
-  background-color: #2c8ad7;
-}
-
-
-.split-name-match {
-  border-left: 2px solid #ff6600;
-}
-

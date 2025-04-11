@@ -1,18 +1,42 @@
-
-input[type="file"],
+/* Стилі для полів введення */
+input[type="text"],
+input[type="search"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+textarea,
+select,
 #searchDbInput {
   width: 100%;
-  background: #252525;
-  color: #f0f0f0;
-  border: 1px solid #555;
-  border-radius: 4px;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-default);
   padding: 0.5rem;
   font-size: clamp(0.875rem, 2vw, 1rem);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus,
+#searchDbInput:focus {
+  border-color: var(--color-accent-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.25));
+}
 
+/* Стилі для чекбоксів та радіокнопок */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--color-accent-primary);
+}
 
+/* Стилі для лейблів */
 .keyword-block label,
 .database-block label {
   display: flex;
@@ -20,10 +44,27 @@ input[type="file"],
   gap: 0.5rem;
   cursor: pointer;
   font-size: clamp(0.875rem, 2vw, 1rem);
+  color: var(--color-text-primary);
 }
 
+/* Стилі для полів, які приховані за замовчуванням */
 #keywordInput,
 #dbFileInput {
   display: none;
   flex: 1;
+}
+
+/* Стилі для textarea */
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Стилі для disabled полів */
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background-color: var(--color-background-disabled, rgba(60, 60, 60, 0.3));
+  cursor: not-allowed;
+  opacity: 0.7;
 }

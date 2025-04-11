@@ -1,109 +1,96 @@
 /* Стилі для кнопок експорту */
 .export-buttons {
-    display: flex;
-    gap: 0.75rem;
-  }
-  
-  .export-buttons button {
-    padding: 0.5rem 1rem;
-    background: rgba(70, 70, 70, 0.8);
-    border: 1px solid #444;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 0.95rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: background 0.2s, transform 0.1s;
-  }
-  
-  .export-buttons button:hover {
-    background: rgba(85, 85, 85, 0.8);
-  }
-  
-  .export-buttons button:active {
-    transform: translateY(1px);
-  }
-  
-  /* Спеціальні стилі для різних форматів */
-  #saveBtn {
-    background: rgba(70, 70, 70, 0.8);
-  }
-  
-  #saveCsvBtn {
-    background: rgba(40, 167, 69, 0.5);
-    border-color: rgba(40, 167, 69, 0.6);
-  }
-  
-  #saveJsonBtn {
-    background: rgba(255, 193, 7, 0.5);
-    border-color: rgba(255, 193, 7, 0.6);
-    color: #212529;
-  }
-  
-  #saveCsvBtn:hover {
-    background: rgba(40, 167, 69, 0.6);
-  }
-  
-  #saveJsonBtn:hover {
-    background: rgba(255, 193, 7, 0.6);
-  }
-  
-  /* Стилі для кнопок імпорту/експорту бази */
-  .db-buttons button {
-    
-    background: rgba(70, 70, 70, 0.8);
-    border: 1px solid #444;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 0.95rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: background 0.2s, transform 0.1s;
-  }
-  
-  .db-buttons button:hover {
-    background: rgba(85, 85, 85, 0.8);
-  }
-  
-  .db-buttons button:active {
-    transform: translateY(1px);
-  }
-  
-  #dbAddBtn {
-    background: rgba(77, 166, 250, 0.5);
-    border-color: rgba(77, 166, 250, 0.6);
-  }
-  
-  #dbImportBtn {
-    background: rgba(70, 70, 70, 0.8);
-    border: 1px solid #797979;
-    border-radius: 4px;
-    padding: 0.5rem 1rem;
-    color: #fff;
-    font-size: 0.95rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: background 0.2s, transform 0.1s;
-  }
-  
-  #dbExportCsvBtn {
-    background: rgba(40, 167, 69, 0.5);
-    border-color: rgba(40, 167, 69, 0.6);
-  }
-  
-  #dbExportJsonBtn {
-    background: rgba(255, 193, 7, 0.5);
-    border-color: rgba(255, 193, 7, 0.6);
-    color: #212529;
-  }
-  
-  #dbAddBtn:hover {
-    background: rgba(77, 166, 250, 0.6);
-  }
-  
+  display: flex;
+  gap: 0.75rem;
+}
+
+.export-buttons button {
+  padding: 0.5rem 1rem;
+  background: var(--color-button-bg, rgba(70, 70, 70, 0.8));
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-default);
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.export-buttons button:hover {
+  background: var(--color-button-hover, rgba(85, 85, 85, 0.8));
+}
+
+.export-buttons button:active {
+  transform: translateY(1px);
+}
+
+/* Спеціальні стилі для різних форматів */
+#saveBtn {
+  background: var(--color-save-txt-bg, rgba(70, 70, 70, 0.8));
+}
+
+#saveCsvBtn {
+  background: var(--color-save-csv-bg, rgba(40, 167, 69, 0.5));
+  border-color: var(--color-save-csv-border, rgba(40, 167, 69, 0.6));
+}
+
+#saveJsonBtn {
+  background: var(--color-save-json-bg, rgba(255, 193, 7, 0.5));
+  border-color: var(--color-save-json-border, rgba(255, 193, 7, 0.6));
+  color: var(--color-save-json-text, #212529);
+}
+
+#saveCsvBtn:hover {
+  background: var(--color-save-csv-hover, rgba(40, 167, 69, 0.6));
+}
+
+#saveJsonBtn:hover {
+  background: var(--color-save-json-hover, rgba(255, 193, 7, 0.6));
+}
+
+/* Стилі для кнопок імпорту/експорту бази */
+.db-buttons button {
+  background: var(--color-button-bg, rgba(70, 70, 70, 0.8));
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-default);
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.db-buttons button:hover {
+  background: var(--color-button-hover, rgba(85, 85, 85, 0.8));
+}
+
+.db-buttons button:active {
+  transform: translateY(1px);
+}
+
+#dbAddBtn {
+  background: var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.5));
+  border-color: var(--color-accent-primary);
+}
+
+#dbAddBtn:hover {
+  background: var(--color-accent-primary-hover, rgba(77, 166, 250, 0.6));
+}
+
+/* Стилі для світлої теми */
+body.light-theme {
+  --color-button-bg: rgba(240, 240, 240, 0.8);
+  --color-button-hover: rgba(220, 220, 220, 0.8);
+  --color-save-txt-bg: rgba(240, 240, 240, 0.8);
+  --color-save-csv-bg: rgba(40, 167, 69, 0.3);
+  --color-save-csv-border: rgba(40, 167, 69, 0.4);
+  --color-save-csv-hover: rgba(40, 167, 69, 0.4);
+  --color-save-json-bg: rgba(255, 193, 7, 0.3);
+  --color-save-json-border: rgba(255, 193, 7, 0.4);
+  --color-save-json-hover: rgba(255, 193, 7, 0.4);
+  --color-save-json-text: #212529;
+}

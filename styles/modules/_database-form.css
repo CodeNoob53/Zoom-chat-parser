@@ -1,163 +1,96 @@
 /* Стилі для форми бази даних */
 .database-form-container {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: rgba(50, 50, 50, 0.5);
-    border-radius: 8px;
-    border: 1px solid #444;
-  }
-  
-  .database-form-container h4 {
-    margin-bottom: 1rem;
-    color: #e0e0e0;
-    font-size: 1.1rem;
-  }
-  
-  .database-form {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-  }
-  
-  .form-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .form-row label {
-    font-size: 0.9rem;
-    color: #ccc;
-  }
-  
-  .form-row input {
-    padding: 0.5rem;
-    background: #252525;
-    color: #f0f0f0;
-    border: 1px solid #555;
-    border-radius: 4px;
-    font-size: 0.95rem;
-  }
-  
-  .form-row input:focus {
-    outline: none;
-    border-color: #4da6fa;
-    box-shadow: 0 0 0 2px rgba(77, 166, 250, 0.25);
-  }
-  
-  .form-row input[readonly] {
-    background: #333;
-    cursor: not-allowed;
-  }
-  
-  .form-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    grid-column: 1 / -1;
-    margin-top: 0.5rem;
-  }
-  
-  .form-buttons button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    transition: background 0.2s, color 0.2s;
-  }
-  
-  #dbFormClearBtn {
-    background: #444;
-    color: #e0e0e0;
-  }
-  
-  #dbFormSaveBtn {
-    background: #4da6fa;
-    color: #fff;
-  }
-  
-  #dbFormClearBtn:hover {
-    background: #555;
-  }
-  
-  #dbFormSaveBtn:hover {
-    background: #2c8ad7;
-  }
-  
-  #dbSearchInput {
-    padding: 8px 8px 8px 32px;
-    width: 100%;
-    border-radius: 4px;
-    border: 1px solid #444;
-    background: #252525;
-    color: #fff;
-    font-size: 14px;
-  }
-  
-  #dbSearchBtn {
-    padding: 0.25rem 0.5rem;
-    background: #4da6fa;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  #dbSearchBtn:hover {
-    background: #2c8ad7;
-  }
-  
-  /* Стилі для кнопок імпорту/експорту */
-  .db-buttons {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-  }
-  
-  .import-export-buttons {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  /* Стилі для світлої теми */
-  body.light-theme .database-form-container {
-    background: rgba(240, 240, 240, 0.6);
-    border-color: #ccc;
-  }
-  
-  body.light-theme .database-form-container h4 {
-    color: #333;
-  }
-  
-  body.light-theme .form-row label {
-    color: #555;
-  }
-  
-  body.light-theme .form-row input {
-    background: #fff;
-    color: #333;
-    border-color: #ccc;
-  }
-  
-  body.light-theme .form-row input[readonly] {
-    background: #eee;
-  }
-  
-  body.light-theme #dbFormClearBtn {
-    background: #e0e0e0;
-    color: #333;
-  }
-  
-  body.light-theme #dbSearchInput {
-    background: #fff;
-    color: #333;
-    border-color: #ccc;
-  }
-  
-  body.light-theme #dbFormClearBtn:hover {
-    background: #d0d0d0;
-  }
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--color-form-container-bg, rgba(50, 50, 50, 0.5));
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border-default);
+}
+
+.database-form-container h4 {
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  font-size: 1.1rem;
+}
+
+.database-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-row label {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.form-row input {
+  padding: 0.5rem;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-default);
+  font-size: 0.95rem;
+}
+
+.form-row input:focus {
+  outline: none;
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 0 0 2px var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.25));
+}
+
+.form-row input[readonly] {
+  background: var(--color-input-readonly-bg, #333);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+}
+
+.form-buttons button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--border-radius-default);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+#dbFormClearBtn {
+  background: var(--color-button-clear-bg, #444);
+  color: var(--color-text-primary);
+}
+
+#dbFormSaveBtn {
+  background: var(--color-accent-primary);
+  color: var(--color-button-text, #fff);
+}
+
+#dbFormClearBtn:hover {
+  background: var(--color-button-clear-hover, #555);
+}
+
+#dbFormSaveBtn:hover {
+  background: var(--color-accent-primary-hover, #2c8ad7);
+}
+
+/* Стилі для світлої теми */
+body.light-theme {
+  --color-form-container-bg: rgba(240, 240, 240, 0.6);
+  --color-input-readonly-bg: #eee;
+  --color-button-clear-bg: #e0e0e0;
+  --color-button-clear-hover: #d0d0d0;
+  --color-button-text: #fff;
+}

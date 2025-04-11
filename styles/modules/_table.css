@@ -4,72 +4,67 @@
   flex: 1 1 auto;
   overflow-y: auto;
   margin-bottom: 15px;
-  background: #4d4d4d4f;
-  border: 1px solid #8f8a8a;
-  border-radius: 4px;
-
-
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-default);
 }
 
+.participants-table {
+  width: 100%;
+  border-radius: var(--border-radius-default);
+  margin-bottom: 0.5rem;
+  border-collapse: separate;
+  border-spacing: 0;
+}
 
-  
-  .participants-table {
-    width: 100%;
-    border-radius: 4px;
-    margin-bottom: 0.5rem;
-    border-collapse: separate;
-    border-spacing: 0;
-  }
-  
-  .participants-table th {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    padding: 10px 8px;
-    border-bottom: 1px solid #6e6e6e;
-    background-color: rgba(54, 54, 54, 0.692);
-    backdrop-filter: blur(5px);
-    font-weight: bold;
-    font-size: 0.95rem;
-    color: #eee;
-    text-align: left;
-  }
-  
-  
-  .participants-table td {
-    padding: 8px;
-    border-bottom: 1px solid rgba(80, 80, 80, 0.87);
-    vertical-align: middle;
-  }
-  
-  .participants-table tr.found {
-    background-color: rgba(40, 40, 45, 0.4);
-  }
-  
-  .participants-table tr.not-found {
-    background-color: rgba(83, 83, 83, 0.24);
-  }
-  
-  .participants-table tr:hover {
-    background-color: rgba(60, 60, 65, 0.4);
-  }
+.participants-table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--color-border-default);
+  background-color: var(--table-header-bg);
+  backdrop-filter: blur(5px);
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  text-align: left;
+}
 
-  .participants-table th::after {
-    font-family: 'Material Icons';
-    content: "swap_vert";
-    opacity: 0.8;
-    font-size: 14px;
-    padding-left: 5px;
-  }
-  
-  .participants-table th.sorted.asc::after {
-    content: "north";
-    opacity: 1;
-    color: #fa754d;
-  }
-  
-  .participants-table th.sorted.desc::after {
-    content: "south";
-    opacity: 1;
-    color: #fa754d;
-  }
+.participants-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--table-border-color);
+  vertical-align: middle;
+}
+
+.participants-table tr.found {
+  background-color: var(--table-found-bg);
+}
+
+.participants-table tr.not-found {
+  background-color: var(--table-not-found-bg);
+}
+
+.participants-table tr:hover {
+  background-color: var(--table-hover-bg);
+}
+
+.participants-table th::after {
+  font-family: 'Material Icons';
+  content: "swap_vert";
+  opacity: 0.8;
+  font-size: 14px;
+  padding-left: 5px;
+}
+
+.participants-table th.sorted.asc::after {
+  content: "north";
+  opacity: 1;
+  color: var(--color-accent-secondary);
+}
+
+.participants-table th.sorted.desc::after {
+  content: "south";
+  opacity: 1;
+  color: var(--color-accent-secondary);
+}

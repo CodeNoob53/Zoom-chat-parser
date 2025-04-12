@@ -2,11 +2,15 @@
 import { elements } from '../core/dom.js'
 import { triggerRerender } from './render-utils.js'
 import { showAssignmentModal } from './assignment-modal.js'
-import { showNotification } from '../core/notification.js';
+import { showNotification } from '../core/notification.js'
 import { getCurrentSortState, sortParticipants } from './sorting.js'
 import { addNicknameToEntry } from '../database/database-service.js'
 import { getParticipantInfo } from '../name-processing/name-database.js'
-import { createElement, createFragment, updateTable } from '../utils/dom-utils.js'
+import {
+  createElement,
+  createFragment,
+  updateTable
+} from '../utils/dom-utils.js'
 
 // Зберігаємо стан відображення для оптимізації рендерингу
 const renderCache = {
@@ -487,7 +491,7 @@ function createAlternativesContainer (participant, recsList) {
     alternativesList.push(...recsAsAlternatives)
   }
 
-  // ВИПРАВЛЕНО: Перевіряємо, чи є хоч якісь альтернативи
+  // Перевіряємо, чи є хоч якісь альтернативи
   if (alternativesList.length === 0) {
     // Якщо немає альтернатив, додаємо повідомлення про це
     alternativesContainer.appendChild(
@@ -591,7 +595,14 @@ function createAlternativesContainer (participant, recsList) {
 
   // Створюємо елементи для альтернатив
   uniqueAlternatives.forEach(alt => {
-    const item = createElement('div', { className: 'alternative-item' })
+    const item = createElement('div', {
+      className: 'alternative-item',
+      onclick: e => {
+        e.stopPropagation()
+        setManualMatch(participant.nickname, alt.id)
+        triggerRerender()
+      }
+    })
 
     // Якість співпадіння
     item.appendChild(
@@ -609,23 +620,6 @@ function createAlternativesContainer (participant, recsList) {
     // Ім'я з бази
     item.appendChild(
       createElement('span', { className: 'db-name' }, alt.dbName)
-    )
-
-    // Кнопка для вибору
-    item.appendChild(
-      createElement(
-        'button',
-        {
-          className: 'select-alternative',
-          title: 'Вибрати це співпадіння',
-          onclick: e => {
-            e.stopPropagation()
-            setManualMatch(participant.nickname, alt.id)
-            triggerRerender()
-          }
-        },
-        '✓'
-      )
     )
 
     alternativesContainer.appendChild(item)

@@ -33,7 +33,7 @@ jobs:
           mkdir -p ./_headers
           cat > ./_headers/headers << 'EOL'
           /*
-            Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'
+            Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-random123' https://cdnjs.cloudflare.com; style-src 'self' 'nonce-random123' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.example.com
             Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
           EOL
       

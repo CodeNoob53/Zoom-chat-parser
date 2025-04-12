@@ -155,51 +155,60 @@
                 id="participantsTable"
                 aria-label="Список учасників"
               >
-                  <thead>
-                    <tr>
-                      <th class="id-cell" id="sortById" scope="col">ID</th>
-                      <th class="surname-cell" id="sortBySurname" scope="col">Прізвище</th>
-                      <th class="firstname-cell" id="sortByFirstname" scope="col">Ім'я</th>
-                      <th class="zoom-nickname-cell" id="sortByNickname" scope="col">Zoom nickname</th>
-                      <th class="actions-header" scope="col">Дії</th>
-                    </tr>
-                  </thead>
+                <thead>
+                  <tr>
+                    <th class="id-cell" id="sortById" scope="col">ID</th>
+                    <th class="surname-cell" id="sortBySurname" scope="col">
+                      Прізвище
+                    </th>
+                    <th class="firstname-cell" id="sortByFirstname" scope="col">
+                      Ім'я
+                    </th>
+                    <th
+                      class="zoom-nickname-cell"
+                      id="sortByNickname"
+                      scope="col"
+                    >
+                      Zoom nickname
+                    </th>
+                    <th class="actions-header" scope="col">Дії</th>
+                  </tr>
+                </thead>
                 <tbody id="participantsList">
                   <!-- Тут будуть рядки таблиці -->
                 </tbody>
               </table>
             </div>
 
-            <div class="legend" role="note" aria-label="Пояснення позначень">
-              <div>
-                <span class="legend-indicator translit" aria-hidden="true"
-                  >Т</span
-                >
-                Знайдено через транслітерацію
-              </div>
-              <div>
-                <span class="legend-indicator reversed" aria-hidden="true"
-                  >↔</span
-                >
-                Знайдено в зворотному порядку (Ім'я Прізвище)
-              </div>
-              <div>
-                <span class="legend-indicator variant" aria-hidden="true"
-                  >V</span
-                >
-                Знайдено зменшувальну форму імені
-              </div>
-              <div>
-                <span class="legend-indicator auto-match" aria-hidden="true"
-                  >А</span
-                >
-                Автоматично знайдене співпадіння
-              </div>
-              <div>
-                <span class="legend-indicator split-name" aria-hidden="true"
-                  >S</span
-                >
-                Автоматично розпізнане склеєне ім'я
+            <div class="legend-container">
+              <button class="legend-toggle" id="legendToggle" aria-expanded="false" aria-controls="legendContent">
+                <div class="legend-toggle-left">
+                  <span class="material-icons info-icon">info_outline</span>
+                  <span>Легенда індикаторів</span>
+                </div>
+                <span class="material-icons toggle-icon">expand_more</span>
+              </button>
+              <div class="legend" id="legendContent" role="note" aria-label="Пояснення позначень">
+                <div>
+                  <span class="legend-indicator translit-indicator" aria-hidden="true">Т</span>
+                  Знайдено через транслітерацію
+                </div>
+                <div>
+                  <span class="legend-indicator reversed-indicator material-icons" aria-hidden="true">swap_horiz</span>
+                  Знайдено в зворотному порядку (Ім'я Прізвище)
+                </div>
+                <div>
+                  <span class="legend-indicator variant-indicator" aria-hidden="true">V</span>
+                  Знайдено зменшувальну форму імені
+                </div>
+                <div>
+                  <span class="legend-indicator auto-indicator" aria-hidden="true">А</span>
+                  Автоматично знайдене співпадіння
+                </div>
+                <div>
+                  <span class="legend-indicator split-name-indicator" aria-hidden="true">S</span>
+                  Автоматично розпізнане склеєне ім'я
+                </div>
               </div>
             </div>
 

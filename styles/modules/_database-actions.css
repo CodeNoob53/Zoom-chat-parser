@@ -9,7 +9,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
   width: 100%;
 }
 
@@ -37,6 +36,20 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+#dbSearchInput {
+  padding-left: 32px; /* Додаємо відступ для іконки */
+  border-radius: 20px; /* Більш круглі краї */
+  background-color: var(--color-search-bg, rgba(50, 50, 50, 0.5));
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+#dbSearchInput:focus {
+  background-color: var(--color-search-focus-bg, rgba(60, 60, 60, 0.7));
+  box-shadow: 0 0 0 2px var(--color-accent-primary-transparent, rgba(77, 166, 250, 0.3));
 }
 
 /* Кнопка додавання запису */
@@ -131,6 +144,8 @@ body.light-theme {
   --color-button-json-border: rgba(255, 193, 7, 0.8);
   --color-button-json-hover: rgba(255, 193, 7, 0.8);
   --color-button-json-text: #212529;
+  --color-search-bg: rgba(240, 240, 240, 0.7);
+  --color-search-focus-bg: rgb(255, 255, 255);
 }
 
 /* Адаптивність для мобільних пристроїв */

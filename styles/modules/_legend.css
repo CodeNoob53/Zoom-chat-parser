@@ -1,14 +1,65 @@
 .legend {
+  overflow: hidden;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
+  padding: 0rem;
   gap: 0.8rem;
-  margin: 0.75rem 0;
-  padding: 1rem;
   background: var(--color-legend-bg, rgba(50, 50, 50, 0.3));
-  border-radius: var(--border-radius-default);
+  border-radius: 0 0 var(--border-radius-default) var(--border-radius-default);
   border: 1px solid var(--color-legend-border, rgba(100, 100, 100, 0.3));
-  box-shadow: 0 2px 4px var(--color-shadow, rgba(0, 0, 0, 0.2));
+  border-top: none;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s;
+}
+
+.legend-container {
+  margin: 0.75rem 0;
+}
+
+.legend-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  background: var(--color-legend-toggle-bg, rgba(50, 50, 50, 0.3));
+  border: 1px solid var(--color-legend-border, rgba(100, 100, 100, 0.3));
+  border-radius: var(--border-radius-default);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.legend-toggle:hover {
+  background: var(--color-legend-toggle-hover, rgba(125, 207, 255, 0.185));
+}
+
+.legend-toggle .material-icons {
+  font-size: 18px;
+  color: #4da6fa !important;
+}
+
+.legend-toggle .toggle-icon {
+  color: var(--color-accent-primary, #4da6fa);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.legend-toggle[aria-expanded="true"] .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.legend-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Стиль для інформаційної іконки */
+.legend-toggle .info-icon {
+  color: var(--color-text-secondary);
+  margin-right: 8px;
 }
 
 .legend div {
@@ -82,6 +133,27 @@
   background-color: var(--color-muted, #666);
 }
 
+@keyframes legendFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 576px) {
+  .legend-toggle {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .legend {
+    gap: 0.5rem;
+  }
+  
+  .legend > div {
+    font-size: 0.85rem;
+  }
+}
+
 /* Змінні для світлої теми */
 body.light-theme {
   --color-legend-bg: rgba(230, 230, 230, 0.5);
@@ -90,4 +162,6 @@ body.light-theme {
   --color-legend-item-border: rgba(200, 200, 200, 0.6);
   --color-legend-dot-border: rgba(0, 0, 0, 0.1);
   --color-legend-indicator-border: rgba(0, 0, 0, 0.1);
+  --color-legend-toggle-bg-light: rgba(230, 230, 230, 0.5);
+  --color-legend-toggle-hover: rgba(240, 240, 240, 0.6);
 }

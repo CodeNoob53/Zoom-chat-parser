@@ -8,6 +8,7 @@ import { initTheme } from './core/theme.js'
 import { initTabs } from './core/tabs.js'
 import { initParserUI } from './ui/parser-ui.js'
 import { initChatView } from './ui/chat-view.js'
+import { initLegendAccordion } from './ui/legend-accordion.js'
 import {
   initDatabaseManager,
   getOldFormatDatabase
@@ -56,6 +57,9 @@ function initApp () {
 
   // Ініціалізуємо відображення чату
   initChatView()
+
+  // Ініціалізуємо акордеон легенди
+  initLegendAccordion()
 
   // Ініціалізуємо базу даних при запуску
   setTimeout(() => {
@@ -149,50 +153,52 @@ function tryUseManagerDatabase () {
 
 // Підписуємося на подію зміни бази даних з більш надійною обробкою
 document.addEventListener('databaseUpdated', e => {
-  console.log('Отримано подію оновлення бази даних:', e.detail);
+  console.log('Отримано подію оновлення бази даних:', e.detail)
 
   // Отримуємо останню версію бази даних
-  const nameDatabase = getNameDatabase();
+  const nameDatabase = getNameDatabase()
 
   // Оновлюємо статус бази даних
-  updateDbStatus(e.detail.databaseSize);
+  updateDbStatus(e.detail.databaseSize)
 
   // Якщо є відображені імена, оновлюємо список
   if (displayedNames.length > 0) {
     // Очистимо кеш перед перепорівнянням
-    clearMatchedNamesCache();
-    
+    clearMatchedNamesCache()
+
     // Порівнюємо імена з базою
-    compareNames(displayedNames, getRealNameMap());
+    compareNames(displayedNames, getRealNameMap())
 
     // Оновлюємо відображення
-    updateNamesList(
-      displayedNames,
-      getRealNameMap(),
-      true,
-      getMatchedNames()
-    );
+    updateNamesList(displayedNames, getRealNameMap(), true, getMatchedNames())
 
-    console.log('Список учасників оновлено з новою базою даних, часова мітка:', e.detail.timestamp);
+    console.log(
+      'Список учасників оновлено з новою базою даних, часова мітка:',
+      e.detail.timestamp
+    )
   }
-});
+})
 
 /**
  * Очистити кеш співпадінь перед оновленням
  */
-function clearMatchedNamesCache() {
+function clearMatchedNamesCache () {
   // Імпортуємо функцію очищення кешу, якщо вона доступна
-  import('./name-processing/name-database.js').then(module => {
-    if (typeof module.clearMatchedNamesCache === 'function') {
-      module.clearMatchedNamesCache();
-    } else {
-      // Запасний варіант очищення кешу
-      console.log('Функція clearMatchedNamesCache недоступна, використовуємо запасний варіант');
-      // Тут можна додати альтернативну логіку очищення кешу
-    }
-  }).catch(err => {
-    console.error('Помилка при імпорті модуля name-database.js:', err);
-  });
+  import('./name-processing/name-database.js')
+    .then(module => {
+      if (typeof module.clearMatchedNamesCache === 'function') {
+        module.clearMatchedNamesCache()
+      } else {
+        // Запасний варіант очищення кешу
+        console.log(
+          'Функція clearMatchedNamesCache недоступна, використовуємо запасний варіант'
+        )
+        // Тут можна додати альтернативну логіку очищення кешу
+      }
+    })
+    .catch(err => {
+      console.error('Помилка при імпорті модуля name-database.js:', err)
+    })
 }
 
 /**

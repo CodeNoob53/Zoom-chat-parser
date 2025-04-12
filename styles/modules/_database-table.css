@@ -4,7 +4,7 @@
   border-collapse: separate;
   border-spacing: 0;
   border-radius: var(--border-radius-default);
-  overflow: hidden;
+  overflow: visible; /* Змінено з 'hidden' на 'visible' для показу sticky хедера */
 }
 
 .database-table th {
@@ -20,6 +20,8 @@
   color: var(--color-text-primary);
   text-align: left;
   cursor: pointer;
+  /* Додані стилі для кращої фіксації */
+  box-shadow: 0 1px 0 var(--color-border-default);
 }
 
 .database-table th::after {

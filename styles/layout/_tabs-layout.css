@@ -167,10 +167,9 @@ textarea#chatInput:focus {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  min-height: 55px;
+  min-height: 71px;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 20px;
   padding: 15px;
   background: var(--color-keyword-bg, rgba(40, 40, 40, 0.4));
   border-radius: var(--border-radius-default);
@@ -315,11 +314,6 @@ body.light-theme {
     font-size: 0.9rem;
   }
   
-  .keyword-block {
-    padding: 10px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
   
   .keyword-block input[type="text"] {
     width: 100%;

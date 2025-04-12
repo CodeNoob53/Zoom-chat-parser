@@ -3,7 +3,6 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  padding: 0rem;
   gap: 0.8rem;
   background: var(--color-legend-bg, rgba(50, 50, 50, 0.3));
   border-radius: 0 0 var(--border-radius-default) var(--border-radius-default);
@@ -11,7 +10,8 @@
   border-top: none;
   max-height: 0;
   opacity: 0;
-  transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s;
+  padding: 0; /* Встановлюємо початковий паддінг 0 */
+  transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease-in-out, visibility 0.3s;
 }
 
 .legend-container {
@@ -89,8 +89,6 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-family: "Consolas", monospace;
-  font-size: 12px;
   width: 24px;
   height: 24px;
   border-radius: 4px;
@@ -102,7 +100,7 @@
 
 .legend-indicator.reversed {
   font-family: 'Material Icons';
-  font-size: 16px;
+  background-color: var(--color-indicator-reversed, #ff9900);
 }
 
 /* Використовуємо ті самі змінні кольорів, що і для індикаторів */
@@ -116,10 +114,6 @@
 
 .legend-indicator.translit {
   background-color: var(--color-indicator-translit, #9400d3);
-}
-
-.legend-indicator.reversed {
-  background-color: var(--color-indicator-reversed, #ff9900);
 }
 
 .legend-indicator.split-name {

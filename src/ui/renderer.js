@@ -1,4 +1,4 @@
-import { elements } from '../core/dom.js';
+// Файл: src/ui/renderer.js
 import { initSortListeners } from './sorting.js';
 import { renderNames } from './table-renderer.js';
 import { setRerenderCallback } from './render-utils.js';

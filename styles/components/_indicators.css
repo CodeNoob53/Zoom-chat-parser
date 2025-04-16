@@ -50,6 +50,17 @@
   background-color: var(--color-indicator-split, #ff6600);
 }
 
+/* Додаємо стилі для нових індикаторів */
+.match-indicator.rnm-indicator {
+  background-color: var(--color-indicator-rnm,);
+  width: auto;
+  padding: 0 4px;
+}
+
+.match-indicator.nickname-indicator {
+  background-color: var(--color-indicator-nickname,);
+}
+
 /* Додаємо змінні в root для індикаторів */
 :root {
   --color-indicator-translit: #9400d3;
@@ -57,4 +68,6 @@
   --color-indicator-variant: #00b400;
   --color-indicator-auto: #ff3366;
   --color-indicator-split: #ff6600;
+  --color-indicator-rnm: #00a6c4;
+  --color-indicator-nickname: #00c493;
 }

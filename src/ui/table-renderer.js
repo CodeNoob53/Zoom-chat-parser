@@ -254,7 +254,10 @@ function renderParticipantRow (
   )
 
   // Додаємо реальне ім'я, якщо є
-  if (realNameMap[participant.nickname]) {
+  if (
+    realNameMap[participant.nickname] &&
+    !(participant.matchType && participant.matchType.includes('real-name-tag'))
+  ) {
     nicknameContainer.appendChild(
       createElement(
         'span',
@@ -445,6 +448,40 @@ function addMatchTypeIndicators (participant, container) {
           title: 'Автоматично знайдене співпадіння'
         },
         'А'
+      )
+    )
+  }
+
+  // Додаємо індикатор для реального імені (rnm:)
+  if (
+    participant.matchType &&
+    participant.matchType.includes('real-name-tag')
+  ) {
+    container.appendChild(
+      createElement(
+        'span',
+        {
+          className: 'match-indicator rnm-indicator',
+          title: 'Знайдено через тег rnm:'
+        },
+        'RNM'
+      )
+    )
+  }
+
+  // Додаємо індикатор для нікнейму
+  if (
+    participant.matchType &&
+    participant.matchType.includes('nickname-match')
+  ) {
+    container.appendChild(
+      createElement(
+        'span',
+        {
+          className: 'match-indicator nickname-indicator',
+          title: 'Знайдено через нікнейм в базі'
+        },
+        'N'
       )
     )
   }

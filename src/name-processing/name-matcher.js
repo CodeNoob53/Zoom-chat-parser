@@ -1,10 +1,7 @@
 import { 
-  transliterateToLatin,
-  transliterateToCyrillic,
   areNamesTransliteratedMatches
 } from './transliteration.js';
 import {
-  getStandardNameForm,
   isVariantOf,
   getAllPossibleStandardNames
 } from './name-variants.js';
@@ -14,6 +11,7 @@ import {
 } from './name-utils.js';
 import { findAllPossibleMatches, hasAmbiguousNameMatch } from './name-recommendation.js';
 import { tryAutoMatchUnrecognized } from './name-recommendation.js';
+import { nicknameToIdMap } from '../database/database-service.js';
 
   /**
    * Порівняння імен з базою даних з покращеним алгоритмом
@@ -83,7 +81,20 @@ import { tryAutoMatchUnrecognized } from './name-recommendation.js';
       }
   
       // 3. Аналіз імені з чату
-      let chatNameToCheck = realNameMap[name] || name
+      let chatNameToCheck = realNameMap[name] || name;
+
+      // 2.5 Перевірка нікнейму в базі даних (переміщено після визначення chatNameToCheck)
+      if (Object.keys(nicknameToIdMap).length > 0 && nicknameToIdMap[chatNameToCheck.toLowerCase()]) {
+        const id = nicknameToIdMap[chatNameToCheck.toLowerCase()];
+        matchedNames[name] = id;
+        matchedNames[name + '_matchInfo'] = {
+          matchType: 'nickname-match',
+          quality: 97,
+          dbName: Object.keys(nameDatabase).find(key => nameDatabase[key] === id)
+        };
+        return; // Далі не шукаємо
+      }
+  
       const chatNameParts = splitName(chatNameToCheck)
   
       // 4. Перебираємо базу імен і шукаємо схожі

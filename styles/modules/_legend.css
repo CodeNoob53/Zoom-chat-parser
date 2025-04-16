@@ -12,6 +12,9 @@
   opacity: 0;
   padding: 0; /* Встановлюємо початковий паддінг 0 */
   transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease-in-out, visibility 0.3s;
+  
+  /* Додаємо стилі для прокрутки */
+  overflow-y: auto; /* Змінюємо з 'hidden' на 'auto', щоб з'явилася прокрутка при необхідності */
 }
 
 .legend-container {
@@ -125,6 +128,39 @@
 }
 .legend-dot.not-found {
   background-color: var(--color-muted, #666);
+}
+
+/* Додаємо стилі для нових індикаторів в легенді */
+.legend-indicator.rnm {
+  background-color: var(--color-indicator-rnm, #00a6c4);
+  width: auto;
+  padding: 0 4px;
+}
+
+.legend-indicator.nickname {
+  background-color: var(--color-indicator-nickname, #c400a6);
+}
+
+
+/* Додаємо специфічні стилі для скроллбару в легенді */
+.legend::-webkit-scrollbar {
+  width: 8px; /* Тонший скроллбар для легенди */
+}
+
+.legend::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: var(--border-radius-default);
+}
+
+.legend::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--border-radius-default);
+  border: 2px solid transparent; /* Тонша рамка для скроллбара в легенді */
+  background-clip: content-box;
+}
+
+.legend::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
 }
 
 @keyframes legendFadeIn {

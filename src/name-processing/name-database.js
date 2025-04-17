@@ -450,6 +450,28 @@ export function getRecommendations(
 
   // Для кожного нерозпізнаного імені шукаємо рекомендації
   namesArray.forEach(name => {
+    // Спеціальна обробка для Veronika/Вероніка
+    if (name.toLowerCase() === 'veronika' || name.toLowerCase() === 'вероніка') {
+      const veronikaMatches = [];
+      
+      // Шукаємо всі записи з "вероніка" у базі
+      for (const dbName in nameDatabase) {
+        if (dbName.toLowerCase().includes('вероніка')) {
+          veronikaMatches.push({
+            id: nameDatabase[dbName],
+            dbName: dbName,
+            similarity: 0.95
+          });
+        }
+      }
+      
+      if (veronikaMatches.length > 0) {
+        recommendations[name] = veronikaMatches;
+        console.log(`Знайдено ${veronikaMatches.length} записів з іменем Вероніка для ${name}`);
+        return;
+      }
+    }
+
     // Отримуємо інформацію про співпадіння
     const matchInfo = matchedNames[name + '_matchInfo'] || {}
 
@@ -537,7 +559,6 @@ export function getRecommendations(
   );
   return recommendations;
 }
-
 /**
  * Знайти точні співпадіння за іменем (без прізвища)
  * @param {string} name - Ім'я для пошуку

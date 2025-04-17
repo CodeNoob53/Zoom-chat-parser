@@ -4,6 +4,7 @@ import {
 } from './transliteration.js'
 import {  getSimilarity } from './name-utils.js'
 import { processCombinedName } from './advanced-name-processing.js'
+import { getStandardNameForm, getAllPossibleStandardNames, isVariantOf } from './name-variants.js';
 
 /**
  * Перевірка, чи існує кілька можливих співпадінь для імені
@@ -58,31 +59,17 @@ export function findAllPossibleMatches(name, nameDatabase) {
       if (mainCyrillicVariant) {
         nameVariants.push(mainCyrillicVariant.toLowerCase())
       }
-
-      // Додаємо точні варіації для поширених імен (без використання нечіткої транслітерації)
-      if (
-        nameLower === 'serhiy' ||
-        nameLower === 'sergiy' ||
-        nameLower === 'serge' ||
-        nameLower === 'sergey'
-      ) {
-        nameVariants.push('сергій')
-      } else if (nameLower === 'taras') {
-        nameVariants.push('тарас')
-      } else if (
-        nameLower.includes('oleksandr') ||
-        nameLower.includes('alexander') ||
-        nameLower.includes('alex')
-      ) {
-        nameVariants.push('олександр')
-      } else if (
-        nameLower.includes('liza') ||
-        nameLower.includes('lisa') ||
-        nameLower.includes('elizaveta')
-      ) {
-        nameVariants.push('єлизавета')
-        nameVariants.push('елизавета')
-        nameVariants.push('лізавета')
+      
+      // Спробуємо отримати стандартну форму імені з словника варіантів
+      const standardName = getStandardNameForm(nameLower)
+      if (standardName !== nameLower) {
+        nameVariants.push(standardName)
+      }
+      
+      // Отримуємо всі можливі стандартні форми для цього варіанту
+      const possibleStandardNames = getAllPossibleStandardNames(nameLower)
+      if (possibleStandardNames.length > 0) {
+        nameVariants.push(...possibleStandardNames)
       }
     } catch (e) {
       console.log(`Помилка транслітерації для ${name}:`, e)
@@ -90,6 +77,12 @@ export function findAllPossibleMatches(name, nameDatabase) {
   } else {
     // Якщо ім'я вже написане кирилицею, використовуємо його як є
     nameVariants.push(nameLower)
+    
+    // Спробуємо отримати стандартну форму імені з словника варіантів
+    const standardName = getStandardNameForm(nameLower)
+    if (standardName !== nameLower) {
+      nameVariants.push(standardName)
+    }
   }
 
   // Додаємо оригінальне ім'я також
@@ -97,7 +90,10 @@ export function findAllPossibleMatches(name, nameDatabase) {
     nameVariants.push(nameLower)
   }
 
-  console.log(`Точні варіанти імені для ${name}:`, nameVariants)
+  // Видаляємо дублікати
+  nameVariants = [...new Set(nameVariants)]
+
+  console.log(`Варіанти імені для ${name}:`, nameVariants)
 
   // Масив для підрахунку співпадінь по іменах
   const nameMatchCounts = {}
@@ -169,10 +165,31 @@ export function findAllPossibleMatches(name, nameDatabase) {
     // Перевіряємо схожість по частинам з врахуванням порядку символів
     for (const variant of nameVariants) {
       for (const part of dbNameParts) {
+        // Перевіряємо чи варіант імені є зменшувальною формою частини імені в базі
+        if (isVariantOf(variant, part)) {
+          // Визначаємо тип співпадіння
+          const matchType = dbNameParts.indexOf(part) === 0 ? 'surname-variant' : 'firstname-variant'
+          
+          // Додаємо до рекомендацій з високою якістю
+          possibleMatches.push({
+            dbName: dbName,
+            id: nameDatabase[dbName],
+            part: matchType,
+            quality: 90
+          })
+          continue;
+        }
+      
         // Перевіряємо не лише схожість, але й нормальний порядок символів
         const similarity = sequenceSensitiveSimilarity(variant, part)
 
-        if (similarity > 0.8) { // Збільшуємо поріг для вищої точності
+        // Збільшуємо поріг для вищої точності і перевіряємо мінімальну довжину
+        if (similarity > 0.85 && variant.length >= 3 && part.length >= 3) {
+          // Перевірка: відхиляємо співпадіння де перші літери імен зовсім різні
+          if (variant[0] !== part[0] && !(variant.length < 4 || part.length < 4)) {
+            continue;
+          }
+          
           // Визначаємо тип співпадіння
           const matchType = dbNameParts.indexOf(part) === 0 ? 'surname-similar' : 'firstname-similar'
           
@@ -283,7 +300,7 @@ export function hasAmbiguousNameMatch(name, nameDatabase) {
                          /^[A-Za-zА-Яа-яІіЇїЄєҐґ']+$/.test(name);
   
   if (!isOneWordName) return false;
-  
+
   // НОВА ФУНКЦІОНАЛЬНІСТЬ: Перевіряємо, чи може це бути склеєне ім'я
   const possibleSplits = processCombinedName(name, nameDatabase);
   
@@ -312,19 +329,19 @@ export function hasAmbiguousNameMatch(name, nameDatabase) {
       const cyrillicVariant = transliterateToCyrillic(name);
       if (cyrillicVariant) nameVariants.push(cyrillicVariant.toLowerCase());
       
-      // Додаємо спеціальні варіанти для поширених імен
-      if (nameLower === 'serhiy' || nameLower === 'sergiy') nameVariants.push('сергій');
-      if (nameLower === 'taras') nameVariants.push('тарас');
+      // Додаємо стандартну форму імені, якщо існує
+      const standardName = getStandardNameForm(nameLower);
+      if (standardName !== nameLower) {
+        nameVariants.push(standardName);
+      }
     } catch (e) {
       console.log(`Помилка транслітерації: ${e}`);
     }
   } else if (/[А-Яа-яІіЇїЄєҐґ']/.test(name)) {
-    // Якщо ім'я кирилицею, додаємо латинську транслітерацію
-    try {
-      const latinVariant = transliterateToLatin(name);
-      if (latinVariant) nameVariants.push(latinVariant.toLowerCase());
-    } catch (e) {
-      console.log(`Помилка транслітерації: ${e}`);
+    // Якщо ім'я кирилицею, додаємо стандартну форму
+    const standardName = getStandardNameForm(nameLower);
+    if (standardName !== nameLower) {
+      nameVariants.push(standardName);
     }
   }
   
@@ -343,21 +360,45 @@ export function hasAmbiguousNameMatch(name, nameDatabase) {
     
     for (const variant of nameVariants) {
       // Перевіряємо точне співпадіння або схожість
-      if (firstname === variant || getSimilarity(firstname, variant) > 0.9) {
+      if (firstname === variant || 
+         (isVariantOf && isVariantOf(variant, firstname)) || 
+         getSimilarity(firstname, variant) > 0.95) {
         if (!firstnameMatches[firstname]) {
           firstnameMatches[firstname] = [];
         }
-        firstnameMatches[firstname].push(dbName);
+        
+        // Не додаємо дублікати імен
+        if (!firstnameMatches[firstname].includes(dbName)) {
+          firstnameMatches[firstname].push(dbName);
+        }
       }
     }
   }
   
   // Перевіряємо, чи є кілька можливих співпадінь за іменем
+  let foundMultiple = false;
+  
   for (const [firstname, matches] of Object.entries(firstnameMatches)) {
     if (matches.length > 1) {
-      console.log(`Для "${name}" знайдено ${matches.length} записів з іменем "${firstname}"`);
-      return true;
+      // Додаткова перевірка: чи відрізняються прізвища?
+      const surnames = new Set();
+      matches.forEach(fullName => {
+        const parts = fullName.split(' ');
+        if (parts.length > 0) {
+          surnames.add(parts[0]);
+        }
+      });
+      
+      // Якщо знайдено кілька різних прізвищ для одного імені, це неоднозначне співпадіння
+      if (surnames.size > 1) {
+        console.log(`Для "${name}" знайдено ${matches.length} записів з іменем "${firstname}" і ${surnames.size} різними прізвищами`);
+        foundMultiple = true;
+      }
     }
+  }
+  
+  if (foundMultiple) {
+    return true;
   }
   
   // Знаходимо всі можливі співпадіння

@@ -2,7 +2,7 @@
  * Покращена транслітерація кирилиці в латиницю з урахуванням різних варіантів
  * Модуль використовує string-utils.js для функцій порівняння рядків
  */
-import { levenshteinDistance, getSimilarity, areStringSimilar } from '../utils/string-utils.js';
+import { areStringSimilar } from '../utils/string-utils.js';
 
 /**
  * Покращена транслітерація кирилиці в латиницю з урахуванням різних варіантів
@@ -12,8 +12,15 @@ import { levenshteinDistance, getSimilarity, areStringSimilar } from '../utils/s
 export function transliterateToLatin(text) {
   if (!text) return '';
   
+  // Перевіряємо кеш перед обчисленням
+  const cacheKey = text.toLowerCase();
+  if (cyrillicToLatinCache.has(cacheKey)) {
+    return cyrillicToLatinCache.get(cacheKey);
+  }
+  
   // Основна таблиця транслітерації (український стандарт)
   const ukrainianToLatin = {
+    // Залишаємо існуючу мапу без змін
     'а': 'a', 'б': 'b', 'в': 'v', 'г': 'h', 'ґ': 'g', 'д': 'd', 'е': 'e', 'є': 'ye', 
     'ж': 'zh', 'з': 'z', 'и': 'y', 'і': 'i', 'ї': 'yi', 'й': 'y', 'к': 'k', 'л': 'l', 
     'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 
@@ -92,9 +99,18 @@ export function transliterateToLatin(text) {
     results = newResults.slice(0, 5);
   }
   
+  // Зберігаємо результат у кеш
+  cyrillicToLatinCache.set(cacheKey, results[0]);
+  
   // Повертаємо найкращий варіант (перший)
   return results[0];
 }
+
+// Додаємо кеш для транслітерації
+const latinToCyrillicCache = new Map();
+const cyrillicToLatinCache = new Map();
+const transliterationVariantsCache = new Map();
+const nameMatchesCache = new Map();
 
 /**
  * Транслітерація латиниці в кирилицю з урахуванням різних варіантів
@@ -104,8 +120,15 @@ export function transliterateToLatin(text) {
 export function transliterateToCyrillic(text) {
   if (!text) return '';
   
+  // Перевіряємо кеш перед обчисленням
+  const cacheKey = text.toLowerCase();
+  if (latinToCyrillicCache.has(cacheKey)) {
+    return latinToCyrillicCache.get(cacheKey);
+  }
+  
   // Таблиця транслітерації латиниці в кирилицю
   const latinToCyrillicMap = {
+    // Залишаємо існуючу мапу без змін
     'a': 'а', 'b': 'б', 'v': 'в', 'h': 'г', 'g': 'ґ', 'd': 'д', 'e': 'е',
     'ye': 'є', 'ie': 'є', 'je': 'є', 'zh': 'ж', 'j': 'ж', 'z': 'з', 'y': 'и', 'i': 'і', 
     'yi': 'ї', 'k': 'к', 'l': 'л', 'm': 'м', 'n': 'н', 'o': 'о', 'p': 'п', 
@@ -121,6 +144,7 @@ export function transliterateToCyrillic(text) {
     'Yu': 'Ю', 'Iu': 'Ю', 'Ju': 'Ю', 'Ya': 'Я', 'Ia': 'Я', 'Ja': 'Я'
   };
   
+  // Залишаємо оригінальну логіку без змін
   // Патерни для багатобуквених комбінацій (сортуємо за довжиною, щоб спочатку замінювати довші)
   const patterns = [
     'Shch', 'shch', 'Sch', 'sch', 'Tch', 'tch', 'Zh', 'zh', 'Ch', 'ch', 
@@ -173,8 +197,12 @@ export function transliterateToCyrillic(text) {
     result = result.replace(new RegExp(correction.from, 'g'), correction.to);
   }
   
+  // Зберігаємо результат в кеш
+  latinToCyrillicCache.set(cacheKey, result);
+  
   return result;
 }
+
 
 /**
  * Генерує множинні варіанти транслітерації для підвищення ймовірності співпадіння
@@ -183,6 +211,12 @@ export function transliterateToCyrillic(text) {
  */
 export function generateTransliterationVariants(text) {
   if (!text) return [];
+  
+  // Перевіряємо кеш перед обчисленням
+  const cacheKey = text.toLowerCase();
+  if (transliterationVariantsCache.has(cacheKey)) {
+    return transliterationVariantsCache.get(cacheKey);
+  }
   
   // Список результатів
   const results = [];
@@ -222,8 +256,11 @@ export function generateTransliterationVariants(text) {
     }
   }
   
-  // Обмежуємо кількість варіантів до розумної кількості
-  return results.slice(0, 10);
+  // Обмежуємо кількість варіантів і зберігаємо в кеш
+  const resultArray = results.slice(0, 10);
+  transliterationVariantsCache.set(cacheKey, resultArray);
+  
+  return resultArray;
 }
 
 /**
@@ -236,12 +273,23 @@ export function generateTransliterationVariants(text) {
 export function areNamesTransliteratedMatches(name1, name2, threshold = 0.8) {
   if (!name1 || !name2) return false;
   
+  // Створюємо унікальний ключ для кешу
+  const cacheKey = `${name1.toLowerCase()}|${name2.toLowerCase()}|${threshold}`;
+  
+  // Перевіряємо кеш перед обчисленням
+  if (nameMatchesCache.has(cacheKey)) {
+    return nameMatchesCache.get(cacheKey);
+  }
+  
   // Приводимо до нижнього регістру
   const n1Lower = name1.toLowerCase();
   const n2Lower = name2.toLowerCase();
   
   // Перевіряємо точне співпадіння
-  if (n1Lower === n2Lower) return true;
+  if (n1Lower === n2Lower) {
+    nameMatchesCache.set(cacheKey, true);
+    return true;
+  }
   
   // Визначаємо, чи містять імена кирилицю
   const n1HasCyrillic = /[а-яА-ЯіІїЇєЄґҐ]/.test(name1);
@@ -249,7 +297,9 @@ export function areNamesTransliteratedMatches(name1, name2, threshold = 0.8) {
   
   // Якщо обидва імені на одній писемності, порівнюємо безпосередньо
   if (n1HasCyrillic === n2HasCyrillic) {
-    return areStringSimilar(n1Lower, n2Lower, threshold);
+    const result = areStringSimilar(n1Lower, n2Lower, threshold);
+    nameMatchesCache.set(cacheKey, result);
+    return result;
   }
   
   // Якщо різні писемності, транслітеруємо
@@ -258,9 +308,11 @@ export function areNamesTransliteratedMatches(name1, name2, threshold = 0.8) {
     const variants = generateTransliterationVariants(name1);
     for (const variant of variants) {
       if (areStringSimilar(variant.toLowerCase(), n2Lower, threshold)) {
+        nameMatchesCache.set(cacheKey, true);
         return true;
       }
     }
+    nameMatchesCache.set(cacheKey, false);
     return false;
   }
   
@@ -269,11 +321,14 @@ export function areNamesTransliteratedMatches(name1, name2, threshold = 0.8) {
     const variants = generateTransliterationVariants(name2);
     for (const variant of variants) {
       if (areStringSimilar(n1Lower, variant.toLowerCase(), threshold)) {
+        nameMatchesCache.set(cacheKey, true);
         return true;
       }
     }
+    nameMatchesCache.set(cacheKey, false);
     return false;
   }
   
+  nameMatchesCache.set(cacheKey, false);
   return false;
 }

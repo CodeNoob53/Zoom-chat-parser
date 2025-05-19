@@ -44,7 +44,8 @@ let currentData = {
   displayedNames: [],
   realNameMap: {},
   useDbChk: false,
-  matchedNames: {}
+  matchedNames: {},
+  nameMatcher: null // Додаємо nameMatcher до стану
 };
 
 // Стан рендерингу
@@ -60,41 +61,43 @@ let renderState = {
  * @param {Object} realNameMap - Карта відповідності Zoom-імені до реального імені
  * @param {boolean} useDbChk - Чи використовувати базу імен
  * @param {Object} matchedNames - Результати порівняння з базою імен
+ * @param {Object} nameMatcher - Екземпляр класу NameMatcher
  */
-export function updateNamesList(displayedNames, realNameMap, useDbChk, matchedNames) {
+export async function updateNamesList(displayedNames, realNameMap, useDbChk, matchedNames, nameMatcher) {
+  // Якщо немає імен для відображення, нічого не робимо
+  if (!displayedNames || displayedNames.length === 0) {
+    return;
+  }
   // Зберігаємо поточні дані для подальшого ререндерингу
   currentData = {
     displayedNames,
     realNameMap,
     useDbChk,
-    matchedNames
+    matchedNames,
+    nameMatcher
   };
-  
   // Якщо рендеринг в процесі, відкладаємо оновлення
   if (renderState.isRendering) {
     renderState.pendingUpdate = true;
     return;
   }
-  
   // Починаємо рендеринг
   renderState.isRendering = true;
-  
   // Використовуємо requestAnimationFrame для синхронізації з циклом перемалювання браузера
-  requestAnimationFrame(() => {
+  requestAnimationFrame(async () => {
     // Викликаємо рендеринг
-    renderNames(displayedNames, realNameMap, useDbChk, matchedNames);
-    
+    await renderNames(nameMatcher, displayedNames, realNameMap, useDbChk, matchedNames);
     // Завершуємо рендеринг
     renderState.isRendering = false;
-    
     // Якщо були відкладені оновлення, виконуємо їх
     if (renderState.pendingUpdate) {
       renderState.pendingUpdate = false;
-      updateNamesList(
+      await updateNamesList(
         currentData.displayedNames, 
         currentData.realNameMap, 
         currentData.useDbChk, 
-        currentData.matchedNames
+        currentData.matchedNames,
+        currentData.nameMatcher
       );
     }
   });
@@ -105,16 +108,11 @@ export function updateNamesList(displayedNames, realNameMap, useDbChk, matchedNa
  * Використовує кешування та оптимізації для уникнення зайвого оновлення DOM
  */
 function rerender() {
-  // Перевіряємо, чи є дані для ререндерингу
-  if (currentData.displayedNames.length === 0) {
-    return;
-  }
-  
-  // Використовуємо ті самі оптимізації, що й в updateNamesList
   updateNamesList(
     currentData.displayedNames, 
     currentData.realNameMap, 
     currentData.useDbChk, 
-    currentData.matchedNames
+    currentData.matchedNames,
+    currentData.nameMatcher
   );
 }

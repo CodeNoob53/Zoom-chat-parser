@@ -1,75 +1,77 @@
 // src/ui/table-renderer.js
-import { elements } from '../core/dom.js'
-import { triggerRerender } from './render-utils.js'
-import { showAssignmentModal } from './assignment-modal.js'
-import { showNotification } from '../core/notification.js'
-import { getCurrentSortState, sortParticipants } from './sorting.js'
-import { addNicknameToEntry } from '../database/database-service.js'
-import { getParticipantInfo } from '../name-processing/name-database.js'
-import {
-  createElement,
-  createFragment,
-  updateTable
-} from '../utils/dom-utils.js'
+import { elements } from '../core/dom.js';
+import { triggerRerender } from './render-utils.js';
+import { showAssignmentModal } from './assignment-modal.js';
+import { showNotification } from '../core/notification.js';
+import { getCurrentSortState, sortParticipants } from './sorting.js';
+import { addNicknameToEntry } from '../database/database-service.js';
+import { createElement, createFragment, updateTable } from '../utils/dom-utils.js';
 
 // Зберігаємо стан відображення для оптимізації рендерингу
 const renderCache = {
   participantsList: null, // Останні відрендерені учасники
   sortState: null, // Останній стан сортування
   expandedRows: new Set() // Список розгорнутих рядків
-}
+};
 
 /**
  * Відображення списку учасників у таблиці з покращеним інтерфейсом
  * і оптимізованим оновленням DOM
+ * @param {NameMatcher} nameMatcher - Екземпляр класу NameMatcher
  * @param {string[]} list - Масив імен для відображення
  * @param {Object} realNameMap - Карта відповідності Zoom-імені до реального імені
  * @param {boolean} useDbChk - Чи використовувати базу імен
  * @param {Object} matchedNames - Результати порівняння з базою імен
  */
-export function renderNames (list, realNameMap, useDbChk, matchedNames) {
-  const { participantsList, countNamesSpan } = elements
+export async function renderNames(nameMatcher, list, realNameMap, useDbChk, matchedNames) {
+  const { participantsList, countNamesSpan } = elements;
+
+  // Перевіряємо, чи передано валідний екземпляр NameMatcher
+  if (!nameMatcher || typeof nameMatcher.getNameDatabase !== 'function') {
+    showNotification('NameMatcher не ініціалізовано', 'error');
+    return;
+  }
 
   // Отримуємо поточний стан сортування
-  const sortState = getCurrentSortState()
+  const sortState = getCurrentSortState();
 
   // Збираємо повну інформацію про учасників
-  const participants = list.map(name => getParticipantInfo(name, realNameMap))
+  const participants = list.map(name => nameMatcher.getParticipantInfo(name, realNameMap));
 
   // Сортуємо учасників
   const sortedParticipants = sortParticipants(
     participants,
     sortState.column,
     sortState.direction
-  )
+  );
 
   // Створюємо набір унікальних ідентифікаторів
-  const uniqueIdentifiers = new Set()
+  const uniqueIdentifiers = new Set();
 
   // Фільтруємо дублікати
   const uniqueParticipants = sortedParticipants.filter(participant => {
     const uniqueId = participant.foundInDb
       ? participant.id
-      : `${participant.id}_${participant.nickname}`
+      : `${participant.id}_${participant.nickname}`;
 
     if (uniqueIdentifiers.has(uniqueId)) {
-      return false
+      return false;
     }
 
-    uniqueIdentifiers.add(uniqueId)
-    return true
-  })
+    uniqueIdentifiers.add(uniqueId);
+    return true;
+  });
 
   // Оновлюємо лічильник імен
-  countNamesSpan.textContent = uniqueParticipants.length
+  countNamesSpan.textContent = uniqueParticipants.length;
 
   // Отримуємо список нерозпізнаних імен
-  const unrecognizedNames = useDbChk ? getUnrecognizedNames() : []
+  const unrecognizedNames = useDbChk ? nameMatcher.getUnrecognizedNames() : [];
 
   // Отримуємо рекомендації для нерозпізнаних імен
   const recommendations = useDbChk
-    ? getRecommendations(unrecognizedNames, getNameDatabase(), matchedNames)
-    : {}
+    ? nameMatcher.getRecommendations(unrecognizedNames, await nameMatcher.getNameDatabase(), matchedNames)
+    : {};
 
   // Використовуємо оптимізований рендеринг таблиці
   updateParticipantsTable(
@@ -78,17 +80,18 @@ export function renderNames (list, realNameMap, useDbChk, matchedNames) {
     realNameMap,
     unrecognizedNames,
     recommendations,
-    renderCache.expandedRows
-  )
+    renderCache.expandedRows,
+    nameMatcher
+  );
 
   // Оновлюємо кеш рендерингу
-  renderCache.participantsList = uniqueParticipants
-  renderCache.sortState = { ...sortState }
+  renderCache.participantsList = uniqueParticipants;
+  renderCache.sortState = { ...sortState };
 
   // По дефолту сортуємо за ID (якщо це перший рендер)
   if (!document.querySelector('.sorted')) {
-    elements.sortById.classList.add('sorted')
-    elements.sortById.classList.add('asc')
+    elements.sortById.classList.add('sorted');
+    elements.sortById.classList.add('asc');
   }
 }
 
@@ -100,31 +103,33 @@ export function renderNames (list, realNameMap, useDbChk, matchedNames) {
  * @param {Array} unrecognizedNames - Список нерозпізнаних імен
  * @param {Object} recommendations - Рекомендації
  * @param {Set} expandedRows - Множина розгорнутих рядків
+ * @param {NameMatcher} nameMatcher - Екземпляр класу NameMatcher
  */
-function updateParticipantsTable (
+function updateParticipantsTable(
   tableBody,
   participants,
   realNameMap,
   unrecognizedNames,
   recommendations,
-  expandedRows
+  expandedRows,
+  nameMatcher
 ) {
   // Використовуємо документ-фрагмент для пакетного оновлення
-  const fragment = createFragment()
+  const fragment = createFragment();
 
   // Карта існуючих рядків для відстеження змін
-  const existingRows = new Map()
+  const existingRows = new Map();
   Array.from(tableBody.children).forEach(row => {
-    const nickname = row.querySelector('.nickname-text')?.textContent
+    const nickname = row.querySelector('.nickname-text')?.textContent;
     if (nickname) {
-      existingRows.set(nickname, row)
+      existingRows.set(nickname, row);
     }
-  })
+  });
 
   // Створюємо або оновлюємо рядки для кожного учасника
   participants.forEach(participant => {
     // Визначаємо, чи був цей рядок розгорнутий раніше
-    const isExpanded = expandedRows.has(participant.nickname)
+    const isExpanded = expandedRows.has(participant.nickname);
 
     // Використовуємо createElement для створення DOM елементів
     const row = renderParticipantRow(
@@ -132,37 +137,38 @@ function updateParticipantsTable (
       realNameMap,
       unrecognizedNames,
       recommendations,
-      isExpanded
-    )
+      isExpanded,
+      nameMatcher
+    );
 
     // Встановлюємо data атрибут для ідентифікації
-    row.setAttribute('data-nickname', participant.nickname)
+    row.setAttribute('data-nickname', participant.nickname);
 
     // Перевіряємо, чи існує такий рядок
     if (existingRows.has(participant.nickname)) {
       // Отримуємо існуючий рядок
-      const existingRow = existingRows.get(participant.nickname)
+      const existingRow = existingRows.get(participant.nickname);
 
       // Перевіряємо, чи рядок розгорнутий
       if (existingRow.classList.contains('expanded')) {
-        row.classList.add('expanded')
-        expandedRows.add(participant.nickname)
+        row.classList.add('expanded');
+        expandedRows.add(participant.nickname);
       }
 
       // Видаляємо з карти
-      existingRows.delete(participant.nickname)
+      existingRows.delete(participant.nickname);
     }
 
     // Додаємо рядок до фрагмента
-    fragment.appendChild(row)
-  })
+    fragment.appendChild(row);
+  });
 
   // Очищаємо таблицю і додаємо фрагмент
-  tableBody.innerHTML = ''
-  tableBody.appendChild(fragment)
+  tableBody.innerHTML = '';
+  tableBody.appendChild(fragment);
 
   // Додаємо обробники подій для розгортання/згортання рядків
-  addExpandListeners(tableBody, expandedRows)
+  addExpandListeners(tableBody, expandedRows);
 }
 
 /**
@@ -172,55 +178,57 @@ function updateParticipantsTable (
  * @param {Array} unrecognizedNames - Список нерозпізнаних імен
  * @param {Object} recommendations - Рекомендації
  * @param {boolean} isExpanded - Чи має бути рядок розгорнутим
+ * @param {NameMatcher} nameMatcher - Екземпляр класу NameMatcher
  * @returns {HTMLElement} Рядок таблиці
  */
-function renderParticipantRow (
+function renderParticipantRow(
   participant,
   realNameMap,
   unrecognizedNames,
   recommendations,
-  isExpanded
+  isExpanded,
+  nameMatcher
 ) {
   // Визначаємо класи рядка
-  const rowClasses = [participant.foundInDb ? 'found' : 'not-found']
+  const rowClasses = [participant.foundInDb ? 'found' : 'not-found'];
 
   // Додаємо додаткові класи
   if (participant.autoMatched) {
-    rowClasses.push('auto-matched')
+    rowClasses.push('auto-matched');
   }
 
   // Додаємо класи залежно від типу співпадіння
   if (participant.matchType) {
     participant.matchType.split(' ').forEach(type => {
-      if (type) rowClasses.push(type)
-    })
+      if (type) rowClasses.push(type);
+    });
   }
 
   // Додаємо клас "has-alternatives", якщо є альтернативи
   const hasRealAlternatives =
-    participant.alternativeMatches && participant.alternativeMatches.length > 0
+    participant.alternativeMatches && participant.alternativeMatches.length > 0;
 
   const hasRealRecommendations =
     recommendations[participant.nickname] &&
-    recommendations[participant.nickname].length > 0
+    recommendations[participant.nickname].length > 0;
 
   const hasAlternatives =
-    !participant.foundInDb && (hasRealAlternatives || hasRealRecommendations)
+    !participant.foundInDb && (hasRealAlternatives || hasRealRecommendations);
 
   if (hasAlternatives) {
-    rowClasses.push('has-alternatives')
+    rowClasses.push('has-alternatives');
   }
 
   // Додаємо клас "expanded", якщо рядок має бути розгорнутим
   if (isExpanded) {
-    rowClasses.push('expanded')
+    rowClasses.push('expanded');
   }
 
   // Створюємо елементи рядка
-  const row = createElement('tr', { className: rowClasses.join(' ') })
+  const row = createElement('tr', { className: rowClasses.join(' ') });
 
   // Додаємо комірку ID
-  row.appendChild(createElement('td', { className: 'id-cell' }, participant.id))
+  row.appendChild(createElement('td', { className: 'id-cell' }, participant.id));
 
   // Додаємо комірку Прізвище
   row.appendChild(
@@ -229,7 +237,7 @@ function renderParticipantRow (
       { className: 'surname-cell' },
       participant.surname || '-'
     )
-  )
+  );
 
   // Додаємо комірку Ім'я
   row.appendChild(
@@ -238,20 +246,20 @@ function renderParticipantRow (
       { className: 'firstname-cell' },
       participant.firstname || '-'
     )
-  )
+  );
 
   // Створюємо комірку нікнейму
-  const nicknameCell = createElement('td', { className: 'zoom-nickname-cell' })
+  const nicknameCell = createElement('td', { className: 'zoom-nickname-cell' });
 
   // Контейнер нікнейму
   const nicknameContainer = createElement('div', {
     className: 'nickname-container'
-  })
+  });
 
   // Текст нікнейму
   nicknameContainer.appendChild(
     createElement('span', { className: 'nickname-text' }, participant.nickname)
-  )
+  );
 
   // Додаємо реальне ім'я, якщо є
   if (
@@ -264,11 +272,11 @@ function renderParticipantRow (
         { className: 'real-name' },
         ` (${realNameMap[participant.nickname]})`
       )
-    )
+    );
   }
 
   // Додаємо індикатори для типів співпадіння
-  addMatchTypeIndicators(participant, nicknameContainer)
+  addMatchTypeIndicators(participant, nicknameContainer);
 
   // Додаємо іконку розгортання, якщо є альтернативи
   if (hasAlternatives) {
@@ -281,24 +289,25 @@ function renderParticipantRow (
         },
         isExpanded ? '▲' : '▼'
       )
-    )
+    );
   }
 
-  nicknameCell.appendChild(nicknameContainer)
+  nicknameCell.appendChild(nicknameContainer);
 
   // Додаємо контейнер для дій і альтернатив
   if (!participant.foundInDb) {
     const actionsContainer = createElement('div', {
       className: 'actions-container'
-    })
+    });
 
     // Додаємо альтернативи або кнопку ручного призначення
     if (hasAlternatives) {
       const alternativesContainer = createAlternativesContainer(
         participant,
-        recommendations[participant.nickname] || []
-      )
-      actionsContainer.appendChild(alternativesContainer)
+        recommendations[participant.nickname] || [],
+        nameMatcher
+      );
+      actionsContainer.appendChild(alternativesContainer);
     } else {
       // Кнопка ручного призначення
       const manualButton = createElement(
@@ -306,23 +315,23 @@ function renderParticipantRow (
         {
           className: 'manual-assign-btn',
           onclick: e => {
-            e.stopPropagation()
-            showAssignmentModal(participant.nickname)
+            e.stopPropagation();
+            showAssignmentModal(nameMatcher, participant.nickname);
           }
         },
         'Призначити вручну'
-      )
+      );
 
-      actionsContainer.appendChild(manualButton)
+      actionsContainer.appendChild(manualButton);
     }
 
-    nicknameCell.appendChild(actionsContainer)
+    nicknameCell.appendChild(actionsContainer);
   }
 
-  row.appendChild(nicknameCell)
+  row.appendChild(nicknameCell);
 
   // Додаємо нову комірку "Дії"
-  const actionsCell = createElement('td', { className: 'actions-cell' })
+  const actionsCell = createElement('td', { className: 'actions-cell' });
 
   // Кнопка прив'язки нікнейму (видима тільки якщо учасник знайдений в базі)
   if (participant.foundInDb && participant.id !== '?') {
@@ -332,19 +341,19 @@ function renderParticipantRow (
         className: 'attach-nickname-btn',
         title: "Прив'язати нікнейм до запису",
         onclick: e => {
-          e.stopPropagation()
-          handleAttachNickname(participant.nickname, participant.id)
+          e.stopPropagation();
+          handleAttachNickname(participant.nickname, participant.id);
         }
       },
       createElement('span', { className: 'material-icons' }, 'link')
-    )
+    );
 
-    actionsCell.appendChild(attachButton)
+    actionsCell.appendChild(attachButton);
   }
 
-  row.appendChild(actionsCell)
+  row.appendChild(actionsCell);
 
-  return row
+  return row;
 }
 
 /**
@@ -352,17 +361,17 @@ function renderParticipantRow (
  * @param {string} nickname - Нікнейм для прив'язки
  * @param {string} dbId - ID запису в базі
  */
-function handleAttachNickname (nickname, dbId) {
+function handleAttachNickname(nickname, dbId) {
   // Додаємо нікнейм до запису
   if (addNicknameToEntry(dbId, nickname)) {
     showNotification(
       `Нікнейм "${nickname}" прив'язано до запису #${dbId}`,
       'success'
-    )
+    );
     // Оновлюємо відображення
-    triggerRerender()
+    triggerRerender();
   } else {
-    showNotification("Не вдалося прив'язати нікнейм", 'error')
+    showNotification("Не вдалося прив'язати нікнейм", 'error');
   }
 }
 
@@ -371,7 +380,7 @@ function handleAttachNickname (nickname, dbId) {
  * @param {Object} participant - Інформація про учасника
  * @param {HTMLElement} container - Контейнер для індикаторів
  */
-function addMatchTypeIndicators (participant, container) {
+function addMatchTypeIndicators(participant, container) {
   // Додаємо індикатор транслітерації
   if (
     participant.matchType.includes('translit') ||
@@ -386,7 +395,7 @@ function addMatchTypeIndicators (participant, container) {
         },
         'Т'
       )
-    )
+    );
   }
 
   // Додаємо індикатор розпізнавання склеєних імен
@@ -400,7 +409,7 @@ function addMatchTypeIndicators (participant, container) {
         },
         'S'
       )
-    )
+    );
   }
 
   // Додаємо індикатор зворотного порядку
@@ -418,7 +427,7 @@ function addMatchTypeIndicators (participant, container) {
         },
         'swap_horiz'
       )
-    )
+    );
   }
 
   // Додаємо індикатор варіанту імені
@@ -435,7 +444,7 @@ function addMatchTypeIndicators (participant, container) {
         },
         'V'
       )
-    )
+    );
   }
 
   // Додаємо індикатор автоматичного співпадіння
@@ -449,7 +458,7 @@ function addMatchTypeIndicators (participant, container) {
         },
         'А'
       )
-    )
+    );
   }
 
   // Додаємо індикатор для реального імені (rnm:)
@@ -466,7 +475,7 @@ function addMatchTypeIndicators (participant, container) {
         },
         'RNM'
       )
-    )
+    );
   }
 
   // Додаємо індикатор для нікнейму
@@ -483,7 +492,7 @@ function addMatchTypeIndicators (participant, container) {
         },
         'N'
       )
-    )
+    );
   }
 }
 
@@ -491,12 +500,13 @@ function addMatchTypeIndicators (participant, container) {
  * Створює контейнер з альтернативними варіантами
  * @param {Object} participant - Інформація про учасника
  * @param {Array} recsList - Список рекомендацій
+ * @param {NameMatcher} nameMatcher - Екземпляр класу NameMatcher
  * @returns {HTMLElement} Контейнер з альтернативами
  */
-function createAlternativesContainer (participant, recsList) {
+function createAlternativesContainer(participant, recsList, nameMatcher) {
   const alternativesContainer = createElement('div', {
     className: 'alternatives-container'
-  })
+  });
 
   // Додаємо заголовок
   alternativesContainer.appendChild(
@@ -505,17 +515,17 @@ function createAlternativesContainer (participant, recsList) {
       { className: 'alternatives-title' },
       'Виберіть співпадіння:'
     )
-  )
+  );
 
   // Збираємо всі альтернативи
-  const alternativesList = []
+  const alternativesList = [];
 
   // Додаємо альтернативи з учасника
   if (
     participant.alternativeMatches &&
     participant.alternativeMatches.length > 0
   ) {
-    alternativesList.push(...participant.alternativeMatches)
+    alternativesList.push(...participant.alternativeMatches);
   }
 
   // Додаємо рекомендації
@@ -524,8 +534,8 @@ function createAlternativesContainer (participant, recsList) {
       dbName: rec.dbName,
       id: rec.id,
       quality: Math.round(rec.similarity * 100)
-    }))
-    alternativesList.push(...recsAsAlternatives)
+    }));
+    alternativesList.push(...recsAsAlternatives);
   }
 
   // Перевіряємо, чи є хоч якісь альтернативи
@@ -544,7 +554,7 @@ function createAlternativesContainer (participant, recsList) {
         },
         'Немає варіантів для вибору. Використовуйте кнопку "Призначити вручну".'
       )
-    )
+    );
 
     // Додаємо кнопку ручного призначення
     const manualButtonContainer = createElement('div', {
@@ -552,39 +562,39 @@ function createAlternativesContainer (participant, recsList) {
         textAlign: 'center',
         marginTop: '10px'
       }
-    })
+    });
 
     const manualButton = createElement(
       'button',
       {
         className: 'manual-assign-btn',
         onclick: e => {
-          e.stopPropagation()
-          showAssignmentModal(participant.nickname)
+          e.stopPropagation();
+          showAssignmentModal(nameMatcher, participant.nickname);
         }
       },
       'Призначити вручну'
-    )
+    );
 
-    manualButtonContainer.appendChild(manualButton)
-    alternativesContainer.appendChild(manualButtonContainer)
+    manualButtonContainer.appendChild(manualButton);
+    alternativesContainer.appendChild(manualButtonContainer);
 
-    return alternativesContainer
+    return alternativesContainer;
   }
 
   // Усуваємо дублікати за ID
-  const uniqueAlternatives = []
-  const seenIds = new Set()
+  const uniqueAlternatives = [];
+  const seenIds = new Set();
 
   for (const alt of alternativesList) {
     if (alt && alt.id && !seenIds.has(alt.id)) {
-      uniqueAlternatives.push(alt)
-      seenIds.add(alt.id)
+      uniqueAlternatives.push(alt);
+      seenIds.add(alt.id);
     }
   }
 
   // Сортуємо за якістю
-  uniqueAlternatives.sort((a, b) => (b.quality || 0) - (a.quality || 0))
+  uniqueAlternatives.sort((a, b) => (b.quality || 0) - (a.quality || 0));
 
   // Перевіряємо, чи залишились варіанти після фільтрації
   if (uniqueAlternatives.length === 0) {
@@ -602,7 +612,7 @@ function createAlternativesContainer (participant, recsList) {
         },
         'Немає унікальних варіантів для вибору. Використовуйте кнопку "Призначити вручну".'
       )
-    )
+    );
 
     // Додаємо кнопку ручного призначення
     const manualButtonContainer = createElement('div', {
@@ -610,24 +620,24 @@ function createAlternativesContainer (participant, recsList) {
         textAlign: 'center',
         marginTop: '10px'
       }
-    })
+    });
 
     const manualButton = createElement(
       'button',
       {
         className: 'manual-assign-btn',
         onclick: e => {
-          e.stopPropagation()
-          showAssignmentModal(participant.nickname)
+          e.stopPropagation();
+          showAssignmentModal(nameMatcher, participant.nickname);
         }
       },
       'Призначити вручну'
-    )
+    );
 
-    manualButtonContainer.appendChild(manualButton)
-    alternativesContainer.appendChild(manualButtonContainer)
+    manualButtonContainer.appendChild(manualButton);
+    alternativesContainer.appendChild(manualButtonContainer);
 
-    return alternativesContainer
+    return alternativesContainer;
   }
 
   // Створюємо елементи для альтернатив
@@ -635,11 +645,11 @@ function createAlternativesContainer (participant, recsList) {
     const item = createElement('div', {
       className: 'alternative-item',
       onclick: e => {
-        e.stopPropagation()
-        setManualMatch(participant.nickname, alt.id)
-        triggerRerender()
+        e.stopPropagation();
+        nameMatcher.setManualMatch(participant.nickname, alt.id);
+        triggerRerender();
       }
-    })
+    });
 
     // Якість співпадіння
     item.appendChild(
@@ -652,17 +662,17 @@ function createAlternativesContainer (participant, recsList) {
         },
         `${alt.quality || 0}%`
       )
-    )
+    );
 
     // Ім'я з бази
     item.appendChild(
       createElement('span', { className: 'db-name' }, alt.dbName)
-    )
+    );
 
-    alternativesContainer.appendChild(item)
-  })
+    alternativesContainer.appendChild(item);
+  });
 
-  return alternativesContainer
+  return alternativesContainer;
 }
 
 /**
@@ -670,53 +680,45 @@ function createAlternativesContainer (participant, recsList) {
  * @param {HTMLElement} tableBody - Тіло таблиці
  * @param {Set} expandedRows - Множина розгорнутих рядків
  */
-function addExpandListeners (tableBody, expandedRows) {
+function addExpandListeners(tableBody, expandedRows) {
   // Знаходимо всі рядки з альтернативами
-  const rowsWithAlternatives = tableBody.querySelectorAll('tr.has-alternatives')
+  const rowsWithAlternatives = tableBody.querySelectorAll('tr.has-alternatives');
 
   rowsWithAlternatives.forEach(row => {
     // Додаємо обробник кліку
     row.addEventListener('click', () => {
       // Отримуємо нікнейм з рядка
-      const nickname = row.getAttribute('data-nickname')
+      const nickname = row.getAttribute('data-nickname');
 
       // Змінюємо стан розгортання
-      const isExpanded = row.classList.contains('expanded')
+      const isExpanded = row.classList.contains('expanded');
 
       if (isExpanded) {
-        row.classList.remove('expanded')
-        expandedRows.delete(nickname)
+        row.classList.remove('expanded');
+        expandedRows.delete(nickname);
 
         // Оновлюємо іконку
-        const expandIcon = row.querySelector('.expand-icon')
-        if (expandIcon) expandIcon.textContent = '▼'
+        const expandIcon = row.querySelector('.expand-icon');
+        if (expandIcon) expandIcon.textContent = '▼';
       } else {
         // Згортаємо інші рядки
         document.querySelectorAll('tr.expanded').forEach(el => {
-          el.classList.remove('expanded')
-          const otherNickname = el.getAttribute('data-nickname')
-          if (otherNickname) expandedRows.delete(otherNickname)
+          el.classList.remove('expanded');
+          const otherNickname = el.getAttribute('data-nickname');
+          if (otherNickname) expandedRows.delete(otherNickname);
 
-          const icon = el.querySelector('.expand-icon')
-          if (icon) icon.textContent = '▼'
-        })
+          const icon = el.querySelector('.expand-icon');
+          if (icon) icon.textContent = '▼';
+        });
 
         // Розгортаємо поточний рядок
-        row.classList.add('expanded')
-        if (nickname) expandedRows.add(nickname)
+        row.classList.add('expanded');
+        if (nickname) expandedRows.add(nickname);
 
         // Оновлюємо іконку
-        const expandIcon = row.querySelector('.expand-icon')
-        if (expandIcon) expandIcon.textContent = '▲'
+        const expandIcon = row.querySelector('.expand-icon');
+        if (expandIcon) expandIcon.textContent = '▲';
       }
-    })
-  })
+    });
+  });
 }
-
-// Імпорт необхідних функцій з інших модулів
-import {
-  getUnrecognizedNames,
-  getRecommendations,
-  getNameDatabase,
-  setManualMatch
-} from '../name-processing/name-database.js'

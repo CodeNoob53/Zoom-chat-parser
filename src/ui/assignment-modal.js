@@ -1,12 +1,18 @@
-import { getNameDatabase, setManualMatch } from '../name-processing/name-database.js';
 import { triggerRerender } from './render-utils.js';
 import { getSimilarity } from './utils.js';
 
 /**
  * Показує модальне вікно для ручного призначення імені з бази
+ * @param {NameMatcher} nameMatcher - Екземпляр класу NameMatcher
  * @param {string} name - Ім'я учасника з чату
  */
-export function showAssignmentModal(name) {
+export function showAssignmentModal(nameMatcher, name) {
+  // Перевіряємо, чи передано валідний екземпляр NameMatcher
+  if (!nameMatcher || typeof nameMatcher.getNameDatabase !== 'function') {
+    console.error('NameMatcher не ініціалізовано');
+    return;
+  }
+
   // Перевіряємо, чи існує вже модальне вікно
   let modal = document.getElementById('assignmentModal');
   if (!modal) {
@@ -71,7 +77,7 @@ export function showAssignmentModal(name) {
     // Додаємо обробник події для поля пошуку
     searchInput.addEventListener('input', () => {
       const searchValue = searchInput.value.toLowerCase();
-      updateDbNamesList(searchValue, name);
+      updateDbNamesList(nameMatcher, searchValue, name);
     });
   }
   
@@ -86,7 +92,7 @@ export function showAssignmentModal(name) {
   }
   
   // Оновлюємо список імен з бази
-  updateDbNamesList('', name);
+  updateDbNamesList(nameMatcher, '', name);
   
   // Показуємо модальне вікно
   modal.style.display = 'block';
@@ -94,10 +100,11 @@ export function showAssignmentModal(name) {
 
 /**
  * Оновлює список імен з бази для модального вікна
+ * @param {NameMatcher} nameMatcher - Екземпляр класу NameMatcher
  * @param {string} searchValue - Значення для пошуку
  * @param {string} chatName - Ім'я учасника з чату
  */
-function updateDbNamesList(searchValue, chatName) {
+function updateDbNamesList(nameMatcher, searchValue, chatName) {
   const dbList = document.getElementById('dbNamesList');
   if (!dbList) return;
   
@@ -105,7 +112,17 @@ function updateDbNamesList(searchValue, chatName) {
   dbList.innerHTML = '';
   
   // Отримуємо всі імена з бази
-  const nameDatabase = getNameDatabase();
+  let nameDatabase;
+  try {
+    nameDatabase = nameMatcher.getNameDatabase();
+  } catch (error) {
+    console.error('Помилка отримання бази імен:', error);
+    const noResults = document.createElement('div');
+    noResults.className = 'no-results';
+    noResults.textContent = 'Помилка завантаження бази';
+    dbList.appendChild(noResults);
+    return;
+  }
   
   // Фільтруємо за пошуковим запитом
   const filteredNames = Object.entries(nameDatabase)
@@ -143,7 +160,7 @@ function updateDbNamesList(searchValue, chatName) {
     // Додаємо обробник кліку
     item.addEventListener('click', () => {
       // Встановлюємо відповідність
-      setManualMatch(chatName, id);
+      nameMatcher.setManualMatch(chatName, id);
       // Закриваємо модальне вікно
       const modal = document.getElementById('assignmentModal');
       if (modal) {

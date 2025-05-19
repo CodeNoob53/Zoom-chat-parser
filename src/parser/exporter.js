@@ -2,20 +2,17 @@
  * Модуль для експорту результатів аналізу в різні формати
  */
 import { showNotification } from '../core/notification.js';
-import { getParticipantInfo } from '../name-processing/name-database.js';
-import { 
-  createDownloadUrl, 
-  downloadFile 
-} from '../utils/file-utils.js';
+import { createDownloadUrl, downloadFile } from '../utils/file-utils.js';
 
 /**
  * Зберегти список імен у файл TXT
+ * @param {NameMatcher} nameMatcher - Екземпляр класу NameMatcher
  * @param {string[]} displayedNames - Масив відображуваних імен
  * @param {Object} realNameMap - Карта відповідності Zoom-імені до реального імені
  * @param {boolean} useDbChk - Чи використовувати базу імен
  * @param {Object} matchedNames - Результати порівняння з базою імен
  */
-export function saveList(displayedNames, realNameMap, useDbChk, matchedNames) {
+export function saveList(nameMatcher, displayedNames, realNameMap, useDbChk, matchedNames) {
   if (!displayedNames.length) {
     showNotification("Список порожній, нема що зберігати.", "warning");
     return;
@@ -24,7 +21,7 @@ export function saveList(displayedNames, realNameMap, useDbChk, matchedNames) {
   try {
     // Збираємо повну інформацію про учасників
     const participants = displayedNames.map(name => 
-      getParticipantInfo(name, realNameMap)
+      nameMatcher.getParticipantInfo(name, realNameMap)
     );
     
     // Створюємо табличний текст для експорту (з розділювачами табуляції)
@@ -57,12 +54,13 @@ export function saveList(displayedNames, realNameMap, useDbChk, matchedNames) {
 
 /**
  * Зберегти список імен у CSV файл
+ * @param {NameMatcher} nameMatcher - Екземпляр класу NameMatcher
  * @param {string[]} displayedNames - Масив відображуваних імен
  * @param {Object} realNameMap - Карта відповідності Zoom-імені до реального імені
  * @param {boolean} useDbChk - Чи використовувати базу імен
  * @param {Object} matchedNames - Результати порівняння з базою імен
  */
-export function saveCsv(displayedNames, realNameMap, useDbChk, matchedNames) {
+export function saveCsv(nameMatcher, displayedNames, realNameMap, useDbChk, matchedNames) {
   if (!displayedNames.length) {
     showNotification("Список порожній, нема що зберігати.", "warning");
     return;
@@ -71,7 +69,7 @@ export function saveCsv(displayedNames, realNameMap, useDbChk, matchedNames) {
   try {
     // Збираємо повну інформацію про учасників
     const participants = displayedNames.map(name => 
-      getParticipantInfo(name, realNameMap)
+      nameMatcher.getParticipantInfo(name, realNameMap)
     );
     
     // Створюємо CSV текст для експорту
@@ -129,12 +127,13 @@ function escapeCsvValue(value) {
 
 /**
  * Зберегти список імен у JSON файл
+ * @param {NameMatcher} nameMatcher - Екземпляр класу NameMatcher
  * @param {string[]} displayedNames - Масив відображуваних імен
  * @param {Object} realNameMap - Карта відповідності Zoom-імені до реального імені
  * @param {boolean} useDbChk - Чи використовувати базу імен
  * @param {Object} matchedNames - Результати порівняння з базою імен
  */
-export function saveJson(displayedNames, realNameMap, useDbChk, matchedNames) {
+export function saveJson(nameMatcher, displayedNames, realNameMap, useDbChk, matchedNames) {
   if (!displayedNames.length) {
     showNotification("Список порожній, нема що зберігати.", "warning");
     return;
@@ -143,7 +142,7 @@ export function saveJson(displayedNames, realNameMap, useDbChk, matchedNames) {
   try {
     // Збираємо повну інформацію про учасників
     const participants = displayedNames.map(name => 
-      getParticipantInfo(name, realNameMap)
+      nameMatcher.getParticipantInfo(name, realNameMap)
     );
     
     // Створюємо JSON об'єкт для експорту

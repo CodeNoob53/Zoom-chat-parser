@@ -30,19 +30,19 @@ export function initChatView () {
   chatViewState.textareaWrapper = textareaWrapper
 
   chatInput.addEventListener('paste', e => {
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       if (!chatViewState.isVisualized && chatInput.value.trim()) {
-        chatViewState.originalText = chatInput.value
-        visualizeChat(chatInput)
+        chatViewState.originalText = chatInput.value;
+        visualizeChat(chatInput);
       }
-    }, 100)
-  })
+    });
+  });
 
   chatInput.addEventListener('input', () => {
     if (chatViewState.isVisualized) {
-      removeChatVisualization()
+      removeChatVisualization();
     }
-  })
+  });
 }
 
 /**
@@ -242,7 +242,7 @@ function generateUserColor (username) {
 
 /**
  * Створює HTML-представлення чату
- * @param {Array} messages - Масив об’єктів повідомлень після парсингу
+ * @param {Array} messages - Масив об'єктів повідомлень після парсингу
  */
 export function renderChatView (messages) {
   // Контейнер усіх повідомлень
@@ -282,7 +282,7 @@ export function renderChatView (messages) {
       chatContainer.appendChild(messageGroup)
     }
 
-    // Зберігаємо ім’я відправника, щоб порівнювати з наступними повідомленнями
+    // Зберігаємо ім'я відправника, щоб порівнювати з наступними повідомленнями
     previousSender = message.sender
 
     // Створюємо елемент "бульбашки" повідомлення

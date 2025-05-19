@@ -36,7 +36,10 @@ export async function importChatFile(file) {
     const success = await importFile(file, { isDatabase: false });
     if (success) {
       // Візуалізуємо чат
-      visualizeChat();
+      const chatInput = document.getElementById('chatInput');
+      if (chatInput) {
+        visualizeChat(chatInput);
+      }
       return true;
     }
     return false;

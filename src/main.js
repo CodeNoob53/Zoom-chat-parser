@@ -47,7 +47,13 @@ function initApp() {
   initTabs();
 
   // Ініціалізуємо обробники файлів
-  initChatFileHandlers();
+  const fileInput = document.getElementById('fileInput');
+  const chatInput = document.getElementById('chatInput');
+  if (fileInput && chatInput) {
+    initChatFileHandlers(fileInput, chatInput);
+  } else {
+    console.warn('Не знайдено елементи для обробки файлів чату');
+  }
 
   // Ініціалізуємо рендерер
   initRenderer();

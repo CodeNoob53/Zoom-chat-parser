@@ -17,16 +17,20 @@ export function showNotification(message, type) {
   notification.classList.add('animate-notification-in');
 
   // Автоматично приховуємо повідомлення через 3 секунди
-  setTimeout(() => {
-    // Замінюємо клас анімації
-    notification.classList.remove('animate-notification-in');
-    notification.classList.add('animate-notification-out');
-    
-    // Ховаємо після завершення анімації
+  requestAnimationFrame(() => {
     setTimeout(() => {
-      notification.style.display = "none";
-      // Видаляємо клас анімації для наступного показу
-      notification.classList.remove('animate-notification-out');
-    }, 300);
-  }, 3000);
+      // Замінюємо клас анімації
+      notification.classList.remove('animate-notification-in');
+      notification.classList.add('animate-notification-out');
+      
+      // Ховаємо після завершення анімації
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          notification.style.display = "none";
+          // Видаляємо клас анімації для наступного показу
+          notification.classList.remove('animate-notification-out');
+        }, 300);
+      });
+    }, 3000);
+  });
 }

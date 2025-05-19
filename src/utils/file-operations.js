@@ -127,8 +127,25 @@ function importDatabaseFile(content, format) {
  * @returns {boolean} Результат імпорту
  */
 function importChatFile(content, format) {
-  // TODO: Implement chat file import logic
-  return false;
+  try {
+    // Отримуємо текстове поле для чату
+    const chatInput = document.getElementById('chatInput');
+    if (!chatInput) {
+      throw new Error('Не знайдено поле введення чату');
+    }
+
+    // Встановлюємо вміст файлу в текстове поле
+    chatInput.value = content;
+
+    // Показуємо повідомлення про успішний імпорт
+    showNotification('Файл чату успішно імпортовано', 'success');
+
+    return true;
+  } catch (error) {
+    console.error('Помилка імпорту файлу чату:', error);
+    showNotification('Помилка імпорту файлу чату', 'error');
+    return false;
+  }
 }
 
 /**

@@ -6,9 +6,9 @@ import {
   areNamesTransliteratedMatches,
   transliterateToCyrillic,
   transliterateToLatin,
-} from '../name-processing/transliteration.js';
-import { isVariantOf } from '../name-processing/name-variants.js';
-import { NameMatchingConfig, getQuality, getThreshold } from '../config.js';
+} from '../../features/name-processing/transliteration.js';
+import { isVariantOf } from '../../features/name-processing/name-variants.js';
+import { NameMatchingConfig, getQuality, getThreshold } from '../../config.js';
 
 /**
  * Функція для обчислення відстані Левенштейна між двома рядками

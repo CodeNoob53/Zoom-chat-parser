@@ -1,11 +1,11 @@
 // src/ui/table-renderer.js
-import { elements } from '../core/dom.js';
-import { triggerRerender } from './render-utils.js';
+import { elements } from '../../core/dom.js';
+import { triggerRerender } from '../renderer/render-utils.js';
 import { showAssignmentModal } from './assignment-modal.js';
-import { showNotification } from '../core/notification.js';
-import { getCurrentSortState, sortParticipants } from './sorting.js';
-import { addNicknameToEntry } from '../database/database-service.js';
-import { createElement, createFragment, updateTable } from '../utils/dom-utils.js';
+import { showNotification } from '../../core/notification.js';
+import { getCurrentSortState, sortParticipants } from '../renderer/sorting.js';
+import { addNicknameToEntry } from '../../features/database/database-service.js';
+import { createElement, createFragment, updateTable } from '../../utils/dom-utils.js';
 
 // Зберігаємо стан відображення для оптимізації рендерингу
 const renderCache = {

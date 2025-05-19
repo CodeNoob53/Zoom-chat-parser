@@ -1,7 +1,7 @@
 /**
  * Модуль для експорту даних чату
  */
-import { showNotification } from '../core/notification.js';
+import { showNotification } from '../../core/notification.js';
 import { exportChatData } from './chat-operations.js';
 
 /**

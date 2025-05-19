@@ -2,7 +2,7 @@
  * Модуль для управління формами роботи з базою даних
  * Об'єднує логіку звичайних форм і модальних вікон
  */
-import { showNotification } from '../core/notification.js';
+import { showNotification } from '../../core/notification.js';
 import { 
   getNextId, 
   updateMappings, 

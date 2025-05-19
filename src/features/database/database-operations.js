@@ -1,16 +1,11 @@
 /**
  * Модуль для операцій з базою даних
  */
-import { showNotification } from '../core/notification.js';
-import { importFile, exportFile } from '../utils/file-operations.js';
+import { showNotification } from '../../core/notification.js';
+import { importFile, exportFile } from '../../utils/file/file-operations.js';
 import { getDatabase } from './database-service.js';
 import { renderDatabaseTable } from './database-table.js';
-import {
-  MAX_FILE_SIZES,
-  ALLOWED_FILE_TYPES,
-  isValidFileSize,
-  isValidFileType
-} from '../utils/file-utils.js';
+import { detectFileFormat, MAX_FILE_SIZES, ALLOWED_FILE_TYPES, isValidFileSize, isValidFileType } from '../../utils/file/file-utils.js';
 
 /**
  * Імпортувати файл бази даних

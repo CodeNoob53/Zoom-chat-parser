@@ -1,12 +1,12 @@
 /**
  * Модуль управління базою імен
  */
-import { elements } from '../core/dom.js';
-import { showNotification } from '../core/notification.js';
+import { elements } from '../../core/dom.js';
+import { showNotification } from '../../core/notification.js';
 import { matchNames } from './name-matcher.js';
 import { splitName } from './name-utils.js';
-import { Logger } from '../utils/logger.js';
-import { NameMatchingConfig } from '../config.js';
+import { Logger } from '../../utils/string/logger.js';
+import { NameMatchingConfig } from '../../config.js';
 import { getRecommendations } from './name-recommendation.js';
 
 /**
@@ -211,7 +211,7 @@ export class NameMatcher {
 
   /**
    * Отримати інформацію про учасника
-   * @param {string} name - Ім’я
+   * @param {string} name - Ім'я
    * @param {Object} realNameMap - Карта реальних імен
    * @returns {Object} Інформація про учасника
    */
@@ -295,8 +295,8 @@ export class NameMatcher {
 
   /**
    * Встановити ручне співпадіння
-   * @param {string} name - Ім’я
-   * @param {string} dbNameOrId - Ім’я з бази або ID
+   * @param {string} name - Ім'я
+   * @param {string} dbNameOrId - Ім'я з бази або ID
    * @returns {boolean} Успішність
    */
   setManualMatch(name, dbNameOrId) {
@@ -328,7 +328,7 @@ export class NameMatcher {
 
   /**
    * Вибрати альтернативне співпадіння
-   * @param {string} name - Ім’я
+   * @param {string} name - Ім'я
    * @param {number} altIndex - Індекс альтернативи
    * @returns {boolean} Успішність
    */

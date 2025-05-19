@@ -1,7 +1,7 @@
 /**
  * Модуль для логування з підтримкою різних рівнів та форматування
  */
-import { isLoggingEnabled, LoggingConfig } from '../config.js';
+import { isLoggingEnabled, LoggingConfig } from '../../config.js';
 
 /**
  * Класи для форматування виводу в консоль

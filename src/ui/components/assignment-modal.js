@@ -1,5 +1,5 @@
-import { triggerRerender } from './render-utils.js';
-import { getSimilarity } from './utils.js';
+import { triggerRerender } from '../renderer/render-utils.js';
+import { getSimilarity } from '../utils.js';
 
 /**
  * Показує модальне вікно для ручного призначення імені з бази

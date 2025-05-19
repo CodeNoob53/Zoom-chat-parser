@@ -2,7 +2,7 @@
  * Покращена транслітерація кирилиці в латиницю з урахуванням різних варіантів
  * Модуль використовує string-utils.js для функцій порівняння рядків
  */
-import { areStringSimilar } from '../utils/string-utils.js';
+import { areStringSimilar } from '../../utils/string/string-utils.js';
 
 /**
  * Покращена транслітерація кирилиці в латиницю з урахуванням різних варіантів

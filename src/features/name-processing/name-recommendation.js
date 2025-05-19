@@ -9,9 +9,9 @@ import {
   isVariantOf,
 } from './name-variants.js';
 import { splitName } from './name-utils.js';
-import { evaluateNameSimilarity } from '../utils/string-utils.js';
-import { Logger } from '../utils/logger.js';
-import { NameMatchingConfig, getQuality } from '../config.js';
+import { evaluateNameSimilarity } from '../../utils/string/string-utils.js';
+import { Logger } from '../../utils/string/logger.js';
+import { NameMatchingConfig, getQuality } from '../../config.js';
 
 /**
  * Перевірка, чи існує кілька можливих співпадінь для імені
@@ -93,7 +93,7 @@ export function hasAmbiguousNameMatch(name, nameDatabase) {
 
 /**
  * Знайти всі можливі співпадіння для імені
- * @param {string} name - Ім’я
+ * @param {string} name - Ім'я
  * @param {Object} nameDatabase - База імен
  * @returns {Array} Масив співпадінь
  */
@@ -480,7 +480,7 @@ export function getRecommendations(
 
 /**
  * Знайти точні співпадіння за іменем
- * @param {string} name - Ім’я
+ * @param {string} name - Ім'я
  * @param {Object} nameDatabase - База імен
  * @returns {Array} Співпадіння
  */
@@ -506,7 +506,7 @@ function findExactNameMatches(name, nameDatabase) {
 
 /**
  * Знайти найкращі співпадіння
- * @param {string} name - Ім’я
+ * @param {string} name - Ім'я
  * @param {Object} nameDatabase - База імен
  * @param {Object} matchedNames - Співпадіння
  * @returns {Array} Найкращі співпадіння
@@ -544,7 +544,7 @@ function findBestMatches(name, nameDatabase, matchedNames) {
 
   const matches = [];
   if (!name || !nameDatabase || Object.keys(nameDatabase).length === 0) {
-    Logger.info(`Немає бази або ім’я пусте: ${name}`);
+    Logger.info(`Немає бази або ім'я пусте: ${name}`);
     return matches;
   }
 

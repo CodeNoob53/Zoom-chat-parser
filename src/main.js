@@ -1,19 +1,19 @@
 import { elements } from './core/dom.js';
-import { saveParticipants } from './chat/chat-exporter.js';
-import { initChatFileHandlers } from './chat/chat-operations.js';
+import { saveParticipants } from './features/chat/chat-exporter.js';
+import { initChatFileHandlers } from './features/chat/chat-operations.js';
 import { showNotification } from './core/notification.js';
-import { getRealNameMap, parseChat } from './parser/parser.js';
-import { initRenderer, updateNamesList } from './ui/renderer.js';
+import { getRealNameMap, parseChat } from './features/chat/chat-parser.js';
+import { initRenderer, updateNamesList } from './ui/renderer/renderer.js';
 import { initTheme } from './core/theme.js';
 import { initTabs } from './core/tabs.js';
 import { initParserUI } from './ui/parser-ui.js';
-import { initChatView } from './ui/chat-view.js';
-import { initLegendAccordion } from './ui/legend-accordion.js';
+import { initChatView } from './ui/components/chat-view.js';
+import { initLegendAccordion } from './ui/components/legend-accordion.js';
 import {
   initDatabaseManager,
   getOldFormatDatabase
-} from './database/database-manager.js';
-import { NameMatcher } from './name-processing/name-database.js';
+} from './features/database/database-manager.js';
+import { NameMatcher } from './features/name-processing/name-database.js';
 
 // Стан додатку
 let displayedNames = [];

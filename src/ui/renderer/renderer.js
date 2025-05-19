@@ -1,6 +1,6 @@
 // Файл: src/ui/renderer.js
 import { initSortListeners } from './sorting.js';
-import { renderNames } from './table-renderer.js';
+import { renderNames } from '../components/table-renderer.js';
 import { setRerenderCallback } from './render-utils.js';
 
 /**

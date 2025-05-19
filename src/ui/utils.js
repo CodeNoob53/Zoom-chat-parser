@@ -5,7 +5,7 @@ import {
   levenshteinDistance, 
   getSimilarity, 
   areStringSimilar 
-} from '../utils/string-utils.js';
+} from '../utils/string/string-utils.js';
 
 // Експортуємо функції зі string-utils для зворотної сумісності
 export { 

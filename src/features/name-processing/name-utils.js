@@ -6,7 +6,7 @@ import {
   fuzzyMatch, 
   getSimilarity, 
   areStringSimilar 
-} from '../utils/string-utils.js';
+} from '../../utils/string/string-utils.js';
 
 // Експортуємо імпортовані функції для зворотної сумісності
 export { 

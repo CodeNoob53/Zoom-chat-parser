@@ -1,5 +1,5 @@
 // src/ui/sorting.js
-import { elements } from '../core/dom.js';
+import { elements } from '../../core/dom.js';
 import { triggerRerender } from './render-utils.js';
 
 // Зберігаємо поточний стан сортування

@@ -1,10 +1,10 @@
 /**
  * Уніфікований модуль для операцій з файлами (імпорт/експорт)
  */
-import { showNotification } from '../core/notification.js';
+import { showNotification } from '../../core/notification.js';
 import { createDownloadUrl, downloadFile, detectFileFormat } from './file-utils.js';
-import { importDatabase } from '../database/database-service.js';
-import { renderDatabaseTable } from '../database/database-table.js';
+import { importDatabase } from '../../features/database/database-service.js';
+import { renderDatabaseTable } from '../../features/database/database-table.js';
 
 /**
  * Імпортувати дані з файлу

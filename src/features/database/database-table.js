@@ -1,19 +1,12 @@
 // src/database/database-table.js
-import { showNotification } from '../core/notification.js';
+import { showNotification } from '../../core/notification.js';
 import { 
   getAllEntries, 
   deleteEntry
 } from './database-service.js';
 import { editDatabaseEntry } from './database-form-manager.js';
-import { 
-  sortDatabaseEntries, 
-  getCurrentDbSortState 
-} from '../ui/sorting.js';
-import { 
-  createFragment, 
-  createElement, 
-  updateTable 
-} from '../utils/dom-utils.js';
+import { getCurrentSortState, sortParticipants } from '../../ui/renderer/sorting.js';
+import { createElement, createFragment, updateTable } from '../../utils/dom-utils.js';
 
 // Кеш останніх відображених записів для оптимізації рендерингу
 let lastRenderedEntries = [];
@@ -30,13 +23,13 @@ export function renderDatabaseTable(filteredEntries) {
   const entries = filteredEntries || getAllEntries();
   
   // Отримуємо поточний стан сортування
-  const sortState = getCurrentDbSortState();
+  const sortState = getCurrentSortState();
   
   // Встановлюємо візуальні індикатори сортування
   updateSortIndicators(sortState);
   
   // Сортуємо записи
-  const sortedEntries = sortDatabaseEntries(entries, sortState.column, sortState.direction);
+  const sortedEntries = sortParticipants(entries, sortState.column, sortState.direction);
   
   // Якщо таблиця порожня, показуємо повідомлення
   if (sortedEntries.length === 0) {

@@ -3,8 +3,8 @@
  */
 import { matchingStrategies } from './matching-strategies.js';
 import { tryAutoMatchUnrecognized, hasAmbiguousNameMatch } from './name-recommendation.js';
-import { Logger } from '../utils/logger.js';
-import { NameMatchingConfig } from '../config.js';
+import { Logger } from '../../utils/string/logger.js';
+import { NameMatchingConfig } from '../../config.js';
 
 /**
  * Порівняння імен з базою даних з використанням стратегій
@@ -50,7 +50,7 @@ export function matchNames(
         allMatches: [],
       };
       unrecognizedNames.add(name);
-      Logger.debug(`Ранній вихід для ${name}: неоднозначне ім’я`);
+      Logger.debug(`Ранній вихід для ${name}: неоднозначне ім'я`);
       continue;
     }
 

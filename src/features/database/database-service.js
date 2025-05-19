@@ -2,7 +2,7 @@
  * Сервіс для роботи з базою даних
  * Об'єднує функціональність core і api в єдиний інтерфейс
  */
-import { showNotification } from '../core/notification.js'
+import { showNotification } from '../../core/notification.js'
 
 // Структура за замовчуванням для бази даних
 const DEFAULT_DATABASE = {
@@ -316,7 +316,7 @@ export function updateEntry(entry) {
     ...entry
   };
   
-  // Оновлюємо карти відповідності
+  // Оновлюємо картини відповідності
   updateMappings();
   
   // Зберігаємо базу даних відразу замість відкладеного збереження
@@ -345,7 +345,7 @@ export function deleteEntry(id) {
   // Видаляємо запис
   databaseData.entries.splice(index, 1);
   
-  // Оновлюємо карти відповідності
+  // Оновлюємо картини відповідності
   updateMappings();
   
   // Зберігаємо базу даних відразу
@@ -497,7 +497,7 @@ export function importDatabase (data) {
       return false
     }
 
-    // Оновлюємо карти відповідності
+    // Оновлюємо картини відповідності
     updateMappings()
 
     // Зберігаємо базу даних
@@ -547,5 +547,5 @@ export function updateDbStatusDisplay (statusElement = null) {
   }
 }
 
-// Експортуємо карти для сумісності з існуючим кодом (хоча краще використовувати методи API)
+// Експортуємо картини для сумісності з існуючим кодом (хоча краще використовувати методи API)
 export { nameToIdMap, nicknameToIdMap, databaseData }

@@ -1,15 +1,10 @@
 /**
  * Модуль для операцій з чатом
  */
-import { showNotification } from '../core/notification.js';
-import { importFile, exportFile } from '../utils/file-operations.js';
-import { visualizeChat } from '../ui/chat-view.js';
-import {
-  MAX_FILE_SIZES,
-  ALLOWED_FILE_TYPES,
-  isValidFileSize,
-  isValidFileType
-} from '../utils/file-utils.js';
+import { showNotification } from '../../core/notification.js';
+import { importFile, exportFile } from '../../utils/file/file-operations.js';
+import { visualizeChat } from '../../ui/components/chat-view.js';
+import { detectFileFormat, ALLOWED_FILE_TYPES, MAX_FILE_SIZES, isValidFileSize, isValidFileType } from '../../utils/file/file-utils.js';
 
 /**
  * Імпортувати файл чату

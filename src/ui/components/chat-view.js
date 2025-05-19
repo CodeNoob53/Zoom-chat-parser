@@ -1,8 +1,8 @@
 /**
  * Модуль для відображення чату Zoom у вигляді візуального інтерфейсу
  */
-import { elements } from '../core/dom.js'
-import { showNotification } from '../core/notification.js'
+import { elements } from '../../core/dom.js'
+import { showNotification } from '../../core/notification.js'
 
 // Стан відображення чату
 let chatViewState = {

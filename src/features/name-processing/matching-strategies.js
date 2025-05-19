@@ -6,8 +6,8 @@ import { nicknameToIdMap } from '../database/database-service.js';
 import { splitName } from './name-utils.js';
 import { areNamesTransliteratedMatches } from './transliteration.js';
 import { isVariantOf } from './name-variants.js';
-import { evaluateNameSimilarity } from '../utils/string-utils.js';
-import { getQuality, NameMatchingConfig } from '../config.js';
+import { evaluateNameSimilarity } from '../../utils/string/string-utils.js';
+import { NameMatchingConfig, getQuality, getThreshold } from '../../config.js';
 
 /**
  * Стратегія точного співпадіння
@@ -104,7 +104,7 @@ const namePartsStrategy = {
         if (match) potentialMatches.push({ ...match, reversed: true });
       }
 
-      // Однослівне ім’я
+      // Однослівне ім'я
       if (chatParts.onlyOneWord) {
         match = compareSingleWord(
           chatParts.word,

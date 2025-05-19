@@ -1,7 +1,7 @@
 /**
  * Модуль утиліт для безпечної роботи з файлами
  */
-import { containsScriptTags, sanitizeContent } from './string-utils.js';
+import { containsScriptTags, sanitizeContent } from '../string/string-utils.js';
 
 /**
  * Максимальні розміри файлів (у байтах)

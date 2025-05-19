@@ -1,6 +1,6 @@
 import { elements } from './core/dom.js';
-import { saveList, saveCsv, saveJson } from './parser/exporter.js';
-import { initFileHandlers } from './parser/file-handler.js';
+import { saveParticipants } from './chat/chat-exporter.js';
+import { initChatFileHandlers } from './chat/chat-operations.js';
 import { showNotification } from './core/notification.js';
 import { getRealNameMap, parseChat } from './parser/parser.js';
 import { initRenderer, updateNamesList } from './ui/renderer.js';
@@ -47,7 +47,7 @@ function initApp() {
   initTabs();
 
   // Ініціалізуємо обробники файлів
-  initFileHandlers();
+  initChatFileHandlers();
 
   // Ініціалізуємо рендерер
   initRenderer();
@@ -330,51 +330,21 @@ async function rerender() {
  * Обробник кнопки збереження в TXT
  */
 function handleSaveTxt() {
-  // Перевіряємо наявність бази даних
-  const nameDatabase = nameMatcher.getNameDatabase();
-  const hasDatabaseEntries = Object.keys(nameDatabase).length > 0;
-
-  saveList(
-    nameMatcher,
-    displayedNames,
-    getRealNameMap(),
-    hasDatabaseEntries,
-    nameMatcher.getMatchedNames()
-  );
+  saveParticipants(nameMatcher, displayedNames, getRealNameMap(), true, nameMatcher.getMatchedNames(), 'txt');
 }
 
 /**
  * Обробник кнопки збереження в CSV
  */
 function handleSaveCsv() {
-  // Перевіряємо наявність бази даних
-  const nameDatabase = nameMatcher.getNameDatabase();
-  const hasDatabaseEntries = Object.keys(nameDatabase).length > 0;
-
-  saveCsv(
-    nameMatcher,
-    displayedNames,
-    getRealNameMap(),
-    hasDatabaseEntries,
-    nameMatcher.getMatchedNames()
-  );
+  saveParticipants(nameMatcher, displayedNames, getRealNameMap(), true, nameMatcher.getMatchedNames(), 'csv');
 }
 
 /**
  * Обробник кнопки збереження в JSON
  */
 function handleSaveJson() {
-  // Перевіряємо наявність бази даних
-  const nameDatabase = nameMatcher.getNameDatabase();
-  const hasDatabaseEntries = Object.keys(nameDatabase).length > 0;
-
-  saveJson(
-    nameMatcher,
-    displayedNames,
-    getRealNameMap(),
-    hasDatabaseEntries,
-    nameMatcher.getMatchedNames()
-  );
+  saveParticipants(nameMatcher, displayedNames, getRealNameMap(), true, nameMatcher.getMatchedNames(), 'json');
 }
 
 // Ініціалізація після завантаження сторінки

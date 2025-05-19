@@ -24,7 +24,7 @@ import {
   deleteDatabaseEntry 
 } from './database-form-manager.js';
 
-import { initImportExportButtons } from './database-import-export.js';
+import { initDatabaseHandlers } from './database-operations.js';
 import { renderDatabaseTable } from './database-table.js';
 import { initDatabaseSearch } from './database-search.js';
 
@@ -55,7 +55,11 @@ export function initDatabaseManager(options = {}) {
   initDatabaseForm();
   
   // Ініціалізуємо кнопки імпорту/експорту
-  initImportExportButtons();
+  const importBtn = document.getElementById('dbImportBtn');
+  const importFile = document.getElementById('dbImportFile');
+  const exportCsvBtn = document.getElementById('dbExportCsvBtn');
+  const exportJsonBtn = document.getElementById('dbExportJsonBtn');
+  initDatabaseHandlers(importBtn, importFile, exportCsvBtn, exportJsonBtn);
   
   // Відображаємо таблицю бази
   renderDatabaseTable();

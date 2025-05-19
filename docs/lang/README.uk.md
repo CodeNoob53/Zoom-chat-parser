@@ -76,6 +76,8 @@ git clone https://github.com/yourusername/zoom-chat-parser.git
 
 ## Розробка
 
+Для детальної технічної документації дивіться [DOCUMENTATION.uk.md](DOCUMENTATION.uk.md).
+
 ### Структура проекту
 
 ```

@@ -91,6 +91,8 @@ Example JSON format:
 
 ## Development
 
+For detailed technical documentation, see [DOCUMENTATION.md](docs/DOCUMENTATION.md).
+
 ### Project Structure
 
 ```

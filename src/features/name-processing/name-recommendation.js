@@ -142,104 +142,102 @@ export function findAllPossibleMatches(name, nameDatabase) {
     if (standardName !== nameLower) nameVariants.push(standardName);
   }
 
-  nameVariants.push(...new Set(nameVariants));
+  // Видаляємо дублікати з nameVariants
+  const uniqueNameVariants = [...new Set(nameVariants)];
 
-  const nameMatchCounts = {};
-  const exactMatchedNames = new Set();
+  // Поділ імені на частини (ім'я/прізвище)
+  const nameParts = splitName(name);
+  const hasMultipleParts = nameParts.standard && !nameParts.onlyOneWord;
 
   for (const dbName in nameDatabase) {
     const dbNameLower = dbName.toLowerCase();
     const dbParts = splitName(dbName);
+    const dbId = nameDatabase[dbName];
 
-    for (const variant of nameVariants) {
+    // Точне співпадіння повного імені
+    for (const variant of uniqueNameVariants) {
       if (dbNameLower === variant) {
         possibleMatches.push({
           dbName,
-          id: nameDatabase[dbName],
+          id: dbId,
           part: 'full-name-exact',
-          quality: getQuality('exactMatch'),
+          quality: 100,
         });
-        exactMatchedNames.add(dbName);
-        continue;
+        break;
       }
+    }
 
-      if (dbParts.standard && dbParts.standard.firstname) {
-        const firstname = dbParts.standard.firstname.toLowerCase();
-        const sim = evaluateNameSimilarity(variant, firstname);
-        if (sim.type === 'exact-match') {
-          if (!nameMatchCounts[firstname]) nameMatchCounts[firstname] = [];
-          nameMatchCounts[firstname].push({
+    // Якщо ім'я складається з кількох частин, перевіряємо співпадіння прямого та зворотного порядку
+    if (hasMultipleParts && dbParts.standard) {
+      // Пряме співпадіння (прізвище = прізвище, ім'я = ім'я)
+      if (nameParts.standard) {
+        let surnameMatch = false;
+        let firstnameMatch = false;
+        
+        // Перевірка співпадіння прізвища
+        const surnameSim = evaluateNameSimilarity(nameParts.standard.surname, dbParts.standard.surname);
+        if (surnameSim.quality >= 0.8) {
+          surnameMatch = true;
+        }
+        
+        // Перевірка співпадіння імені
+        const firstnameSim = evaluateNameSimilarity(nameParts.standard.firstname, dbParts.standard.firstname);
+        if (firstnameSim.quality >= 0.8) {
+          firstnameMatch = true;
+        }
+        
+        // Якщо обидві частини співпадають
+        if (surnameMatch && firstnameMatch) {
+          possibleMatches.push({
             dbName,
-            id: nameDatabase[dbName],
-            part: 'firstname-exact',
-            quality: getQuality('standardOrderExact') - 5,
+            id: dbId,
+            part: 'standard-order-' + surnameSim.type,
+            quality: Math.round((surnameSim.quality + firstnameSim.quality) * 50),
+          });
+        }
+      }
+      
+      // Зворотній порядок (прізвище = ім'я, ім'я = прізвище)
+      if (nameParts.standard) {
+        let reversedSurnameMatch = false;
+        let reversedFirstnameMatch = false;
+        
+        // Перевірка імені як прізвища
+        const reversedSurnameSim = evaluateNameSimilarity(nameParts.standard.surname, dbParts.standard.firstname);
+        if (reversedSurnameSim.quality >= 0.8) {
+          reversedSurnameMatch = true;
+        }
+        
+        // Перевірка прізвища як імені
+        const reversedFirstnameSim = evaluateNameSimilarity(nameParts.standard.firstname, dbParts.standard.surname);
+        if (reversedFirstnameSim.quality >= 0.8) {
+          reversedFirstnameMatch = true;
+        }
+        
+        // Якщо обидві частини співпадають у зворотному порядку
+        if (reversedSurnameMatch && reversedFirstnameMatch) {
+          possibleMatches.push({
+            dbName,
+            id: dbId,
+            part: 'reversed-order-' + reversedSurnameSim.type,
+            quality: Math.round((reversedSurnameSim.quality + reversedFirstnameSim.quality) * 45), // трохи нижча якість для зворотного порядку
           });
         }
       }
     }
   }
 
-  for (const [firstname, matches] of Object.entries(nameMatchCounts)) {
-    if (matches.length === 1 && !exactMatchedNames.has(matches[0].dbName)) {
-      possibleMatches.push(matches[0]);
-      exactMatchedNames.add(matches[0].dbName);
-      Logger.info(
-        `Єдине точне співпадіння для імені "${firstname}": ${matches[0].dbName}`
-      );
-    }
-  }
-
-  if (possibleMatches.length > 0) {
-    Logger.info(`Знайдено ${possibleMatches.length} точних співпадінь для ${name}`);
-    return possibleMatches;
-  }
-
-  for (const dbName in nameDatabase) {
-    const dbParts = splitName(dbName);
-    if (!dbParts.standard) continue;
-
-    for (const variant of nameVariants) {
-      const surnameSim = evaluateNameSimilarity(
-        variant,
-        dbParts.standard.surname
-      );
-      const firstnameSim = evaluateNameSimilarity(
-        variant,
-        dbParts.standard.firstname
-      );
-
-      if (surnameSim.quality >= NameMatchingConfig.thresholds.variantMatch) {
-        possibleMatches.push({
-          dbName,
-          id: nameDatabase[dbName],
-          part: 'surname-' + surnameSim.type,
-          quality: Math.round(surnameSim.quality * 90),
-        });
-      } else if (
-        firstnameSim.quality >= NameMatchingConfig.thresholds.variantMatch
-      ) {
-        possibleMatches.push({
-          dbName,
-          id: nameDatabase[dbName],
-          part: 'firstname-' + firstnameSim.type,
-          quality: Math.round(firstnameSim.quality * 90),
-        });
-      }
-    }
-  }
-
-  possibleMatches.sort((a, b) => {
-    if (a.part.includes('exact') && !b.part.includes('exact')) return -1;
-    if (!a.part.includes('exact') && b.part.includes('exact')) return 1;
-    return b.quality - a.quality;
-  });
-
+  // Видаляємо дублікати за ID
   const uniqueMatches = [];
-  const ids = new Set();
+  const seenIds = new Set();
+
+  // Сортуємо за якістю перед видаленням дублікатів
+  possibleMatches.sort((a, b) => b.quality - a.quality);
+
   for (const match of possibleMatches) {
-    if (!ids.has(match.id)) {
+    if (!seenIds.has(match.id)) {
       uniqueMatches.push(match);
-      ids.add(match.id);
+      seenIds.add(match.id);
     }
   }
 
@@ -343,25 +341,36 @@ export function tryAutoMatchUnrecognized(
       }
     }
 
+    // Шукаємо всі можливі співпадіння
     const possibleMatches = findAllPossibleMatches(name, nameDatabase)
       .filter((match) => !usedIds.has(match.id))
       .sort((a, b) => b.quality - a.quality);
 
-    if (possibleMatches.length === 1 && possibleMatches[0].quality >= 90) {
+    if (possibleMatches.length > 0) {
+      // Беремо найкраще співпадіння, якщо його якість висока
       const bestMatch = possibleMatches[0];
-      matchedNames[name] = bestMatch.id;
-      matchedNames[name + '_matchInfo'] = {
-        matchType: 'auto-match',
-        quality: bestMatch.quality,
-        dbName: bestMatch.dbName,
-        allMatches: possibleMatches.slice(0, NameMatchingConfig.limits.maxAlternatives),
-        autoMatched: true,
-      };
-      usedIds.add(bestMatch.id);
-      unrecognizedNames.delete(name);
-      Logger.info(
-        `Автоматичне співпадіння для ${name}: ${bestMatch.dbName}`
-      );
+      
+      // Перевіряємо умови для прийняття автоматичного співпадіння
+      const isHighQuality = bestMatch.quality >= 85;
+      const hasSignificantAdvantage = possibleMatches.length === 1 || 
+          (possibleMatches.length > 1 && 
+          (bestMatch.quality - possibleMatches[1].quality) >= 10);
+      
+      if (isHighQuality && hasSignificantAdvantage) {
+        matchedNames[name] = bestMatch.id;
+        matchedNames[name + '_matchInfo'] = {
+          matchType: 'auto-match',
+          quality: bestMatch.quality,
+          dbName: bestMatch.dbName,
+          allMatches: possibleMatches.slice(0, NameMatchingConfig.limits.maxAlternatives),
+          autoMatched: true,
+        };
+        usedIds.add(bestMatch.id);
+        unrecognizedNames.delete(name);
+        Logger.info(
+          `Автоматичне співпадіння для ${name}: ${bestMatch.dbName}`
+        );
+      }
     }
   }
 }

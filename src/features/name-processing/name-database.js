@@ -18,6 +18,7 @@ export class NameMatcher {
     this.matchedNames = {};
     this.unrecognizedNames = new Set();
     this.manualAssignments = {};
+    this.recommendationsCache = null;
     Logger.info('NameMatcher ініціалізовано');
   }
 
@@ -170,9 +171,8 @@ export class NameMatcher {
     try {
       const { getOldFormatDatabase } = await import('../database/database-service.js');
       const oldFormatDb = getOldFormatDatabase();
-      if (Object.keys(oldFormatDb).length > 0) {
+      if (Object.keys(oldFormatDb).length > 0 && Object.keys(this.nameDatabase).length !== Object.keys(oldFormatDb).length) {
         this.nameDatabase = oldFormatDb;
-        Logger.info(`Оновлено базу імен: ${Object.keys(this.nameDatabase).length} записів`);
       }
     } catch (err) {
       Logger.error('Помилка отримання бази:', err);
@@ -188,7 +188,22 @@ export class NameMatcher {
    * @returns {Object} Рекомендації
    */
   getRecommendations(unrecognizedNames, nameDatabase, matchedNames) {
-    return getRecommendations(unrecognizedNames, nameDatabase, matchedNames);
+    // Використовуємо кеш, якщо він існує і параметри не змінились
+    if (this.recommendationsCache && 
+        JSON.stringify(unrecognizedNames) === this.recommendationsCache.unrecognizedNamesKey) {
+      return this.recommendationsCache.recommendations;
+    }
+    
+    // Отримуємо нові рекомендації
+    const recommendations = getRecommendations(unrecognizedNames, nameDatabase, matchedNames);
+    
+    // Зберігаємо в кеш
+    this.recommendationsCache = {
+      unrecognizedNamesKey: JSON.stringify(unrecognizedNames),
+      recommendations
+    };
+    
+    return recommendations;
   }
 
   /**
@@ -201,7 +216,6 @@ export class NameMatcher {
 
     if (Object.keys(oldFormatDb).length > 0) {
       this.nameDatabase = oldFormatDb;
-      Logger.info(`База синхронізована: ${Object.keys(this.nameDatabase).length} записів`);
       return true;
     }
 
@@ -290,6 +304,7 @@ export class NameMatcher {
   clearMatchedNamesCache() {
     this.matchedNames = {};
     this.unrecognizedNames.clear();
+    this.recommendationsCache = null;
     Logger.info('Кеш співпадінь очищено');
   }
 

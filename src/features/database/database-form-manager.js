@@ -49,7 +49,10 @@ export function initDatabaseForm() {
       
       // Генеруємо новий ID
       const newId = getNextId();
-      document.getElementById('dbFormId').value = newId;
+      const idField = document.getElementById('dbFormId');
+      if (idField) {
+        idField.value = newId;
+      }
       
       // Показуємо форму
       if (displayMode === 'modal') {
@@ -58,6 +61,8 @@ export function initDatabaseForm() {
         showInlineForm();
       }
     });
+  } else {
+    console.error('Кнопка додавання не знайдена');
   }
   
   // Обробник для закриття модального вікна
@@ -69,6 +74,8 @@ export function initDatabaseForm() {
         hideInlineForm();
       }
     });
+  } else {
+    console.error('Кнопка закриття не знайдена');
   }
   
   // Закриття модального вікна при кліку поза ним
@@ -84,14 +91,18 @@ export function initDatabaseForm() {
   if (dbForm) {
     dbForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      saveFormData();
+      const result = saveFormData();
       
-      if (displayMode === 'modal') {
-        hideModal();
-      } else {
-        hideInlineForm();
+      if (result) {
+        if (displayMode === 'modal') {
+          hideModal();
+        } else {
+          hideInlineForm();
+        }
       }
     });
+  } else {
+    console.error('Форма бази даних не знайдена');
   }
   
   // Обробник для очищення форми
@@ -100,7 +111,10 @@ export function initDatabaseForm() {
       clearForm();
       if (editingId === null) {
         // Якщо це новий запис, встановлюємо новий ID
-        document.getElementById('dbFormId').value = getNextId();
+        const idField = document.getElementById('dbFormId');
+        if (idField) {
+          idField.value = getNextId();
+        }
       }
     });
   }
@@ -121,13 +135,21 @@ export function initDatabaseForm() {
  */
 export function showModal() {
   const modal = document.getElementById('databaseFormModal');
-  if (!modal) return;
+  if (!modal) {
+    console.error('Модальне вікно не знайдено');
+    return;
+  }
   
   modal.style.display = 'block';
   
   // Фокус на першому полі введення
   setTimeout(() => {
-    document.getElementById('dbFormSurname').focus();
+    const surnameField = document.getElementById('dbFormSurname');
+    if (surnameField) {
+      surnameField.focus();
+    } else {
+      console.error('Поле прізвища не знайдено');
+    }
   }, 100);
   
   // Блокуємо прокрутку основного контенту
@@ -139,7 +161,10 @@ export function showModal() {
  */
 export function hideModal() {
   const modal = document.getElementById('databaseFormModal');
-  if (!modal) return;
+  if (!modal) {
+    console.error('Модальне вікно не знайдено');
+    return;
+  }
   
   modal.style.display = 'none';
   
@@ -152,13 +177,19 @@ export function hideModal() {
  */
 export function showInlineForm() {
   const formContainer = document.getElementById('databaseFormContainer');
-  if (!formContainer) return;
+  if (!formContainer) {
+    console.error('Контейнер форми не знайдено');
+    return;
+  }
   
   formContainer.style.display = 'block';
   
   // Фокус на першому полі введення
   setTimeout(() => {
-    document.getElementById('dbFormSurname').focus();
+    const surnameField = document.getElementById('dbFormSurname');
+    if (surnameField) {
+      surnameField.focus();
+    }
   }, 100);
 }
 
@@ -176,28 +207,51 @@ export function hideInlineForm() {
  * Очистити форму
  */
 export function clearForm() {
-  document.getElementById('dbFormId').value = '';
-  document.getElementById('dbFormSurname').value = '';
-  document.getElementById('dbFormFirstname').value = '';
-  document.getElementById('dbFormNickname1').value = '';
-  document.getElementById('dbFormNickname2').value = '';
+  const fields = [
+    'dbFormId',
+    'dbFormSurname',
+    'dbFormFirstname',
+    'dbFormNickname1',
+    'dbFormNickname2'
+  ];
+  
+  fields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.value = '';
+    }
+  });
 }
 
 /**
  * Зберегти дані форми
+ * @returns {boolean} Результат операції
  */
 export function saveFormData() {
   // Отримуємо дані з форми
-  const id = document.getElementById('dbFormId').value.trim();
-  const surname = document.getElementById('dbFormSurname').value.trim();
-  const firstname = document.getElementById('dbFormFirstname').value.trim();
-  const nickname1 = document.getElementById('dbFormNickname1').value.trim();
-  const nickname2 = document.getElementById('dbFormNickname2').value.trim();
+  const idField = document.getElementById('dbFormId');
+  const surnameField = document.getElementById('dbFormSurname');
+  const firstnameField = document.getElementById('dbFormFirstname');
+  const nickname1Field = document.getElementById('dbFormNickname1');
+  const nickname2Field = document.getElementById('dbFormNickname2');
+  
+  // Перевіряємо наявність полів
+  if (!idField || !surnameField || !firstnameField || !nickname1Field || !nickname2Field) {
+    showNotification('Помилка: не всі поля форми знайдено', 'error');
+    console.error('Не всі поля форми знайдено');
+    return false;
+  }
+  
+  const id = idField.value.trim();
+  const surname = surnameField.value.trim();
+  const firstname = firstnameField.value.trim();
+  const nickname1 = nickname1Field.value.trim();
+  const nickname2 = nickname2Field.value.trim();
   
   // Перевіряємо обов'язкові поля
   if (!surname || !firstname) {
     showNotification('Прізвище та ім\'я обов\'язкові', 'warning');
-    return;
+    return false;
   }
   
   // Формуємо масив нікнеймів (без пустих значень)
@@ -216,24 +270,34 @@ export function saveFormData() {
   // Перевіряємо, чи редагуємо існуючий запис
   const isEditing = !!editingId;
   
+  let result = false;
   if (isEditing) {
     // Оновлюємо існуючий запис
-    updateDatabaseEntry(entry);
-    showNotification('Запис оновлено', 'success');
+    result = updateDatabaseEntry(entry);
+    if (result) {
+      showNotification('Запис оновлено', 'success');
+    }
   } else {
     // Додаємо новий запис
-    addDatabaseEntry(entry);
-    showNotification('Запис додано', 'success');
+    result = addDatabaseEntry(entry);
+    if (result) {
+      showNotification('Запис додано', 'success');
+    }
   }
   
-  // Очищаємо форму
-  clearForm();
-  editingId = null;
+  // Очищаємо форму тільки якщо операція була успішною
+  if (result) {
+    clearForm();
+    editingId = null;
+  }
+  
+  return result;
 }
 
 /**
  * Додати новий запис до бази даних
  * @param {Object} entry - Запис для додавання
+ * @returns {boolean} Успішність операції
  */
 export function addDatabaseEntry(entry) {
   if (!entry || !entry.surname || !entry.firstname) {
@@ -247,6 +311,8 @@ export function addDatabaseEntry(entry) {
   if (result) {
     // Оновлюємо відображення
     updateDatabaseUI();
+  } else {
+    showNotification('Помилка додавання запису', 'error');
   }
   
   return result;
@@ -255,6 +321,7 @@ export function addDatabaseEntry(entry) {
 /**
  * Оновити існуючий запис у базі даних
  * @param {Object} entry - Запис для оновлення
+ * @returns {boolean} Успішність операції
  */
 export function updateDatabaseEntry(entry) {
   if (!entry || !entry.id) {
@@ -278,6 +345,7 @@ export function updateDatabaseEntry(entry) {
 /**
  * Видалити запис з бази даних
  * @param {string} id - ID запису для видалення
+ * @returns {boolean} Успішність операції
  */
 export function deleteDatabaseEntry(id) {
   if (!id) {
@@ -313,11 +381,24 @@ export function editDatabaseEntry(id) {
   }
   
   // Заповнюємо форму
-  document.getElementById('dbFormId').value = entry.id;
-  document.getElementById('dbFormSurname').value = entry.surname;
-  document.getElementById('dbFormFirstname').value = entry.firstname;
-  document.getElementById('dbFormNickname1').value = entry.nicknames && entry.nicknames.length > 0 ? entry.nicknames[0] : '';
-  document.getElementById('dbFormNickname2').value = entry.nicknames && entry.nicknames.length > 1 ? entry.nicknames[1] : '';
+  const idField = document.getElementById('dbFormId');
+  const surnameField = document.getElementById('dbFormSurname');
+  const firstnameField = document.getElementById('dbFormFirstname');
+  const nickname1Field = document.getElementById('dbFormNickname1');
+  const nickname2Field = document.getElementById('dbFormNickname2');
+  
+  // Перевіряємо наявність полів
+  if (!idField || !surnameField || !firstnameField || !nickname1Field || !nickname2Field) {
+    showNotification('Помилка: не всі поля форми знайдено', 'error');
+    console.error('Не всі поля форми знайдено');
+    return;
+  }
+  
+  idField.value = entry.id;
+  surnameField.value = entry.surname;
+  firstnameField.value = entry.firstname;
+  nickname1Field.value = entry.nicknames && entry.nicknames.length > 0 ? entry.nicknames[0] : '';
+  nickname2Field.value = entry.nicknames && entry.nicknames.length > 1 ? entry.nicknames[1] : '';
   
   // Встановлюємо режим редагування
   editingId = id;

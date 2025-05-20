@@ -62,8 +62,9 @@ let renderState = {
  * @param {boolean} useDbChk - Чи використовувати базу імен
  * @param {Object} matchedNames - Результати порівняння з базою імен
  * @param {Object} nameMatcher - Екземпляр класу NameMatcher
+ * @param {boolean} useRecs - Чи використовувати рекомендації (за замовчуванням true)
  */
-export async function updateNamesList(displayedNames, realNameMap, useDbChk, matchedNames, nameMatcher) {
+export async function updateNamesList(displayedNames, realNameMap, useDbChk, matchedNames, nameMatcher, useRecs = true) {
   // Якщо немає імен для відображення, нічого не робимо
   if (!displayedNames || displayedNames.length === 0) {
     return;
@@ -74,7 +75,8 @@ export async function updateNamesList(displayedNames, realNameMap, useDbChk, mat
     realNameMap,
     useDbChk,
     matchedNames,
-    nameMatcher
+    nameMatcher,
+    useRecs
   };
   // Якщо рендеринг в процесі, відкладаємо оновлення
   if (renderState.isRendering) {
@@ -85,8 +87,8 @@ export async function updateNamesList(displayedNames, realNameMap, useDbChk, mat
   renderState.isRendering = true;
   // Використовуємо requestAnimationFrame для синхронізації з циклом перемалювання браузера
   requestAnimationFrame(async () => {
-    // Викликаємо рендеринг
-    await renderNames(nameMatcher, displayedNames, realNameMap, useDbChk, matchedNames);
+    // Викликаємо рендеринг з параметром useRecs
+    await renderNames(nameMatcher, displayedNames, realNameMap, useDbChk, matchedNames, useRecs);
     // Завершуємо рендеринг
     renderState.isRendering = false;
     // Якщо були відкладені оновлення, виконуємо їх
@@ -97,7 +99,8 @@ export async function updateNamesList(displayedNames, realNameMap, useDbChk, mat
         currentData.realNameMap, 
         currentData.useDbChk, 
         currentData.matchedNames,
-        currentData.nameMatcher
+        currentData.nameMatcher,
+        currentData.useRecs
       );
     }
   });

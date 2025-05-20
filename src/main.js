@@ -201,12 +201,14 @@ document.addEventListener('databaseUpdated', async e => {
     nameMatcher.compareNames(displayedNames, getRealNameMap());
 
     // Оновлюємо відображення
+    // Вносимо зміну: передаємо false як аргумент useRecs для уникнення подвійного виклику getRecommendations
     await updateNamesList(
       displayedNames,
       getRealNameMap(),
       true,
       nameMatcher.getMatchedNames(),
-      nameMatcher
+      nameMatcher,
+      false // додаємо параметр useRecs: false
     );
 
     console.log(

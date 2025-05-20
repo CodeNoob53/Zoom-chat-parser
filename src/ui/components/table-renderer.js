@@ -20,10 +20,11 @@ const renderCache = {
  * @param {NameMatcher} nameMatcher - Екземпляр класу NameMatcher
  * @param {string[]} list - Масив імен для відображення
  * @param {Object} realNameMap - Карта відповідності Zoom-імені до реального імені
- * @param {boolean} useDbChk - Чи використовувати базу імен
+ * @param {boolean} useDbChk - Чи використовувати базу даних
  * @param {Object} matchedNames - Результати порівняння з базою імен
+ * @param {boolean} useRecs - Чи використовувати рекомендації
  */
-export async function renderNames(nameMatcher, list, realNameMap, useDbChk, matchedNames) {
+export async function renderNames(nameMatcher, list, realNameMap, useDbChk, matchedNames, useRecs = true) {
   const { participantsList, countNamesSpan } = elements;
 
   // Перевіряємо, чи передано валідний екземпляр NameMatcher
@@ -68,8 +69,8 @@ export async function renderNames(nameMatcher, list, realNameMap, useDbChk, matc
   // Отримуємо список нерозпізнаних імен
   const unrecognizedNames = useDbChk ? nameMatcher.getUnrecognizedNames() : [];
 
-  // Отримуємо рекомендації для нерозпізнаних імен
-  const recommendations = useDbChk
+  // Отримуємо рекомендації для нерозпізнаних імен, тільки якщо useRecs=true
+  const recommendations = (useDbChk && useRecs) 
     ? nameMatcher.getRecommendations(unrecognizedNames, await nameMatcher.getNameDatabase(), matchedNames)
     : {};
 

@@ -153,6 +153,11 @@ export function updateMappings () {
       })
     }
   })
+  
+  // Логуємо для налагодження
+  console.log('Оновлено карти відповідності:');
+  console.log('Імена:', Object.keys(nameToIdMap).length);
+  console.log('Нікнейми:', Object.keys(nicknameToIdMap).length);
 }
 
 /**
@@ -190,6 +195,9 @@ export function findEntryByNickname (nickname) {
   if (!nickname) return null
 
   const id = nicknameToIdMap[nickname.toLowerCase()]
+  
+  // Логуємо для налагодження
+  console.log(`Пошук за нікнеймом "${nickname}": ${id ? 'знайдено' : 'не знайдено'}`);
 
   if (!id) return null
 
@@ -269,7 +277,13 @@ export function searchEntries (searchText) {
  */
 export function addEntry(entry) {
   if (!entry || !entry.surname || !entry.firstname) {
+    console.error('Неповний запис для додавання:', entry);
     return false;
+  }
+  
+  // Перевіряємо, що nicknames є масивом
+  if (!Array.isArray(entry.nicknames)) {
+    entry.nicknames = [];
   }
   
   // Створюємо новий запис
@@ -277,7 +291,7 @@ export function addEntry(entry) {
     id: entry.id || getNextId(),
     surname: entry.surname,
     firstname: entry.firstname,
-    nicknames: entry.nicknames || []
+    nicknames: [...entry.nicknames] // Створюємо копію масиву
   };
   
   // Додаємо запис
@@ -287,9 +301,11 @@ export function addEntry(entry) {
   updateMappings();
   
   // Зберігаємо базу даних відразу
-  saveDatabase();
+  const result = saveDatabase();
   
-  return true;
+  console.log('Додано новий запис:', newEntry);
+  
+  return result;
 }
 
 
@@ -300,6 +316,7 @@ export function addEntry(entry) {
  */
 export function updateEntry(entry) {
   if (!entry || !entry.id) {
+    console.error('Неповний запис для оновлення:', entry);
     return false;
   }
   
@@ -307,22 +324,32 @@ export function updateEntry(entry) {
   const index = databaseData.entries.findIndex(e => e.id === entry.id);
   
   if (index === -1) {
+    console.error('Запис для оновлення не знайдено:', entry.id);
     return false;
+  }
+  
+  // Перевіряємо, що nicknames є масивом
+  if (!Array.isArray(entry.nicknames)) {
+    entry.nicknames = [];
   }
   
   // Оновлюємо запис
   databaseData.entries[index] = {
     ...databaseData.entries[index],
-    ...entry
+    surname: entry.surname,
+    firstname: entry.firstname,
+    nicknames: [...entry.nicknames] // Створюємо копію масиву
   };
   
   // Оновлюємо картини відповідності
   updateMappings();
   
   // Зберігаємо базу даних відразу замість відкладеного збереження
-  saveDatabase();
+  const result = saveDatabase();
   
-  return true;
+  console.log('Оновлено запис:', databaseData.entries[index]);
+  
+  return result;
 }
 
 /**
@@ -349,9 +376,7 @@ export function deleteEntry(id) {
   updateMappings();
   
   // Зберігаємо базу даних відразу
-  saveDatabase();
-  
-  return true;
+  return saveDatabase();
 }
 
 /**

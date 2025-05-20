@@ -22,14 +22,22 @@ export function matchNames(
   manualAssignments = {},
   unrecognizedNames = new Set()
 ) {
+  // Очищаємо попередні дані
+  unrecognizedNames.clear();
   const matchedNames = {};
-  const strategies = Object.values(matchingStrategies).sort(
-    (a, b) => b.priority - a.priority
-  );
+  
+  // Отримуємо стратегії, відсортовані за пріоритетом
+  const strategies = Object.values(matchingStrategies)
+    .filter(s => s && typeof s.match === 'function')
+    .sort((a, b) => b.priority - a.priority);
 
   Logger.info(`Початок порівняння ${displayedNames.length} імен`);
 
+  // Для кожного імені з відображуваних
   for (const name of displayedNames) {
+    // Пропускаємо порожні імена
+    if (!name.trim()) continue;
+    
     // Ранній вихід для ручних призначень
     if (manualAssignments[name]) {
       matchedNames[name] = manualAssignments[name];
@@ -41,45 +49,77 @@ export function matchNames(
       continue;
     }
 
-    // Ранній вихід для неоднозначних імен
-    if (hasAmbiguousNameMatch(name, nameDatabase)) {
-      matchedNames[name] = 'not-in-db';
+    // Спочатку перевіряємо саме точне співпадіння для всіх імен
+    const exactMatch = matchingStrategies.exactMatch.match(name, nameDatabase, realNameMap);
+    if (exactMatch) {
+      matchedNames[name] = exactMatch.id;
       matchedNames[name + '_matchInfo'] = {
-        matchType: 'ambiguous-name',
-        quality: 0,
-        allMatches: [],
+        matchType: exactMatch.matchType,
+        quality: exactMatch.quality,
+        dbName: exactMatch.dbName,
       };
-      unrecognizedNames.add(name);
-      Logger.debug(`Ранній вихід для ${name}: неоднозначне ім'я`);
+      Logger.debug(`Знайдено точне співпадіння для ${name}: ${exactMatch.dbName}`);
       continue;
     }
 
-    // Застосовуємо стратегії
-    let bestMatch = null;
-    for (const strategy of strategies) {
-      const match = strategy.match(name, nameDatabase, realNameMap);
-      if (match) {
-        bestMatch = match;
-        break;
-      }
+    // Потім перевіряємо реальне ім'я (rnm:)
+    const realNameMatch = matchingStrategies.realNameTag.match(name, nameDatabase, realNameMap);
+    if (realNameMatch) {
+      matchedNames[name] = realNameMatch.id;
+      matchedNames[name + '_matchInfo'] = {
+        matchType: realNameMatch.matchType,
+        quality: realNameMatch.quality,
+        dbName: realNameMatch.dbName,
+      };
+      Logger.debug(`Знайдено співпадіння по реальному імені для ${name}: ${realNameMatch.dbName}`);
+      continue;
     }
 
-    if (bestMatch && bestMatch.id !== 'not-in-db') {
-      matchedNames[name] = bestMatch.id;
+    // Перевіряємо унікальність імені або прізвища
+    const uniqueNameMatch = matchingStrategies.uniqueName?.match(name, nameDatabase, realNameMap);
+    if (uniqueNameMatch) {
+      matchedNames[name] = uniqueNameMatch.id;
       matchedNames[name + '_matchInfo'] = {
-        matchType: bestMatch.matchType,
-        quality: bestMatch.quality,
-        dbName: bestMatch.dbName,
-        reversed: bestMatch.reversed || false,
-        allMatches: bestMatch.allMatches || [],
+        matchType: uniqueNameMatch.matchType,
+        quality: uniqueNameMatch.quality,
+        dbName: uniqueNameMatch.dbName,
       };
-      Logger.debug(`Знайдено співпадіння для ${name}: ${bestMatch.dbName}`);
+      Logger.debug(`Знайдено унікальне співпадіння для ${name}: ${uniqueNameMatch.dbName}`);
+      continue;
+    }
+
+    // Перевіряємо нікнейм
+    const nicknameMatch = matchingStrategies.nicknameMatch.match(name, nameDatabase, realNameMap);
+    if (nicknameMatch) {
+      matchedNames[name] = nicknameMatch.id;
+      matchedNames[name + '_matchInfo'] = {
+        matchType: nicknameMatch.matchType,
+        quality: nicknameMatch.quality,
+        dbName: nicknameMatch.dbName,
+      };
+      Logger.debug(`Знайдено співпадіння по нікнейму для ${name}: ${nicknameMatch.dbName}`);
+      continue;
+    }
+
+    // Якщо не знайшли по попередніх стратегіях, використовуємо загальну стратегію порівняння частин імені
+    const namePartsMatch = matchingStrategies.nameParts.match(name, nameDatabase, realNameMap);
+    if (namePartsMatch && namePartsMatch.id !== 'not-in-db') {
+      matchedNames[name] = namePartsMatch.id;
+      matchedNames[name + '_matchInfo'] = {
+        matchType: namePartsMatch.matchType,
+        quality: namePartsMatch.quality,
+        dbName: namePartsMatch.dbName,
+        reversed: namePartsMatch.reversed || false,
+        allMatches: namePartsMatch.allMatches || [],
+      };
+      Logger.debug(`Знайдено співпадіння для ${name}: ${namePartsMatch.dbName}`);
     } else {
+      // Якщо не знайшли жодного співпадіння
       matchedNames[name] = 'not-in-db';
       matchedNames[name + '_matchInfo'] = {
-        matchType: bestMatch?.matchType || 'not-found',
-        quality: bestMatch?.quality || 0,
-        allMatches: bestMatch?.allMatches || [],
+        matchType: namePartsMatch?.matchType || 'not-found',
+        quality: namePartsMatch?.quality || 0,
+        allMatches: namePartsMatch?.allMatches || [],
       };
       unrecognizedNames.add(name);
       Logger.debug(`Не знайдено співпадіння для ${name}`);
@@ -87,7 +127,9 @@ export function matchNames(
   }
 
   // Автоматичне співпадіння для нерозпізнаних імен
-  tryAutoMatchUnrecognized(matchedNames, unrecognizedNames, nameDatabase);
+  if (unrecognizedNames.size > 0) {
+    tryAutoMatchUnrecognized(matchedNames, unrecognizedNames, nameDatabase);
+  }
 
   Logger.info(
     `Порівняння завершено: ${unrecognizedNames.size} імен не знайдено`

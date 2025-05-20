@@ -11,9 +11,9 @@ export const NameMatchingConfig = {
     thresholds: {
       exactMatch: 1.0,             // Точне співпадіння
       variantMatch: 0.9,           // Співпадіння варіантів імені
-      translitMatch: 0.75,         // Співпадіння через транслітерацію
+      translitMatch: 0.65,         // Співпадіння через транслітерацію
       fuzzyMatch: 0.25,            // Нечітке співпадіння
-      autoMatchMin: 0.85,          // Мінімальна якість для автоматичного співпадіння
+      autoMatchMin: 0.8,           // Мінімальна якість для автоматичного співпадіння
       similarQualityDiff: 5,       // Різниця в якості для схожих співпадінь
       nicknameMatch: 0.85,         // Співпадіння нікнеймів
       ambiguousMatch: 0.9,         // Поріг для неоднозначних імен
@@ -24,18 +24,20 @@ export const NameMatchingConfig = {
       manualAssignment: 100,       // Ручне призначення
       exactMatch: 100,             // Точне співпадіння
       realNameTag: 99,             // Співпадіння через теги реальних імен
+      uniqueSurnameMatch: 98,      // Співпадіння унікального прізвища
+      uniqueFirstnameMatch: 97,    // Співпадіння унікального імені
       nicknameMatch: 97,           // Співпадіння нікнеймів
       standardOrderExact: 98,      // Точне співпадіння в стандартному порядку
       reversedOrderExact: 92,      // Точне співпадіння в зворотному порядку
-      surnameExactFirstnameFuzzy: 90, // Точне прізвище, нечітке ім’я
+      surnameExactFirstnameFuzzy: 90, // Точне прізвище, нечітке ім'я
       standardOrderNameVariant: 88,   // Варіант імені в стандартному порядку
       standardOrderTranslit: 85,      // Транслітерація в стандартному порядку
-      reversedSurnameExactFirstnameFuzzy: 85, // Зворотний порядок, точне прізвище, нечітке ім’я
+      reversedSurnameExactFirstnameFuzzy: 85, // Зворотний порядок, точне прізвище, нечітке ім'я
       reversedOrderNameVariant: 82,     // Варіант імені в зворотному порядку
       reversedOrderTranslit: 80,        // Транслітерація в зворотному порядку
       singleWordVariantMatch: 75,       // Співпадіння варіанту однослівного імені
       singleWordSurnameMatch: 70,       // Співпадіння однослівного імені з прізвищем
-      singleWordFirstnameMatch: 65,     // Співпадіння однослівного імені з ім’ям
+      singleWordFirstnameMatch: 65,     // Співпадіння однослівного імені з ім'ям
       fullNameTranslit: 60,             // Транслітерація повного імені
       splitNameMatch: 85,               // Співпадіння склеєного імені
       autoMatchSingleName: 95,          // Автоматичне співпадіння однослівного імені
@@ -47,6 +49,7 @@ export const NameMatchingConfig = {
     strategies: {
       exactMatch: { priority: 100, enabled: true },
       realNameTag: { priority: 99, enabled: true },
+      uniqueName: { priority: 98, enabled: true }, // Додана нова стратегія
       nicknameMatch: { priority: 97, enabled: true },
       nameParts: { priority: 95, enabled: true },
     },
@@ -94,7 +97,7 @@ export const NameMatchingConfig = {
    * @returns {number} Значення порогу
    */
   export function getThreshold(thresholdName) {
-    return NameMatchingConfig.thresholds[thresholdName] || 0.5;
+    return NameMatchingConfig.thresholds[thresholdName] || 0.7;
   }
   
   /**

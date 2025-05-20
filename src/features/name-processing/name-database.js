@@ -163,22 +163,33 @@ export class NameMatcher {
     return [...this.unrecognizedNames];
   }
 
-  /**
-   * Отримати базу імен
-   * @returns {Object} База імен
-   */
-  async getNameDatabase() {
-    try {
-      const { getOldFormatDatabase } = await import('../database/database-service.js');
-      const oldFormatDb = getOldFormatDatabase();
-      if (Object.keys(oldFormatDb).length > 0 && Object.keys(this.nameDatabase).length !== Object.keys(oldFormatDb).length) {
-        this.nameDatabase = oldFormatDb;
-      }
-    } catch (err) {
-      Logger.error('Помилка отримання бази:', err);
+/**
+ * Отримати стандартну базу імен з оптимізацією
+ * @returns {Object} База імен
+ */
+async getNameDatabase() {
+  try {
+    // Перевіряємо, чи є кеш
+    if (Object.keys(this.nameDatabase).length > 0) {
+      return { ...this.nameDatabase };
     }
-    return { ...this.nameDatabase };
+    
+    // Якщо кеш порожній, завантажуємо з бази даних
+    const { getOldFormatDatabase } = await import('../database/database-service.js');
+    const oldFormatDb = getOldFormatDatabase();
+    
+    if (Object.keys(oldFormatDb).length > 0) {
+      this.nameDatabase = oldFormatDb;
+      Logger.info(`Завантажено базу даних: ${Object.keys(oldFormatDb).length} записів`);
+    } else {
+      Logger.warn('База даних порожня');
+    }
+  } catch (err) {
+    Logger.error('Помилка отримання бази:', err);
   }
+  
+  return { ...this.nameDatabase };
+} 
 
   /**
    * Отримати рекомендації для нерозпізнаних імен
@@ -298,48 +309,73 @@ export class NameMatcher {
     return info;
   }
 
-  /**
-   * Очистити кеш співпадінь
-   */
-  clearMatchedNamesCache() {
-    this.matchedNames = {};
-    this.unrecognizedNames.clear();
-    this.recommendationsCache = null;
-    Logger.info('Кеш співпадінь очищено');
-  }
+/**
+ * Очистити кеш співпадінь для оновлення результатів
+ */
+clearMatchedNamesCache() {
+  this.matchedNames = {};
+  this.unrecognizedNames.clear();
+  this.recommendationsCache = null;
+  Logger.info('Кеш співпадінь очищено');
+}
 
-  /**
-   * Встановити ручне співпадіння
-   * @param {string} name - Ім'я
-   * @param {string} dbNameOrId - Ім'я з бази або ID
-   * @returns {boolean} Успішність
-   */
-  setManualMatch(name, dbNameOrId) {
-    if (!name) return false;
+/**
+ * Отримати співпадіння за іменем з кешу
+ * @param {string} name - Ім'я
+ * @returns {Object|null} Інформація про співпадіння
+ */
+getMatchInfo(name) {
+  if (!name) return null;
+  
+  return this.matchedNames[name + '_matchInfo'] || null;
+}
 
-    let id = dbNameOrId;
-    if (this.nameDatabase[dbNameOrId]) {
-      id = this.nameDatabase[dbNameOrId];
+
+/**
+ * Удосконалена функція для встановлення ручного співпадіння
+ * @param {string} name - Ім'я
+ * @param {string} dbNameOrId - Ім'я з бази або ID
+ * @returns {boolean} Успішність операції
+ */
+setManualMatch(name, dbNameOrId) {
+  if (!name) return false;
+
+  let id = dbNameOrId;
+  let dbName = null;
+  
+  // Якщо передали ім'я з бази, а не ID
+  if (this.nameDatabase[dbNameOrId]) {
+    id = this.nameDatabase[dbNameOrId];
+    dbName = dbNameOrId;
+  } else {
+    // Шукаємо dbName за id
+    for (const [key, value] of Object.entries(this.nameDatabase)) {
+      if (value === id) {
+        dbName = key;
+        break;
+      }
     }
-
-    const existsInDb = Object.values(this.nameDatabase).includes(id);
-    if (!existsInDb) return false;
-
-    this.manualAssignments[name] = id;
-    this.matchedNames[name] = id;
-    this.matchedNames[name + '_matchInfo'] = {
-      matchType: 'manual-match',
-      quality: NameMatchingConfig.qualities.manualAssignment,
-      dbName: Object.keys(this.nameDatabase).find(
-        (key) => this.nameDatabase[key] === id
-      ),
-    };
-
-    this.unrecognizedNames.delete(name);
-    showNotification('Ручне призначення встановлено!', 'success');
-    Logger.info(`Ручне призначення для ${name} -> ${id}`);
-    return true;
   }
+
+  const existsInDb = Object.values(this.nameDatabase).includes(id);
+  if (!existsInDb) {
+    Logger.error(`ID ${id} не знайдено в базі даних`);
+    return false;
+  }
+
+  this.manualAssignments[name] = id;
+  this.matchedNames[name] = id;
+  this.matchedNames[name + '_matchInfo'] = {
+    matchType: 'manual-match',
+    quality: NameMatchingConfig.qualities.manualAssignment,
+    dbName: dbName,
+  };
+
+  this.unrecognizedNames.delete(name);
+  showNotification('Ручне призначення встановлено!', 'success');
+  Logger.info(`Ручне призначення для ${name} -> ${id} (${dbName})`);
+  return true;
+}
 
   /**
    * Вибрати альтернативне співпадіння

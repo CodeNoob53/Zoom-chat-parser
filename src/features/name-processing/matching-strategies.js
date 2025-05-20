@@ -46,6 +46,70 @@ const realNameTagStrategy = {
 };
 
 /**
+ * Стратегія унікальних імен
+ * Шукає унікальні імена або прізвища в базі даних
+ */
+const uniqueNameStrategy = {
+  priority: 98, // Ставимо вище за nicknameMatch, але нижче за realNameTag
+  match(name, nameDatabase, realNameMap) {
+    // Розбиваємо ім'я на частини
+    const nameParts = splitName(name);
+    if (!nameParts.standard) return null;
+    
+    const { surname, firstname } = nameParts.standard;
+    
+    // Рахуємо, скільки разів зустрічається це прізвище в базі
+    const matchingSurnames = [];
+    for (const dbName in nameDatabase) {
+      const dbParts = splitName(dbName);
+      if (dbParts.standard && 
+          dbParts.standard.surname.toLowerCase() === surname.toLowerCase()) {
+        matchingSurnames.push({
+          id: nameDatabase[dbName],
+          dbName: dbName
+        });
+      }
+    }
+    
+    // Якщо прізвище унікальне (зустрічається лише раз)
+    if (matchingSurnames.length === 1) {
+      return {
+        id: matchingSurnames[0].id,
+        dbName: matchingSurnames[0].dbName,
+        matchType: 'unique-surname-match',
+        quality: getQuality('uniqueSurnameMatch'),
+      };
+    }
+    
+    // Рахуємо, скільки разів зустрічається це ім'я в базі
+    const matchingFirstnames = [];
+    for (const dbName in nameDatabase) {
+      const dbParts = splitName(dbName);
+      if (dbParts.standard && 
+          dbParts.standard.firstname.toLowerCase() === firstname.toLowerCase()) {
+        matchingFirstnames.push({
+          id: nameDatabase[dbName],
+          dbName: dbName
+        });
+      }
+    }
+    
+    // Якщо ім'я унікальне (зустрічається лише раз)
+    if (matchingFirstnames.length === 1) {
+      return {
+        id: matchingFirstnames[0].id,
+        dbName: matchingFirstnames[0].dbName,
+        matchType: 'unique-firstname-match',
+        quality: getQuality('uniqueFirstnameMatch'),
+      };
+    }
+    
+    return null;
+  },
+};
+
+
+/**
  * Стратегія співпадіння за нікнеймом
  */
 const nicknameMatchStrategy = {
@@ -143,9 +207,21 @@ const namePartsStrategy = {
 };
 
 /**
- * Порівняння в стандартному порядку
+ * Удосконалене порівняння в стандартному порядку
  */
 function compareStandardOrder(chatParts, dbParts, dbName, id) {
+  // Попереднє швидке порівняння (case-insensitive)
+  if (chatParts.surname.toLowerCase() === dbParts.surname.toLowerCase() &&
+      chatParts.firstname.toLowerCase() === dbParts.firstname.toLowerCase()) {
+    return {
+      id,
+      dbName,
+      matchType: 'standard-order-exact',
+      quality: getQuality('standardOrderExact'),
+    };
+  }
+
+  // Тепер перевіряємо більш детально
   const surnameSim = evaluateNameSimilarity(
     chatParts.surname,
     dbParts.surname
@@ -273,53 +349,75 @@ function compareReversedOrder(chatParts, dbParts, dbName, id) {
 }
 
 /**
- * Порівняння однослівного імені
+ * Покращене порівняння однослівного імені
  */
 function compareSingleWord(word, dbParts, dbName, id) {
-  if (dbParts.standard) {
-    if (
-      areNamesTransliteratedMatches(
-        word,
-        dbParts.standard.surname,
-        NameMatchingConfig.thresholds.translitMatch
-      )
-    ) {
-      return {
-        id,
-        dbName,
-        matchType: 'single-word-surname-match',
-        quality: getQuality('singleWordSurnameMatch'),
-      };
-    }
-
-    if (
-      areNamesTransliteratedMatches(
-        word,
-        dbParts.standard.firstname,
-        NameMatchingConfig.thresholds.translitMatch
-      )
-    ) {
-      return {
-        id,
-        dbName,
-        matchType: 'single-word-firstname-match',
-        quality: getQuality('singleWordFirstnameMatch'),
-      };
-    }
-
-    if (
-      isVariantOf(word, dbParts.standard.firstname) ||
-      isVariantOf(dbParts.standard.firstname, word)
-    ) {
-      return {
-        id,
-        dbName,
-        matchType: 'single-word-variant-match',
-        quality: getQuality('singleWordVariantMatch'),
-      };
-    }
+  if (!dbParts.standard) return null;
+  
+  // Спочатку перевіряємо точні співпадіння з прізвищем або ім'ям
+  if (word.toLowerCase() === dbParts.standard.surname.toLowerCase()) {
+    return {
+      id,
+      dbName,
+      matchType: 'single-word-surname-exact-match',
+      quality: getQuality('singleWordSurnameMatch') + 5, // Збільшуємо якість для точного співпадіння
+    };
+  }
+  
+  if (word.toLowerCase() === dbParts.standard.firstname.toLowerCase()) {
+    return {
+      id,
+      dbName,
+      matchType: 'single-word-firstname-exact-match',
+      quality: getQuality('singleWordFirstnameMatch') + 5, // Збільшуємо якість для точного співпадіння
+    };
   }
 
+  // Перевіряємо транслітерацію
+  if (
+    areNamesTransliteratedMatches(
+      word,
+      dbParts.standard.surname,
+      getThreshold('translitMatch')
+    )
+  ) {
+    return {
+      id,
+      dbName,
+      matchType: 'single-word-surname-match',
+      quality: getQuality('singleWordSurnameMatch'),
+    };
+  }
+
+  if (
+    areNamesTransliteratedMatches(
+      word,
+      dbParts.standard.firstname,
+      getThreshold('translitMatch')
+    )
+  ) {
+    return {
+      id,
+      dbName,
+      matchType: 'single-word-firstname-match',
+      quality: getQuality('singleWordFirstnameMatch'),
+    };
+  }
+
+  // Перевіряємо варіанти імені (зменшувальні форми)
+  if (
+    isVariantOf(word, dbParts.standard.firstname) ||
+    isVariantOf(dbParts.standard.firstname, word)
+  ) {
+    return {
+      id,
+      dbName,
+      matchType: 'single-word-variant-match',
+      quality: getQuality('singleWordVariantMatch'),
+    };
+  }
+
+  // Нечітке співпадіння як останній ресурс
   const similarity = evaluateNameSimilarity(word, dbName);
   if (similarity.type === 'fuzzy-match') {
     return {
@@ -336,6 +434,7 @@ function compareSingleWord(word, dbParts, dbName, id) {
 export const matchingStrategies = {
   exactMatch: exactMatchStrategy,
   realNameTag: realNameTagStrategy,
+  uniqueName: uniqueNameStrategy, // Додана нова стратегія
   nicknameMatch: nicknameMatchStrategy,
   nameParts: namePartsStrategy,
 };

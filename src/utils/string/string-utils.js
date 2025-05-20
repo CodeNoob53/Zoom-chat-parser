@@ -8,7 +8,7 @@ import {
   transliterateToLatin,
 } from '../../features/name-processing/transliteration.js';
 import { isVariantOf } from '../../features/name-processing/name-variants.js';
-import { NameMatchingConfig, getQuality, getThreshold } from '../../config.js';
+import { getQuality, getThreshold } from '../../config.js';
 
 /**
  * Функція для обчислення відстані Левенштейна між двома рядками
@@ -96,7 +96,7 @@ export function areStringSimilar(str1, str2, threshold = getThreshold('fuzzyMatc
 }
 
 /**
- * Уніфікована функція оцінки схожості імен
+ * Удосконалена уніфікована функція оцінки схожості імен
  * @param {string} name1 - Перше ім'я
  * @param {string} name2 - Друге ім'я
  * @param {Object} options - Додаткові параметри
@@ -110,45 +110,99 @@ export function evaluateNameSimilarity(name1, name2, options = {}) {
   const n1 = name1.toLowerCase();
   const n2 = name2.toLowerCase();
 
+  // Додаємо кешування для покращення продуктивності
+  const cacheKey = `${n1}|${n2}`;
+  if (similarityCache.has(cacheKey)) {
+    return similarityCache.get(cacheKey);
+  }
+
   // Точне співпадіння
   if (n1 === n2) {
-    return {
+    const result = {
       type: 'exact-match',
       quality: getQuality('exactMatch') / 100,
     };
+    similarityCache.set(cacheKey, result);
+    return result;
+  }
+
+  // Перевіряємо спочатку, чи міститься кирилиця в одному імені і латиниця в іншому
+  const n1HasCyrillic = /[а-яА-ЯіІїЇєЄґҐ]/.test(n1);
+  const n2HasCyrillic = /[а-яА-ЯіІїЇєЄґҐ]/.test(n2);
+  const n1HasLatin = /[a-zA-Z]/.test(n1);
+  const n2HasLatin = /[a-zA-Z]/.test(n2);
+
+  // Якщо одне ім'я кирилицею, а інше латиницею, спочатку перевіримо транслітерацію
+  if ((n1HasCyrillic && n2HasLatin) || (n1HasLatin && n2HasCyrillic)) {
+    let translitN1 = n1;
+    let translitN2 = n2;
+
+    if (n1HasCyrillic) {
+      translitN1 = transliterateToLatin(n1).toLowerCase();
+    } else if (n1HasLatin) {
+      translitN1 = transliterateToCyrillic(n1).toLowerCase();
+    }
+
+    if (n2HasCyrillic) {
+      translitN2 = transliterateToLatin(n2).toLowerCase();
+    } else if (n2HasLatin) {
+      translitN2 = transliterateToCyrillic(n2).toLowerCase();
+    }
+
+    // Після транслітерації перевіряємо точне співпадіння
+    if (translitN1 === translitN2 || translitN1 === n2 || n1 === translitN2) {
+      const result = {
+        type: 'translit-match',
+        quality: getQuality('standardOrderTranslit') / 100,
+      };
+      similarityCache.set(cacheKey, result);
+      return result;
+    }
+
+    // Якщо після транслітерації не точне співпадіння, перевіряємо схожість
+    const translitSimilarity = Math.max(
+      getSimilarity(translitN1, n2),
+      getSimilarity(n1, translitN2)
+    );
+
+    if (translitSimilarity >= getThreshold('translitMatch')) {
+      const result = {
+        type: 'translit-fuzzy-match',
+        quality: (getQuality('standardOrderTranslit') / 100) * translitSimilarity,
+      };
+      similarityCache.set(cacheKey, result);
+      return result;
+    }
   }
 
   // Перевірка варіантів імені
   if (isVariantOf(n1, n2) || isVariantOf(n2, n1)) {
-    return {
+    const result = {
       type: 'variant-match',
       quality: getQuality('standardOrderNameVariant') / 100,
     };
+    similarityCache.set(cacheKey, result);
+    return result;
   }
 
-  // Перевірка транслітерації
-  if (
-    areNamesTransliteratedMatches(n1, n2, getThreshold('translitMatch')) ||
-    transliterateToCyrillic(n1).toLowerCase() === n2 ||
-    transliterateToLatin(n1).toLowerCase() === n2
-  ) {
-    return {
-      type: 'translit-match',
-      quality: getQuality('standardOrderTranslit') / 100,
-    };
-  }
-
-  // Нечітке співпадіння
+  // Нечітке співпадіння як останній ресурс
   const similarity = getSimilarity(n1, n2);
   if (similarity >= getThreshold('fuzzyMatch')) {
-    return {
+    const result = {
       type: 'fuzzy-match',
       quality: (getQuality('fullNameTranslit') / 100) * similarity,
     };
+    similarityCache.set(cacheKey, result);
+    return result;
   }
 
-  return { type: 'not-found', quality: 0 };
+  const result = { type: 'not-found', quality: 0 };
+  similarityCache.set(cacheKey, result);
+  return result;
 }
+
+// Додаємо кеш для оптимізації
+const similarityCache = new Map();
 
 /**
  * Санітизує вхідний текстовий контент від потенційно шкідливих елементів
